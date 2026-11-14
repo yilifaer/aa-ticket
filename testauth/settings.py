@@ -9,6 +9,7 @@ SECRET_KEY = "aa-ticket-test-secret-key-not-for-production"
 SITE_URL = "https://auth.example.com"
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [SITE_URL]
 
 DATABASES = {
     "default": {
