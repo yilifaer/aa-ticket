@@ -1,0 +1,13 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n %}
+
+{% block ticket_title %}{% translate "Manage" %}{% endblock %}
+
+{% block ticket_content %}
+<ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">
+    {% for key, label, url_name in sections %}
+        <li class="nav-item"><a class="nav-link text-nowrap{% if key == section %} active{% endif %}" href="{% url url_name %}">{{ label }}</a></li>
+    {% endfor %}
+</ul>
+{% block manage_content %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "aa_ticket/manage/base.html" %}
+{% load i18n %}
+
+{% block manage_content %}
+<h1 class="h4 mb-3">{{ title }}</h1>
+{% if obj.pk %}
+    <div class="mb-3 small">
+        {% if obj.webhook_url %}
+            {% translate "Current webhook" %}: <code>{{ obj.masked_webhook }}</code>
+            <form method="post" action="{% url 'aa_ticket:manage_department_test' obj.pk %}" class="d-inline">{% csrf_token %}
+                <button class="btn btn-sm btn-outline-primary ms-2">{% translate "Send test message" %}</button>
+            </form>
+        {% else %}
+            <span class="text-warning-emphasis">⚠️ {% translate "Discord channel not configured — new tickets will not be announced." %}</span>
+        {% endif %}
+    </div>
+{% endif %}
+<form method="post" class="aa-ticket-form" style="max-width: 48rem;">
+    {% csrf_token %}
+    {% include "aa_ticket/partials/form_fields.html" %}
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
+        <a class="btn btn-secondary" href="{% url 'aa_ticket:manage_departments' %}">{% translate "Cancel" %}</a>
+    </div>
+</form>
+{% endblock %}

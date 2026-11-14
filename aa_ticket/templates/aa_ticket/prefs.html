@@ -1,0 +1,21 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n %}
+
+{% block ticket_title %}{% translate "Preferences" %}{% endblock %}
+
+{% block ticket_content %}
+<h1 class="h3 mb-3">{% translate "Preferences" %}</h1>
+{% if available %}
+    <form method="post" style="max-width: 40rem;">
+        {% csrf_token %}
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="dm" name="discord_dm_enabled"{% if pref.discord_dm_enabled %} checked{% endif %}>
+            <label class="form-check-label" for="dm">{% translate "Discord direct messages" %}</label>
+        </div>
+        <p class="form-text">{% translate "When on, you also get ticket notifications as Discord direct messages. Notifications in Alliance Auth always stay on." %}</p>
+        <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
+    </form>
+{% else %}
+    <p class="text-body-secondary">{% translate "Discord direct messages are not available on this server. You get all ticket notifications in Alliance Auth." %}</p>
+{% endif %}
+{% endblock %}

@@ -109,3 +109,24 @@ def percent(value):
     if value is None:
         return "—"
     return f"{round(value * 100)}%"
+
+
+@register.filter
+def bs_field(field):
+    """Render a form field widget with the Bootstrap 5 class that fits it."""
+    widget = field.field.widget
+    input_type = getattr(widget, "input_type", "")
+    if input_type == "checkbox":
+        css = "form-check-input"
+    elif input_type == "select" or widget.__class__.__name__ in ("Select", "SelectMultiple"):
+        css = "form-select"
+    else:
+        css = "form-control"
+    if field.errors:
+        css += " is-invalid"
+    return field.as_widget(attrs={"class": css})
+
+
+@register.filter
+def is_checkbox(field):
+    return getattr(field.field.widget, "input_type", "") == "checkbox"
