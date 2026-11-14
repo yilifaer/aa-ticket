@@ -1,9 +1,11 @@
 import requests
 from celery import shared_task
 
+from django.db import models
 from django.utils import timezone
 
 from allianceauth.services.hooks import get_extension_logger
+from allianceauth.services.tasks import QueueOnce
 
 from .app_settings import WEBHOOK_MAX_RETRIES
 from .discord import webhook
@@ -79,3 +81,129 @@ def send_dm(user_id, ticket_id, event, data=None):
         dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket))
     except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
         logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
+
+
+BATCH_SIZE = 500
+
+
+def _now(now):
+    if now:
+        from django.utils.dateparse import parse_datetime
+
+        return parse_datetime(now)
+    return timezone.now()
+
+
+def _mark_and_emit(ticket, field, now, event, extra_filter=None):
+    """Set a reminder field only if still unset, then emit. Survives restarts and races."""
+    from django.db import transaction
+
+    from .services import _emit
+
+    with transaction.atomic():
+        filters = {"pk": ticket.pk, f"{field}__isnull": True}
+        filters.update(extra_filter or {})
+        if not Ticket.objects.filter(**filters).update(**{field: now}):
+            return False
+        _emit(Ticket.objects.get(pk=ticket.pk), event)
+    return True
+
+
+@shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
+def check_unclaimed(now=None):
+    """Remind departments of unclaimed tickets and escalate to the parent."""
+    from datetime import timedelta
+
+    from .constants import Event, Status
+
+    now = _now(now)
+    tickets = (
+        Ticket.objects.filter(status=Status.OPEN)
+        .select_related("priority", "department")
+        .filter(
+            models.Q(priority__remind_after_minutes__isnull=False, reminded_at__isnull=True)
+            | models.Q(priority__escalate_after_minutes__isnull=False, escalated_at__isnull=True)
+        )
+        .order_by("open_since")[:BATCH_SIZE]
+    )
+    for ticket in tickets:
+        prio = ticket.priority
+        waited = now - ticket.open_since
+        if (
+            prio.remind_after_minutes
+            and ticket.reminded_at is None
+            and waited >= timedelta(minutes=prio.remind_after_minutes)
+        ):
+            _mark_and_emit(ticket, "reminded_at", now, Event.UNCLAIMED_REMINDER, {"status": Status.OPEN})
+        if (
+            prio.escalate_after_minutes
+            and ticket.escalated_at is None
+            and ticket.department.parent_id
+            and waited >= timedelta(minutes=prio.escalate_after_minutes)
+        ):
+            _mark_and_emit(ticket, "escalated_at", now, Event.ESCALATION_REMINDER, {"status": Status.OPEN})
+
+
+@shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
+def check_auto_close(now=None):
+    """Warn before auto-close, auto-close tickets waiting for the requester,
+    and remind staff about tickets waiting for staff."""
+    from datetime import timedelta
+
+    from .constants import ClosedReason, Event, Status
+    from .models import TicketSettings
+    from .services import close
+
+    now = _now(now)
+    s = TicketSettings.get_solo()
+    close_after = timedelta(days=s.autoclose_days)
+    warn_at = close_after - timedelta(hours=s.autoclose_warning_hours)
+    oldest_due = now - min(warn_at, close_after)
+    tickets = Ticket.objects.filter(status=Status.IN_PROGRESS, last_reply_at__lte=oldest_due).order_by(
+        "last_reply_at"
+    )[:BATCH_SIZE]
+    for ticket in tickets:
+        idle = now - ticket.last_reply_at
+        if ticket.last_reply_by_staff:
+            if idle >= close_after:
+                close(None, ticket, ClosedReason.AUTO)
+            elif s.autoclose_warning_hours and ticket.autoclose_warned_at is None and idle >= warn_at:
+                _mark_and_emit(
+                    ticket,
+                    "autoclose_warned_at",
+                    now,
+                    Event.AUTOCLOSE_WARNING,
+                    {"status": Status.IN_PROGRESS, "last_reply_at": ticket.last_reply_at},
+                )
+        elif ticket.staff_reminded_at is None and idle >= close_after:
+            _mark_and_emit(
+                ticket,
+                "staff_reminded_at",
+                now,
+                Event.AWAITING_STAFF_REMINDER,
+                {"status": Status.IN_PROGRESS, "last_reply_at": ticket.last_reply_at},
+            )
+
+
+@shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
+def cleanup_attachments():
+    """Delete image files of tickets closed longer than the retention period."""
+    from datetime import timedelta
+
+    from .attachments import delete_attachment
+    from .constants import Status
+    from .models import Attachment, TicketSettings
+
+    days = TicketSettings.get_solo().attachment_retention_days
+    if not days:
+        return
+    cutoff = timezone.now() - timedelta(days=days)
+    old = Attachment.objects.filter(
+        message__ticket__status=Status.CLOSED, message__ticket__closed_at__lt=cutoff
+    )[:BATCH_SIZE]
+    count = 0
+    for attachment in old:
+        delete_attachment(attachment)
+        count += 1
+    if count:
+        logger.info("Deleted %d old ticket images.", count)
