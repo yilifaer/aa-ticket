@@ -1,0 +1,1323 @@
+# aa-ticket translations.
+# This file is distributed under the same license as the aa-ticket package (MIT).
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: aa-ticket\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 12:44+0000\n"
+"PO-Revision-Date: 2026-11-14 00:00+0000\n"
+"Last-Translator: aa-ticket contributors\n"
+"Language-Team: es\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: attachments.py:36
+msgid "Only PNG, JPG, GIF and WEBP images are allowed."
+msgstr "Solo se permiten imágenes PNG, JPG, GIF y WEBP."
+
+#: attachments.py:57
+#, python-format
+msgid "You can attach at most %(count)d images per message."
+msgstr "Puedes adjuntar como máximo %(count)d imágenes por mensaje."
+
+#: attachments.py:62
+#, python-format
+msgid "Each image must be smaller than %(size)d MB."
+msgstr "Cada imagen debe pesar menos de %(size)d MB."
+
+#: auth_hooks.py:34 templates/aa_ticket/base.html:4
+#: templates/aa_ticket/base.html:6
+msgid "Tickets"
+msgstr "Tickets"
+
+#: constants.py:6 views/staff.py:20
+msgid "Unclaimed"
+msgstr "Sin asumir"
+
+#: constants.py:7
+msgid "In progress"
+msgstr "En curso"
+
+#: constants.py:8 templates/aa_ticket/detail.html:94
+#: templates/aa_ticket/my_tickets.html:13 templates/aa_ticket/stats.html:19
+#: views/staff.py:25
+msgid "Closed"
+msgstr "Cerrado"
+
+#: constants.py:12
+msgid "Closed by requester"
+msgstr "Cerrado por el solicitante"
+
+#: constants.py:13
+msgid "Closed by staff"
+msgstr "Cerrado por el personal"
+
+#: constants.py:14 templates/aa_ticket/stats.html:23
+msgid "Closed automatically"
+msgstr "Cerrado automáticamente"
+
+#: constants.py:18 templates/aa_ticket/detail.html:36
+msgid "Reply"
+msgstr "Respuesta"
+
+#: constants.py:19 templates/aa_ticket/detail.html:38
+msgid "Internal note"
+msgstr "Nota interna"
+
+#: constants.py:20
+msgid "Event"
+msgstr "Evento"
+
+#: constants.py:24
+msgid "submitted the ticket"
+msgstr "envió el ticket"
+
+#: constants.py:25
+msgid "claimed the ticket"
+msgstr "asumió el ticket"
+
+#: constants.py:26
+msgid "assigned the ticket"
+msgstr "asignó el ticket"
+
+#: constants.py:27
+msgid "replied"
+msgstr "respondió"
+
+#: constants.py:28
+msgid "added an internal note"
+msgstr "añadió una nota interna"
+
+#: constants.py:29
+msgid "invited a department"
+msgstr "invitó a un departamento"
+
+#: constants.py:30
+msgid "removed a department"
+msgstr "quitó un departamento"
+
+#: constants.py:31
+msgid "transferred the ticket"
+msgstr "transfirió el ticket"
+
+#: constants.py:32
+msgid "requested escalation"
+msgstr "solicitó escalado"
+
+#: constants.py:33
+msgid "changed the priority"
+msgstr "cambió la prioridad"
+
+#: constants.py:34
+msgid "changed the category"
+msgstr "cambió la categoría"
+
+#: constants.py:35
+msgid "closed the ticket"
+msgstr "cerró el ticket"
+
+#: constants.py:36
+msgid "reopened the ticket"
+msgstr "reabrió el ticket"
+
+#: constants.py:37
+msgid "unclaimed reminder sent"
+msgstr "recordatorio de ticket sin asumir enviado"
+
+#: constants.py:38
+msgid "escalation reminder sent"
+msgstr "recordatorio de escalado enviado"
+
+#: constants.py:39
+msgid "auto-close warning sent"
+msgstr "aviso de cierre automático enviado"
+
+#: constants.py:40
+msgid "waiting-for-staff reminder sent"
+msgstr "recordatorio de espera del personal enviado"
+
+#: constants.py:44
+msgid "Grey"
+msgstr "Gris"
+
+#: constants.py:45
+msgid "Blue"
+msgstr "Azul"
+
+#: constants.py:46
+msgid "Cyan"
+msgstr "Cian"
+
+#: constants.py:47
+msgid "Green"
+msgstr "Verde"
+
+#: constants.py:48
+msgid "Yellow"
+msgstr "Amarillo"
+
+#: constants.py:49
+msgid "Red"
+msgstr "Rojo"
+
+#: discord/webhook.py:35
+msgid ""
+"Paste the full webhook URL from Discord. It starts with "
+"https://discord.com/api/webhooks/"
+msgstr ""
+"Pega la URL completa del webhook de Discord. Empieza por "
+"https://discord.com/api/webhooks/"
+
+#: discord/webhook.py:43
+msgid "New ticket"
+msgstr "Nuevo ticket"
+
+#: discord/webhook.py:45
+#, python-format
+msgid "Ticket transferred to %(department)s"
+msgstr "Ticket transferido a %(department)s"
+
+#: discord/webhook.py:47
+#, python-format
+msgid "%(department)s was invited to help"
+msgstr "Se invitó a %(department)s a ayudar"
+
+#: discord/webhook.py:49
+#, python-format
+msgid "The requester asked %(department)s to step in"
+msgstr "El solicitante pidió la intervención de %(department)s"
+
+#: discord/webhook.py:51
+msgid "Still unclaimed — please take a look"
+msgstr "Sigue sin asumir: echa un vistazo, por favor"
+
+#: discord/webhook.py:53
+#, python-format
+msgid "A ticket of %(department)s is still unclaimed"
+msgstr "Un ticket de %(department)s sigue sin asumir"
+
+#: discord/webhook.py:55
+msgid "The requester is still waiting for a reply"
+msgstr "El solicitante sigue esperando una respuesta"
+
+#: discord/webhook.py:66 templates/aa_ticket/detail.html:116
+#: templates/aa_ticket/detail.html:125 templates/aa_ticket/detail.html:136
+#: templates/aa_ticket/manage/categories.html:11
+#: templates/aa_ticket/partials/ticket_table.html:7
+#: templates/aa_ticket/stats.html:17 templates/aa_ticket/workbench.html:17
+msgid "Department"
+msgstr "Departamento"
+
+#: discord/webhook.py:67 forms.py:11 templates/aa_ticket/detail.html:152
+#: templates/aa_ticket/partials/ticket_table.html:8
+#: templates/aa_ticket/workbench.html:19
+msgid "Priority"
+msgstr "Prioridad"
+
+#: discord/webhook.py:70 forms.py:9 templates/aa_ticket/detail.html:161
+msgid "Category"
+msgstr "Categoría"
+
+#: discord/webhook.py:72 templates/aa_ticket/detail.html:14
+#: templates/aa_ticket/partials/ticket_table.html:10
+msgid "Requester"
+msgstr "Solicitante"
+
+#: discord/webhook.py:104
+msgid "No webhook configured."
+msgstr "No hay ningún webhook configurado."
+
+#: discord/webhook.py:111
+msgid "Test message"
+msgstr "Mensaje de prueba"
+
+#: discord/webhook.py:112
+#, python-format
+msgid "Tickets for %(department)s will be announced in this channel."
+msgstr "Los tickets de %(department)s se anunciarán en este canal."
+
+#: discord/webhook.py:120
+#, python-format
+msgid "Sending failed (%(reason)s)."
+msgstr "Error al enviar (%(reason)s)."
+
+#: discord/webhook.py:122
+msgid "Test message sent. Check the Discord channel."
+msgstr "Mensaje de prueba enviado. Revisa el canal de Discord."
+
+#: discord/webhook.py:123
+#, python-format
+msgid "Discord refused the message (HTTP %(status)s). Check the webhook URL."
+msgstr ""
+"Discord rechazó el mensaje (HTTP %(status)s). Revisa la URL del webhook."
+
+#: forms.py:9 templates/aa_ticket/submit.html:19
+msgid "Choose a category"
+msgstr "Elige una categoría"
+
+#: forms.py:12
+msgid "Title"
+msgstr "Título"
+
+#: forms.py:13
+msgid "Describe your request"
+msgstr "Describe tu solicitud"
+
+#: forms.py:37 models/config.py:79
+msgid "Discord webhook"
+msgstr "Webhook de Discord"
+
+#: forms.py:40
+msgid ""
+"Paste a new webhook URL to change it. Leave empty to keep the current one."
+msgstr ""
+"Pega una nueva URL de webhook para cambiarla. Déjalo vacío para mantener la "
+"actual."
+
+#: forms.py:42
+msgid "Remove the webhook"
+msgstr "Eliminar el webhook"
+
+#: forms.py:66
+msgid ""
+"In Discord, enable Developer Mode, right-click the role and choose 'Copy "
+"Role ID'. Separate several IDs with commas."
+msgstr ""
+"En Discord, activa el Modo desarrollador, haz clic derecho en el rol y elige"
+" «Copiar ID del rol». Separa varios ID con comas."
+
+#: models/config.py:21
+msgid "Enter Discord role IDs as numbers, separated by commas or spaces."
+msgstr ""
+"Introduce los ID de rol de Discord como números, separados por comas o "
+"espacios."
+
+#: models/config.py:39 models/config.py:144 models/config.py:182
+msgid "name"
+msgstr "nombre"
+
+#: models/config.py:41
+msgid "description"
+msgstr "descripción"
+
+#: models/config.py:41
+msgid "Shown to players when they pick a department."
+msgstr "Se muestra a los jugadores al elegir un departamento."
+
+#: models/config.py:45
+msgid "parent department"
+msgstr "departamento superior"
+
+#: models/config.py:50
+msgid "Staff of the parent department can see all tickets of this department."
+msgstr ""
+"El personal del departamento superior puede ver todos los tickets de este "
+"departamento."
+
+#: models/config.py:54
+msgid "staff groups"
+msgstr "grupos de personal"
+
+#: models/config.py:57
+msgid "Members of these groups are staff of this department."
+msgstr "Los miembros de estos grupos son personal de este departamento."
+
+#: models/config.py:61
+msgid "states allowed to submit"
+msgstr "estados con permiso para enviar"
+
+#: models/config.py:64
+msgid "Leave both lists empty to allow everyone who can use tickets."
+msgstr ""
+"Deja ambas listas vacías para permitirlo a todos los que puedan usar "
+"tickets."
+
+#: models/config.py:68
+msgid "groups allowed to submit"
+msgstr "grupos con permiso para enviar"
+
+#: models/config.py:73
+msgid "accepts tickets from players"
+msgstr "acepta tickets de jugadores"
+
+#: models/config.py:75
+msgid ""
+"When off, tickets can only reach this department by transfer or invitation."
+msgstr ""
+"Si está desactivado, los tickets solo llegan a este departamento por "
+"transferencia o invitación."
+
+#: models/config.py:77 models/config.py:166 models/config.py:187
+msgid "active"
+msgstr "activo"
+
+#: models/config.py:78 models/config.py:146 models/config.py:186
+msgid "order"
+msgstr "orden"
+
+#: models/config.py:81
+msgid "Discord role IDs to mention"
+msgstr "ID de roles de Discord a mencionar"
+
+#: models/config.py:92 models/config.py:180 models/config.py:206
+msgid "department"
+msgstr "departamento"
+
+#: models/config.py:93
+msgid "departments"
+msgstr "departamentos"
+
+#: models/config.py:128
+msgid "A department cannot be its own parent."
+msgstr "Un departamento no puede ser su propio departamento superior."
+
+#: models/config.py:131
+msgid "This parent would create a loop. Pick a department above this one."
+msgstr ""
+"Este departamento superior crearía un bucle. Elige un departamento por "
+"encima de este."
+
+#: models/config.py:145
+msgid "colour"
+msgstr "color"
+
+#: models/config.py:146
+msgid "Higher means more urgent."
+msgstr "Un valor más alto es más urgente."
+
+#: models/config.py:148
+msgid "mention roles for new tickets"
+msgstr "mencionar roles en tickets nuevos"
+
+#: models/config.py:150
+msgid ""
+"When on, new tickets with this priority mention the department's Discord "
+"roles."
+msgstr ""
+"Si está activado, los tickets nuevos con esta prioridad mencionan los roles "
+"de Discord del departamento."
+
+#: models/config.py:153
+msgid "remind after (minutes)"
+msgstr "recordar tras (minutos)"
+
+#: models/config.py:157
+msgid ""
+"Mention the department again if nobody claims the ticket in time. Leave "
+"empty to turn off."
+msgstr ""
+"Menciona de nuevo al departamento si nadie asume el ticket a tiempo. Déjalo "
+"vacío para desactivarlo."
+
+#: models/config.py:160
+msgid "escalate after (minutes)"
+msgstr "escalar tras (minutos)"
+
+#: models/config.py:164
+msgid ""
+"Mention the parent department if nobody claims the ticket in time. Leave "
+"empty to turn off."
+msgstr ""
+"Menciona al departamento superior si nadie asume el ticket a tiempo. Déjalo "
+"vacío para desactivarlo."
+
+#: models/config.py:171
+msgid "priority"
+msgstr "prioridad"
+
+#: models/config.py:172
+msgid "priorities"
+msgstr "prioridades"
+
+#: models/config.py:184
+msgid "template"
+msgstr "plantilla"
+
+#: models/config.py:184
+msgid "Pre-filled into the ticket text when a player picks this category."
+msgstr ""
+"Se rellena en el texto del ticket cuando un jugador elige esta categoría."
+
+#: models/config.py:192
+msgid "category"
+msgstr "categoría"
+
+#: models/config.py:193
+msgid "categories"
+msgstr "categorías"
+
+#: models/config.py:207
+msgid "Leave empty to share with all departments."
+msgstr "Déjalo vacío para compartirlo con todos los departamentos."
+
+#: models/config.py:209 models/tickets.py:12
+msgid "title"
+msgstr "título"
+
+#: models/config.py:210
+msgid "text"
+msgstr "texto"
+
+#: models/config.py:215
+msgid "canned reply"
+msgstr "respuesta predefinida"
+
+#: models/config.py:216
+msgid "canned replies"
+msgstr "respuestas predefinidas"
+
+#: models/config.py:224
+msgid "auto-close after (days)"
+msgstr "cierre automático tras (días)"
+
+#: models/config.py:227
+msgid ""
+"Tickets waiting for the requester are closed automatically after this many "
+"days without a reply."
+msgstr ""
+"Los tickets que esperan al solicitante se cierran automáticamente tras este "
+"número de días sin respuesta."
+
+#: models/config.py:230
+msgid "warn before auto-close (hours)"
+msgstr "avisar antes del cierre automático (horas)"
+
+#: models/config.py:232
+msgid ""
+"The requester and the assignee are warned this many hours before a ticket "
+"closes automatically."
+msgstr ""
+"El solicitante y el asignado reciben un aviso este número de horas antes de "
+"que un ticket se cierre automáticamente."
+
+#: models/config.py:235
+msgid "requester can reopen for (days)"
+msgstr "el solicitante puede reabrir durante (días)"
+
+#: models/config.py:237
+msgid ""
+"For this many days after closing, the requester can reopen the ticket. Staff"
+" can always reopen."
+msgstr ""
+"Durante este número de días tras el cierre, el solicitante puede reabrir el "
+"ticket. El personal siempre puede reabrirlo."
+
+#: models/config.py:240
+msgid "open tickets per person"
+msgstr "tickets abiertos por persona"
+
+#: models/config.py:243
+msgid ""
+"A person cannot submit a new ticket while this many of their tickets are "
+"still open."
+msgstr ""
+"Una persona no puede enviar un ticket nuevo mientras tenga abiertos este "
+"número de tickets."
+
+#: models/config.py:246
+msgid "maximum image size (MB)"
+msgstr "tamaño máximo de imagen (MB)"
+
+#: models/config.py:249
+msgid "delete images after (days)"
+msgstr "eliminar imágenes tras (días)"
+
+#: models/config.py:252
+msgid ""
+"Images of tickets closed longer than this are deleted. Leave empty to keep "
+"them forever."
+msgstr ""
+"Se eliminan las imágenes de los tickets cerrados hace más tiempo que esto. "
+"Déjalo vacío para conservarlas siempre."
+
+#: models/config.py:255 models/config.py:270 templates/aa_ticket/prefs.html:13
+msgid "Discord direct messages"
+msgstr "Mensajes directos de Discord"
+
+#: models/config.py:257
+msgid ""
+"When on and aa-discordbot is installed, people also get notifications as "
+"Discord direct messages."
+msgstr ""
+"Si está activado y aa-discordbot está instalado, las personas también "
+"reciben notificaciones como mensajes directos de Discord."
+
+#: models/config.py:262
+msgid "ticket settings"
+msgstr "configuración de tickets"
+
+#: models/config.py:265
+msgid "Ticket settings"
+msgstr "Configuración de tickets"
+
+#: notifications.py:86 notifications.py:90
+#, python-format
+msgid "%(name)s is now handling your ticket."
+msgstr "%(name)s se encarga ahora de tu ticket."
+
+#: notifications.py:89
+msgid "You were assigned this ticket."
+msgstr "Se te asignó este ticket."
+
+#: notifications.py:93
+msgid "There is a new reply on your ticket."
+msgstr "Hay una nueva respuesta en tu ticket."
+
+#: notifications.py:94
+msgid "The requester replied."
+msgstr "El solicitante respondió."
+
+#: notifications.py:96
+msgid "The ticket was closed."
+msgstr "El ticket se cerró."
+
+#: notifications.py:98
+msgid "The ticket was reopened."
+msgstr "El ticket se reabrió."
+
+#: notifications.py:100
+#, python-format
+msgid "The ticket was transferred to %(department)s."
+msgstr "El ticket se transfirió a %(department)s."
+
+#: notifications.py:102
+#, python-format
+msgid "The priority was changed to %(priority)s."
+msgstr "La prioridad se cambió a %(priority)s."
+
+#: notifications.py:104
+#, python-format
+msgid "The requester asked %(department)s to step in."
+msgstr "El solicitante pidió la intervención de %(department)s."
+
+#: notifications.py:107
+#, python-format
+msgid ""
+"This ticket will close automatically in %(hours)d hours unless someone "
+"replies."
+msgstr ""
+"Este ticket se cerrará automáticamente en %(hours)d horas si nadie responde."
+
+#: notifications.py:111
+msgid "The requester is still waiting for a reply."
+msgstr "El solicitante sigue esperando una respuesta."
+
+#: services.py:75
+msgid "Image uploads are turned off on this server."
+msgstr "La subida de imágenes está desactivada en este servidor."
+
+#: services.py:89 templates/aa_ticket/submit.html:37
+msgid "Please enter a title."
+msgstr "Introduce un título."
+
+#: services.py:91
+msgid "Please keep the title under 200 characters."
+msgstr "El título debe tener menos de 200 caracteres."
+
+#: services.py:93 templates/aa_ticket/submit.html:42
+msgid "Please describe your request."
+msgstr "Describe tu solicitud."
+
+#: services.py:95 services.py:296
+msgid "Please pick an available priority."
+msgstr "Elige una prioridad disponible."
+
+#: services.py:97
+msgid "Please pick a category of the selected department."
+msgstr "Elige una categoría del departamento seleccionado."
+
+#: services.py:103
+#, python-format
+msgid ""
+"You already have %(count)d open tickets. Please close resolved tickets "
+"before opening a new one."
+msgstr ""
+"Ya tienes %(count)d tickets abiertos. Cierra los tickets resueltos antes de "
+"abrir uno nuevo."
+
+#: services.py:138 services.py:165
+msgid "Please write a message before sending."
+msgstr "Escribe un mensaje antes de enviar."
+
+#: services.py:189
+#, python-format
+msgid "Already claimed by %(name)s."
+msgstr "Ya lo asumió %(name)s."
+
+#: services.py:191
+msgid "This ticket can no longer be claimed."
+msgstr "Este ticket ya no se puede asumir."
+
+#: services.py:201
+msgid "Pick someone from the responsible department."
+msgstr "Elige a alguien del departamento responsable."
+
+#: services.py:217 services.py:241
+msgid "This department is not active."
+msgstr "Este departamento no está activo."
+
+#: services.py:219
+msgid "This department is already responsible for the ticket."
+msgstr "Este departamento ya es responsable del ticket."
+
+#: services.py:221
+msgid "This department is already working on the ticket."
+msgstr "Este departamento ya está trabajando en el ticket."
+
+#: services.py:231
+msgid "This department is not working on the ticket."
+msgstr "Este departamento no está trabajando en el ticket."
+
+#: services.py:243
+msgid "The ticket is already with this department."
+msgstr "El ticket ya está en este departamento."
+
+#: services.py:310
+msgid "Please pick a category of the responsible department."
+msgstr "Elige una categoría del departamento responsable."
+
+#: templates/aa_ticket/base.html:10 templates/aa_ticket/my_tickets.html:4
+#: templates/aa_ticket/my_tickets.html:8
+msgid "My tickets"
+msgstr "Mis tickets"
+
+#: templates/aa_ticket/base.html:11 templates/aa_ticket/workbench.html:4
+#: templates/aa_ticket/workbench.html:7
+msgid "Workbench"
+msgstr "Mesa de trabajo"
+
+#: templates/aa_ticket/base.html:12 templates/aa_ticket/stats.html:4
+#: templates/aa_ticket/stats.html:8
+msgid "Statistics"
+msgstr "Estadísticas"
+
+#: templates/aa_ticket/base.html:13 templates/aa_ticket/manage/base.html:4
+msgid "Manage"
+msgstr "Gestionar"
+
+#: templates/aa_ticket/base.html:14 templates/aa_ticket/prefs.html:4
+#: templates/aa_ticket/prefs.html:7
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: templates/aa_ticket/detail.html:15
+msgid "Assignee"
+msgstr "Asignado"
+
+#: templates/aa_ticket/detail.html:15
+msgid "nobody yet"
+msgstr "nadie todavía"
+
+#: templates/aa_ticket/detail.html:16 views/staff.py:24
+msgid "Helping"
+msgstr "Colaborando"
+
+#: templates/aa_ticket/detail.html:21
+#, python-format
+msgid "Closes automatically %(when)s unless someone replies."
+msgstr "Se cierra automáticamente %(when)s si nadie responde."
+
+#: templates/aa_ticket/detail.html:34
+msgid "Message type"
+msgstr "Tipo de mensaje"
+
+#: templates/aa_ticket/detail.html:43
+msgid "Message"
+msgstr "Mensaje"
+
+#: templates/aa_ticket/detail.html:47 templates/aa_ticket/detail.html:48
+msgid "Insert canned reply"
+msgstr "Insertar respuesta predefinida"
+
+#: templates/aa_ticket/detail.html:53
+msgid "Add images"
+msgstr "Añadir imágenes"
+
+#: templates/aa_ticket/detail.html:58
+msgid "Send"
+msgstr "Enviar"
+
+#: templates/aa_ticket/detail.html:63
+msgid "This ticket is closed."
+msgstr "Este ticket está cerrado."
+
+#: templates/aa_ticket/detail.html:63
+msgid "Reopen it to continue the conversation."
+msgstr "Reábrelo para continuar la conversación."
+
+#: templates/aa_ticket/detail.html:70
+msgid "Claim"
+msgstr "Asumir"
+
+#: templates/aa_ticket/detail.html:74
+msgid "Actions"
+msgstr "Acciones"
+
+#: templates/aa_ticket/detail.html:78 templates/aa_ticket/detail.html:104
+#: templates/aa_ticket/detail.html:107
+msgid "Assign"
+msgstr "Asignar"
+
+#: templates/aa_ticket/detail.html:79 templates/aa_ticket/detail.html:114
+msgid "Invite department"
+msgstr "Invitar departamento"
+
+#: templates/aa_ticket/detail.html:80 templates/aa_ticket/detail.html:124
+msgid "Remove department"
+msgstr "Quitar departamento"
+
+#: templates/aa_ticket/detail.html:81 templates/aa_ticket/detail.html:133
+#: templates/aa_ticket/detail.html:144
+msgid "Transfer"
+msgstr "Transferir"
+
+#: templates/aa_ticket/detail.html:82 templates/aa_ticket/detail.html:151
+msgid "Change priority"
+msgstr "Cambiar prioridad"
+
+#: templates/aa_ticket/detail.html:83 templates/aa_ticket/detail.html:160
+msgid "Change category"
+msgstr "Cambiar categoría"
+
+#: templates/aa_ticket/detail.html:84 templates/aa_ticket/detail.html:169
+#: templates/aa_ticket/detail.html:175
+msgid "Request escalation"
+msgstr "Solicitar escalado"
+
+#: templates/aa_ticket/detail.html:85 templates/aa_ticket/detail.html:182
+#: templates/aa_ticket/detail.html:187
+msgid "Close ticket"
+msgstr "Cerrar ticket"
+
+#: templates/aa_ticket/detail.html:88
+msgid "Reopen"
+msgstr "Reabrir"
+
+#: templates/aa_ticket/detail.html:93
+msgid "Submitted"
+msgstr "Enviado"
+
+#: templates/aa_ticket/detail.html:104 templates/aa_ticket/detail.html:107
+#: templates/aa_ticket/detail.html:114 templates/aa_ticket/detail.html:117
+#: templates/aa_ticket/detail.html:124 templates/aa_ticket/detail.html:126
+#: templates/aa_ticket/detail.html:133 templates/aa_ticket/detail.html:144
+#: templates/aa_ticket/detail.html:151 templates/aa_ticket/detail.html:153
+#: templates/aa_ticket/detail.html:160 templates/aa_ticket/detail.html:162
+#: templates/aa_ticket/detail.html:169 templates/aa_ticket/detail.html:175
+#: templates/aa_ticket/detail.html:182 templates/aa_ticket/detail.html:187
+#: templates/aa_ticket/manage/department_form.html:23
+#: templates/aa_ticket/manage/form.html:11
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/aa_ticket/detail.html:105
+msgid "Who should handle this ticket?"
+msgstr "¿Quién debería encargarse de este ticket?"
+
+#: templates/aa_ticket/detail.html:115
+msgid ""
+"The invited department can read and reply, and is notified in its Discord "
+"channel."
+msgstr ""
+"El departamento invitado puede leer y responder, y recibe un aviso en su "
+"canal de Discord."
+
+#: templates/aa_ticket/detail.html:117
+msgid "Invite"
+msgstr "Invitar"
+
+#: templates/aa_ticket/detail.html:126
+msgid "Remove"
+msgstr "Quitar"
+
+#: templates/aa_ticket/detail.html:135
+msgid ""
+"The new department becomes responsible. The ticket goes back to unclaimed "
+"and the department is notified."
+msgstr ""
+"El nuevo departamento pasa a ser responsable. El ticket vuelve a estar sin "
+"asumir y se avisa al departamento."
+
+#: templates/aa_ticket/detail.html:138
+msgid "Reason (optional)"
+msgstr "Motivo (opcional)"
+
+#: templates/aa_ticket/detail.html:142
+#, python-format
+msgid "%(name)s keeps helping"
+msgstr "%(name)s sigue colaborando"
+
+#: templates/aa_ticket/detail.html:153 templates/aa_ticket/detail.html:162
+#: templates/aa_ticket/manage/department_form.html:22
+#: templates/aa_ticket/manage/form.html:10 templates/aa_ticket/prefs.html:16
+msgid "Save"
+msgstr "Guardar"
+
+#: templates/aa_ticket/detail.html:161
+msgid "No category"
+msgstr "Sin categoría"
+
+#: templates/aa_ticket/detail.html:171
+#, python-format
+msgid ""
+"%(name)s will be notified and asked to step in. You can do this once per "
+"level."
+msgstr ""
+"Se avisará a %(name)s y se le pedirá que intervenga. Puedes hacerlo una vez "
+"por nivel."
+
+#: templates/aa_ticket/detail.html:172
+msgid "Why are you asking for help? (optional)"
+msgstr "¿Por qué pides ayuda? (opcional)"
+
+#: templates/aa_ticket/detail.html:184
+msgid "Final reply (optional)"
+msgstr "Respuesta final (opcional)"
+
+#: templates/aa_ticket/manage/canned.html:6 views/manage.py:25
+msgid "Canned replies"
+msgstr "Respuestas predefinidas"
+
+#: templates/aa_ticket/manage/canned.html:7
+msgid "Add canned reply"
+msgstr "Añadir respuesta predefinida"
+
+#: templates/aa_ticket/manage/canned.html:19
+msgid "All departments"
+msgstr "Todos los departamentos"
+
+#: templates/aa_ticket/manage/canned.html:22
+msgid "Delete this canned reply?"
+msgstr "¿Eliminar esta respuesta predefinida?"
+
+#: templates/aa_ticket/manage/canned.html:22
+#: templates/aa_ticket/manage/categories.html:18
+#: templates/aa_ticket/manage/departments.html:27
+#: templates/aa_ticket/manage/priorities.html:24
+msgid "Delete"
+msgstr "Eliminar"
+
+#: templates/aa_ticket/manage/canned.html:28
+msgid "No canned replies yet."
+msgstr "Aún no hay respuestas predefinidas."
+
+#: templates/aa_ticket/manage/categories.html:6 views/manage.py:24
+msgid "Categories"
+msgstr "Categorías"
+
+#: templates/aa_ticket/manage/categories.html:7
+msgid "Add category"
+msgstr "Añadir categoría"
+
+#: templates/aa_ticket/manage/categories.html:11
+#: templates/aa_ticket/manage/priorities.html:11
+msgid "Name"
+msgstr "Nombre"
+
+#: templates/aa_ticket/manage/categories.html:11
+msgid "Template"
+msgstr "Plantilla"
+
+#: templates/aa_ticket/manage/categories.html:16
+#: templates/aa_ticket/manage/departments.html:15
+#: templates/aa_ticket/manage/priorities.html:20
+msgid "inactive"
+msgstr "inactivo"
+
+#: templates/aa_ticket/manage/categories.html:18
+msgid "Delete this category?"
+msgstr "¿Eliminar esta categoría?"
+
+#: templates/aa_ticket/manage/categories.html:24
+msgid ""
+"No categories yet. Categories are optional; without them players only pick a"
+" department."
+msgstr ""
+"Aún no hay categorías. Son opcionales; sin ellas los jugadores solo eligen "
+"un departamento."
+
+#: templates/aa_ticket/manage/department_form.html:9
+msgid "Current webhook"
+msgstr "Webhook actual"
+
+#: templates/aa_ticket/manage/department_form.html:11
+msgid "Send test message"
+msgstr "Enviar mensaje de prueba"
+
+#: templates/aa_ticket/manage/department_form.html:14
+#: templates/aa_ticket/manage/departments.html:21
+msgid "Discord channel not configured — new tickets will not be announced."
+msgstr "Canal de Discord sin configurar: los tickets nuevos no se anunciarán."
+
+#: templates/aa_ticket/manage/departments.html:6 views/manage.py:22
+msgid "Departments"
+msgstr "Departamentos"
+
+#: templates/aa_ticket/manage/departments.html:7
+#: templates/aa_ticket/manage/departments.html:35
+msgid "Add department"
+msgstr "Añadir departamento"
+
+#: templates/aa_ticket/manage/departments.html:16
+msgid "no player tickets"
+msgstr "sin tickets de jugadores"
+
+#: templates/aa_ticket/manage/departments.html:18
+msgid "Staff groups"
+msgstr "Grupos de personal"
+
+#: templates/aa_ticket/manage/departments.html:18
+msgid "none — nobody can handle tickets here"
+msgstr "ninguno: nadie puede gestionar tickets aquí"
+
+#: templates/aa_ticket/manage/departments.html:23
+#, python-format
+msgid "Last delivery failed (%(when)s: %(reason)s)"
+msgstr "Falló el último envío (%(when)s: %(reason)s)"
+
+#: templates/aa_ticket/manage/departments.html:26
+msgid "Delete this department?"
+msgstr "¿Eliminar este departamento?"
+
+#: templates/aa_ticket/manage/departments.html:34
+msgid "No departments yet. Add the first one so players can submit tickets."
+msgstr ""
+"Aún no hay departamentos. Añade el primero para que los jugadores puedan "
+"enviar tickets."
+
+#: templates/aa_ticket/manage/priorities.html:6 views/manage.py:23
+msgid "Priorities"
+msgstr "Prioridades"
+
+#: templates/aa_ticket/manage/priorities.html:7
+msgid "Add priority"
+msgstr "Añadir prioridad"
+
+#: templates/aa_ticket/manage/priorities.html:12
+msgid "Mention roles"
+msgstr "Mencionar roles"
+
+#: templates/aa_ticket/manage/priorities.html:13
+msgid "Remind after"
+msgstr "Recordar tras"
+
+#: templates/aa_ticket/manage/priorities.html:14
+msgid "Escalate after"
+msgstr "Escalar tras"
+
+#: templates/aa_ticket/manage/priorities.html:21
+msgid "Yes"
+msgstr "Sí"
+
+#: templates/aa_ticket/manage/priorities.html:21
+msgid "No"
+msgstr "No"
+
+#: templates/aa_ticket/manage/priorities.html:22
+#: templates/aa_ticket/manage/priorities.html:23
+#, python-format
+msgid "%(n)s min"
+msgstr "%(n)s min"
+
+#: templates/aa_ticket/manage/priorities.html:24
+msgid "Delete this priority?"
+msgstr "¿Eliminar esta prioridad?"
+
+#: templates/aa_ticket/my_tickets.html:9
+#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/submit.html:4
+#: templates/aa_ticket/submit.html:8
+#: templates/aa_ticket/submit_choose_department.html:4
+#: templates/aa_ticket/submit_choose_department.html:7
+msgid "Submit ticket"
+msgstr "Enviar ticket"
+
+#: templates/aa_ticket/my_tickets.html:12
+msgid "Open"
+msgstr "Abiertos"
+
+#: templates/aa_ticket/my_tickets.html:19
+msgid "No closed tickets."
+msgstr "No hay tickets cerrados."
+
+#: templates/aa_ticket/my_tickets.html:19
+msgid "No tickets yet."
+msgstr "Aún no hay tickets."
+
+#: templates/aa_ticket/partials/ticket_table.html:6
+msgid "Ticket"
+msgstr "Ticket"
+
+#: templates/aa_ticket/partials/ticket_table.html:9
+#: templates/aa_ticket/workbench.html:21
+msgid "Status"
+msgstr "Estado"
+
+#: templates/aa_ticket/partials/ticket_table.html:11
+msgid "Last activity"
+msgstr "Última actividad"
+
+#: templates/aa_ticket/partials/ticket_table.html:18
+msgid "Waiting for you"
+msgstr "Esperando tu respuesta"
+
+#: templates/aa_ticket/partials/timeline.html:18
+msgid "Internal note — only staff can see this"
+msgstr "Nota interna: solo el personal puede verla"
+
+#: templates/aa_ticket/prefs.html:15
+msgid ""
+"When on, you also get ticket notifications as Discord direct messages. "
+"Notifications in Alliance Auth always stay on."
+msgstr ""
+"Si está activado, también recibes las notificaciones de tickets como "
+"mensajes directos de Discord. Las notificaciones en Alliance Auth siempre "
+"permanecen activas."
+
+#: templates/aa_ticket/prefs.html:19
+msgid ""
+"Discord direct messages are not available on this server. You get all ticket"
+" notifications in Alliance Auth."
+msgstr ""
+"Los mensajes directos de Discord no están disponibles en este servidor. "
+"Recibes todas las notificaciones de tickets en Alliance Auth."
+
+#: templates/aa_ticket/stats.html:9
+msgid "Time range"
+msgstr "Intervalo de tiempo"
+
+#: templates/aa_ticket/stats.html:10
+#, python-format
+msgid "%(n)s day"
+msgid_plural "%(n)s days"
+msgstr[0] "%(n)s día"
+msgstr[1] "%(n)s días"
+
+#: templates/aa_ticket/stats.html:18
+msgid "New"
+msgstr "Nuevos"
+
+#: templates/aa_ticket/stats.html:20
+msgid "Unclaimed now"
+msgstr "Sin asumir ahora"
+
+#: templates/aa_ticket/stats.html:21
+msgid "Avg. time to claim"
+msgstr "Tiempo medio hasta asumir"
+
+#: templates/aa_ticket/stats.html:22
+msgid "Avg. time to close"
+msgstr "Tiempo medio hasta cerrar"
+
+#: templates/aa_ticket/stats.html:41
+msgid "No departments to show."
+msgstr "No hay departamentos que mostrar."
+
+#: templates/aa_ticket/submit.html:46
+msgid "Images (optional)"
+msgstr "Imágenes (opcional)"
+
+#: templates/aa_ticket/submit.html:48
+msgid "Up to 5 PNG, JPG, GIF or WEBP images."
+msgstr "Hasta 5 imágenes PNG, JPG, GIF o WEBP."
+
+#: templates/aa_ticket/submit.html:51
+msgid "Submit"
+msgstr "Enviar"
+
+#: templates/aa_ticket/submit_choose_department.html:8
+msgid "Choose the department that can help you."
+msgstr "Elige el departamento que pueda ayudarte."
+
+#: templates/aa_ticket/submit_choose_department.html:23
+msgid ""
+"No department accepts tickets from you at the moment. Please contact your "
+"leadership."
+msgstr ""
+"Ningún departamento acepta tickets tuyos por el momento. Contacta con tu "
+"liderazgo."
+
+#: templates/aa_ticket/workbench.html:15
+msgid "Search"
+msgstr "Buscar"
+
+#: templates/aa_ticket/workbench.html:16
+msgid "Number, title or requester"
+msgstr "Número, título o solicitante"
+
+#: templates/aa_ticket/workbench.html:18 templates/aa_ticket/workbench.html:20
+#: templates/aa_ticket/workbench.html:22
+msgid "All"
+msgstr "Todos"
+
+#: templates/aa_ticket/workbench.html:23
+msgid "Filter"
+msgstr "Filtrar"
+
+#: templates/aa_ticket/workbench.html:28
+msgid "Pages"
+msgstr "Páginas"
+
+#: templates/aa_ticket/workbench.html:29
+msgid "Previous"
+msgstr "Anterior"
+
+#: templates/aa_ticket/workbench.html:31
+msgid "Next"
+msgstr "Siguiente"
+
+#: templates/aa_ticket/workbench.html:35
+msgid "Nothing here right now."
+msgstr "No hay nada por ahora."
+
+#: templatetags/aa_ticket.py:30
+msgid "System"
+msgstr "Sistema"
+
+#: templatetags/aa_ticket.py:43
+#, python-format
+msgid "from %(from)s to %(to)s"
+msgstr "de %(from)s a %(to)s"
+
+#: templatetags/aa_ticket.py:47
+#, python-format
+msgid "to %(value)s"
+msgstr "a %(value)s"
+
+#: templatetags/aa_ticket.py:101
+#, python-format
+msgid "%(d)d d %(h)d h"
+msgstr "%(d)d d %(h)d h"
+
+#: templatetags/aa_ticket.py:103
+#, python-format
+msgid "%(h)d h %(m)d min"
+msgstr "%(h)d h %(m)d min"
+
+#: templatetags/aa_ticket.py:104
+#, python-format
+msgid "%(m)d min"
+msgstr "%(m)d min"
+
+#: views/manage.py:26 views/manage.py:254
+msgid "Settings"
+msgstr "Configuración"
+
+#: views/manage.py:49
+msgid "Saved."
+msgstr "Guardado."
+
+#: views/manage.py:66
+msgid "Deleted."
+msgstr "Eliminado."
+
+#: views/manage.py:106
+msgid "New department"
+msgstr "Nuevo departamento"
+
+#: views/manage.py:106
+msgid "Edit department"
+msgstr "Editar departamento"
+
+#: views/manage.py:116 views/manage.py:120
+msgid ""
+"This department still has tickets or sub-departments. Deactivate it instead."
+msgstr ""
+"Este departamento aún tiene tickets o subdepartamentos. Desactívalo en su "
+"lugar."
+
+#: views/manage.py:146
+msgid "New priority"
+msgstr "Nueva prioridad"
+
+#: views/manage.py:146
+msgid "Edit priority"
+msgstr "Editar prioridad"
+
+#: views/manage.py:155
+msgid "Tickets still use this priority. Deactivate it instead."
+msgstr "Aún hay tickets con esta prioridad. Desactívala en su lugar."
+
+#: views/manage.py:172
+msgid "New category"
+msgstr "Nueva categoría"
+
+#: views/manage.py:172
+msgid "Edit category"
+msgstr "Editar categoría"
+
+#: views/manage.py:222
+msgid "New canned reply"
+msgstr "Nueva respuesta predefinida"
+
+#: views/manage.py:222
+msgid "Edit canned reply"
+msgstr "Editar respuesta predefinida"
+
+#: views/manage.py:247
+msgid "Settings saved."
+msgstr "Configuración guardada."
+
+#: views/prefs.py:18
+msgid "Preferences saved."
+msgstr "Preferencias guardadas."
+
+#: views/requester.py:74
+#, python-format
+msgid "Ticket %(number)s submitted."
+msgstr "Ticket %(number)s enviado."
+
+#: views/staff.py:21
+msgid "Assigned to me"
+msgstr "Asignados a mí"
+
+#: views/staff.py:22
+msgid "My departments"
+msgstr "Mis departamentos"
+
+#: views/staff.py:23
+msgid "Sub-departments"
+msgstr "Subdepartamentos"
+
+#: views/ticket.py:122
+msgid "You are now handling this ticket."
+msgstr "Ahora te encargas de este ticket."
+
+#: views/ticket.py:125
+msgid "Ticket assigned."
+msgstr "Ticket asignado."
+
+#: views/ticket.py:129
+msgid "Please pick a department."
+msgstr "Elige un departamento."
+
+#: views/ticket.py:132
+msgid "Department invited."
+msgstr "Departamento invitado."
+
+#: views/ticket.py:134
+msgid "Department removed."
+msgstr "Departamento quitado."
+
+#: views/ticket.py:145
+msgid "Ticket transferred."
+msgstr "Ticket transferido."
+
+#: views/ticket.py:155
+msgid "Escalation requested. The department above has been notified."
+msgstr "Escalado solicitado. Se ha avisado al departamento superior."
+
+#: views/ticket.py:160
+msgid "Please pick a priority."
+msgstr "Elige una prioridad."
+
+#: views/ticket.py:176
+msgid "Ticket closed."
+msgstr "Ticket cerrado."
+
+#: views/ticket.py:179
+msgid "Ticket reopened."
+msgstr "Ticket reabierto."
