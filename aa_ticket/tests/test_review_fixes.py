@@ -153,3 +153,50 @@ class TestBrokerDown(TestCase):
                 r = self.client.post(f"/ticket/{t.pk}/action/claim/")
         self.assertEqual(r.status_code, 302)
         self.assertEqual(Ticket.objects.get(pk=t.pk).assignee, staff)
+
+
+class TestExifStripped(TestCase):
+    def _jpeg_with_gps(self):
+        img = Image.new("RGB", (40, 20), (10, 200, 10))
+        exif = Image.Exif()
+        exif[0x0110] = "SecretPhone 12"  # camera model
+        exif[0x8825] = {1: "N", 2: (31.0, 13.0, 0.0)}  # GPS info
+        exif[0x0112] = 6  # orientation: rotate 90
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", exif=exif)
+        return SimpleUploadedFile("photo.jpg", buf.getvalue())
+
+    def test_saved_jpeg_has_no_exif_and_is_upright(self):
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        requester = make_user("Pilot A")
+        t = services.create_ticket(requester, dept, priority("normal"), "Help", "Body", images=[self._jpeg_with_gps()])
+        att = t.messages.get(kind="reply").attachments.get()
+        with att.file.open("rb") as fh:
+            data = fh.read()
+        self.assertNotIn(b"SecretPhone", data)
+        with Image.open(io.BytesIO(data)) as saved:
+            self.assertEqual(len(saved.getexif()), 0)
+            self.assertEqual(saved.size, (20, 40))  # orientation applied
+
+    def test_trailing_html_removed(self):
+        buf = io.BytesIO()
+        Image.new("RGB", (5, 5)).save(buf, format="PNG")
+        upload = SimpleUploadedFile("a.png", buf.getvalue() + b"<html><script>alert(1)</script></html>")
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        t = services.create_ticket(make_user("Pilot A"), dept, priority("normal"), "Help", "Body", images=[upload])
+        with t.messages.get(kind="reply").attachments.get().file.open("rb") as fh:
+            self.assertNotIn(b"<script>", fh.read())
+
+    def test_animated_gif_keeps_frames(self):
+        frames = [Image.new("RGB", (8, 8), c) for c in ((255, 0, 0), (0, 255, 0))]
+        buf = io.BytesIO()
+        frames[0].save(buf, format="GIF", save_all=True, append_images=frames[1:], duration=100, loop=0)
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        t = services.create_ticket(make_user("Pilot A"), dept, priority("normal"), "Help", "Body",
+                                   images=[SimpleUploadedFile("a.gif", buf.getvalue())])
+        with t.messages.get(kind="reply").attachments.get().file.open("rb") as fh:
+            with Image.open(io.BytesIO(fh.read())) as saved:
+                self.assertEqual(getattr(saved, "n_frames", 1), 2)

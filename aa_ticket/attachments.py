@@ -4,11 +4,12 @@ Files are stored under MEDIA_ROOT/aa_ticket/ with random names and are only
 served through the permission-checked view in views/files.py.
 """
 
+import io
 import os
 import uuid
 import warnings
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -82,17 +83,41 @@ def validate_images(files):
         _detect_format(upload)
 
 
+def _reencode(upload, fmt):
+    """Re-encode the image so metadata (EXIF, GPS, comments) and trailing bytes are dropped."""
+    upload.seek(0)
+    out = io.BytesIO()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", Image.DecompressionBombWarning)
+        with Image.open(upload) as img:
+            frames = getattr(img, "n_frames", 1)
+            if frames > 1 and fmt in ("GIF", "WEBP"):
+                options = {"save_all": True, "loop": img.info.get("loop", 0)}
+                if "duration" in img.info:
+                    options["duration"] = img.info["duration"]
+                img.save(out, format=fmt, **options)
+            else:
+                image = ImageOps.exif_transpose(img)
+                if fmt == "JPEG":
+                    if image.mode not in ("RGB", "L"):
+                        image = image.convert("RGB")
+                    image.save(out, format="JPEG", quality=90)
+                else:
+                    image.save(out, format=fmt)
+    return out.getvalue()
+
+
 def save_image(message, upload):
     fmt = _detect_format(upload)
     content_type, ext = ALLOWED_FORMATS[fmt]
+    data = _reencode(upload, fmt)
     attachment = Attachment(
         message=message,
         original_name=os.path.basename(upload.name or "image")[:255],
-        size=upload.size,
+        size=len(data),
         content_type=content_type,
     )
-    upload.seek(0)
-    attachment.file.save(uuid.uuid4().hex + ext, ContentFile(upload.read()), save=True)
+    attachment.file.save(uuid.uuid4().hex + ext, ContentFile(data), save=True)
     return attachment
 
 
