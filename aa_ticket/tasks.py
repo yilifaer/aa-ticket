@@ -52,3 +52,30 @@ def send_webhook(self, department_id, ticket_id, event, mention):
     logger.warning(
         "Discord message for department %s (ticket %s) failed: %s", department.name, ticket.display_number, error
     )
+
+
+@shared_task(ignore_result=True)
+def send_dm(user_id, ticket_id, event, data=None):
+    """Send one Discord DM. Never retries: an undeliverable DM is not an error."""
+    from django.contrib.auth.models import User
+
+    from .discord import dm
+    from .links import ticket_url
+    from .models import UserPreference
+    from .notifications import personal_text, personal_title
+    from .translation import user_language
+
+    if not dm.is_available():
+        return
+    user = User.objects.filter(pk=user_id).first()
+    ticket = Ticket.objects.filter(pk=ticket_id).first()
+    if user is None or ticket is None:
+        return
+    if not UserPreference.for_user(user).discord_dm_enabled:
+        return
+    with user_language(user):
+        text = personal_text(ticket, event, data or {}, recipient_id=user.pk)
+    try:
+        dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket))
+    except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
+        logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
