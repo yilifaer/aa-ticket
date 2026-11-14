@@ -20,8 +20,8 @@ def attachment(request, pk):
         handle = att.file.open("rb")
     except (FileNotFoundError, ValueError) as exc:
         raise Http404 from exc
-    response = FileResponse(handle, content_type=att.content_type)
+    response = FileResponse(handle, content_type=att.content_type, filename=att.original_name)
     response["X-Content-Type-Options"] = "nosniff"
-    response["Content-Disposition"] = "inline"
+    response["Content-Security-Policy"] = "sandbox"
     response["Cache-Control"] = "private, max-age=3600"
     return response

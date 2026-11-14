@@ -62,8 +62,23 @@ def _author_department(user, ticket):
     return type(ticket.department).objects.filter(pk__in=staff_ids).order_by("order", "name").first()
 
 
-def _clean_text(text):
-    return (text or "").strip()
+# Characters that can reorder how text is displayed, plus NUL.
+_STRIP_CHARS = dict.fromkeys(map(ord, "\x00\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069"))
+# Invisible characters that do not count as content.
+_INVISIBLE = "\u200b\u200c\u200d\u2060\ufeff"
+BODY_MAX = 10000
+REASON_MAX = 1000
+
+
+def _clean_text(text, max_length=None):
+    text = (text or "").translate(_STRIP_CHARS).strip()
+    if not text.strip(_INVISIBLE + " \t\r\n"):
+        return ""
+    if max_length and len(text) > max_length:
+        raise TicketActionError(
+            pgettext("aa_ticket", "Please keep the text under %(count)d characters.") % {"count": max_length}
+        )
+    return text
 
 
 def _validate_images(images):
@@ -84,7 +99,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
     if department not in access.submittable_departments(user):
         raise PermissionDenied("department")
     title = _clean_text(title)
-    body = _clean_text(body)
+    body = _clean_text(body, BODY_MAX)
     if not title:
         raise TicketActionError(pgettext("aa_ticket", "Please enter a title."))
     if len(title) > TITLE_MAX:
@@ -133,7 +148,7 @@ def _lock(ticket):
 def add_reply(user, ticket, body, images=(), notify=True):
     ticket = _lock(ticket)
     _require(user, ticket, "reply")
-    body = _clean_text(body)
+    body = _clean_text(body, BODY_MAX)
     if not body and not images:
         raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
     _validate_images(images)
@@ -161,7 +176,7 @@ def add_reply(user, ticket, body, images=(), notify=True):
 def add_note(user, ticket, body, images=()):
     ticket = _lock(ticket)
     _require(user, ticket, "note")
-    body = _clean_text(body)
+    body = _clean_text(body, BODY_MAX)
     if not body and not images:
         raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
     _validate_images(images)
@@ -267,7 +282,7 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
             "from": old.name,
             "to": department.name,
             "department_id": department.pk,
-            "reason": _clean_text(reason),
+            "reason": _clean_text(reason, REASON_MAX),
         },
     )
 
@@ -281,7 +296,7 @@ def request_escalation(user, ticket, reason=""):
         ticket=ticket,
         to_department=target,
         requested_by=user,
-        reason=_clean_text(reason),
+        reason=_clean_text(reason, REASON_MAX),
         cycle=ticket.escalation_cycle,
     )
     ticket.collaborating_departments.add(target)
