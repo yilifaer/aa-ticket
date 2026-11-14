@@ -18,13 +18,13 @@
 - **关闭**：提交人或工作人员都可以手动关闭。等待提交人回复的工单，超过设定天数会自动关闭，关闭前会先提醒。等待工作人员回复的工单不会被自动关闭，只会提醒工作人员。
 - **通知**：AA 铃铛通知一直都有。装了 [aa-discordbot](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot) 的话，还会发 Discord 私信，每个人可以自己关掉。
 - **回复模板**、**工作台**、**统计页**。
-- **语言**：英文、简体中文、德语、俄语、西班牙语。
+- **语言**：英文、简体中文、德语、俄语、西班牙语。Discord 频道消息的语言在设置里选（默认英文）；私信可以跟随每个人的语言，也可以和频道一致。
 
 ## 安装
 
 完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.1.0`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.2.0`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -35,7 +35,7 @@
 | 权限 | 给谁 | 作用 |
 |---|---|---|
 | `aa_ticket.basic_access` | 能提交工单的人（比如 Member 状态）**和所有部门人员** | 显示菜单、提交工单、查看自己的工单 |
-| `aa_ticket.view_all` | 需要看所有工单的高层（可选） | 能看到并处理所有工单，但不会被 @ |
+| `aa_ticket.view_all`（可查看并处理所有工单） | 需要看所有工单的高层（可选） | 能看到并处理所有工单，但不会被 @ |
 | `aa_ticket.manage` | 工单管理员 | 进入「管理」页面 |
 
 **部门人员不是靠权限决定的**，而是靠部门绑定的权限组。**部门的权限组必须是不公开、不能自己申请的组**，否则谁都能加进去看工单和内部备注。

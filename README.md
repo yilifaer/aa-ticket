@@ -63,7 +63,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.1.0
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.2.0
 ```
 
 ### 2. Change `local.py`
@@ -134,8 +134,8 @@ The app adds three permissions. It does not give them to anyone; you decide.
 | Permission | Who should get it | What it does |
 |---|---|---|
 | `aa_ticket.basic_access` | Everyone who may submit tickets (for example the Member state) **and all department staff** | Shows the menu, lets the person submit tickets and see their own tickets |
-| `aa_ticket.view_all` | Top leadership, if you want them to see every ticket | Sees all tickets and can act on them like the parent of every department. Is never pinged |
-| `aa_ticket.manage` | Ticket administrators | Opens the *Manage* pages: departments, priorities, categories, canned replies, settings |
+| `aa_ticket.view_all` ("Can view and handle all tickets") | Top leadership, if you want them to see every ticket | Sees all tickets and can act on them like the parent of every department. Is never pinged |
+| `aa_ticket.manage` | Ticket administrators (they also need `basic_access`) | Opens the *Manage* pages: departments, priorities, categories, canned replies, settings |
 
 Department staff are not set by a permission. They are the members of the groups you link
 to a department (see below).
@@ -212,6 +212,8 @@ mentioned; `@everyone` and `@here` in a ticket title do nothing.
 If Discord refuses a message, the app retries a few times and then shows
 "Last delivery failed" on the department page.
 
+Channel messages use the *Language of Discord channel messages* setting (English by default).
+
 ### Direct messages (optional)
 
 If aa-discordbot is installed and *Discord direct messages* is on in the settings, people
@@ -222,6 +224,13 @@ A person does not get direct messages if they have not linked Discord in Allianc
 are not on your Discord server, or do not allow direct messages from server members. Their
 Alliance Auth notifications still arrive.
 
+aa-discordbot needs its Celery route in `myauth/celery.py`:
+`"aadiscordbot.tasks.*": {"queue": "aadiscordbot"}`. Without it, no app can send direct
+messages and the worker log shows "This function should be called asynchronously".
+
+Direct messages use each person's language from their Alliance Auth profile, or the channel
+language, depending on the *Language of Discord direct messages* setting.
+
 ## Settings
 
 **Tickets → Manage → Settings**
@@ -229,12 +238,14 @@ Alliance Auth notifications still arrive.
 | Setting | Default | Meaning |
 |---|---|---|
 | Auto-close after (days) | 7 | Tickets waiting for the requester close after this many days without a reply |
-| Warn before auto-close (hours) | 24 | Requester and assignee are warned this long before. `0` turns the warning off |
+| Warn before auto-close (hours) | 24 | Requester and assignee are warned this long before. `0` turns the warning off. Must be shorter than the auto-close time |
 | Requester can reopen for (days) | 7 | Staff can always reopen |
 | Open tickets per person | 5 | A person cannot open more tickets than this at once |
 | Maximum image size (MB) | 5 | Up to 5 images per message; PNG, JPG, GIF and WEBP |
 | Delete images after (days) | empty | Images of tickets closed longer than this are deleted. Empty keeps them |
 | Discord direct messages | on | Only has an effect when aa-discordbot is installed |
+| Language of Discord channel messages | English | English, Simplified Chinese, German, Russian or Spanish |
+| Language of Discord direct messages | each person's own | Each person's profile language, or the channel language |
 
 ## How a ticket moves
 
@@ -254,6 +265,8 @@ Submitted ──► Unclaimed ──claim──► In progress ──close──
   last and staff stay silent, the assignee and the department are reminded instead.
 - A requester who is also staff of the department still cannot see internal notes on their
   own ticket and cannot claim it.
+- If the assignee leaves the department's staff groups, they lose access at once and the
+  ticket goes back to *Unclaimed* within five minutes; the department channel is notified.
 
 ## Data protection
 
@@ -279,6 +292,8 @@ Then restart Alliance Auth and Celery. Read the [CHANGELOG](CHANGELOG.md) first.
 ## Uninstalling
 
 1. Remove the three `aa_ticket_*` entries from `CELERYBEAT_SCHEDULE`.
+   If you plan to restore a database backup afterwards, run step 2 first; otherwise the
+   restored database still contains the app's tables and a later reinstall fails.
 2. Remove the tables:
    ```bash
    python manage.py migrate aa_ticket zero
@@ -295,8 +310,11 @@ Then restart Alliance Auth and Celery. Read the [CHANGELOG](CHANGELOG.md) first.
 
 ## Translations
 
-The interface follows the language each person picks in Alliance Auth. Discord channel
-messages use the site language (`LANGUAGE_CODE`).
+The interface follows the language each person picks in Alliance Auth. Alliance Auth
+notifications use the language stored in each person's profile. Discord channel messages use
+the language chosen in the settings (English by default).
+
+All texts use the translation context `aa_ticket`, so other apps cannot override them.
 
 English and Simplified Chinese are maintained by the author. German, Russian and Spanish are
 first versions — corrections from native speakers are very welcome. Translation files are in

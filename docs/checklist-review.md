@@ -1,4 +1,4 @@
-> **Note:** this self-review was made against commit `7cd0cf7`. Its main findings (AA 5.0 migration dependencies, `migrate aa_ticket zero`, `on_commit` without `robust=True`, committed `dump.rdb`) were fixed afterwards in the commits that follow `7cd0cf7`.
+> **Note:** this self-review was made against commit `7cd0cf7`. Since 0.2.0 a former assignee loses all access as soon as they leave the staff group, and the ticket goes back to unclaimed (items 4.3.3, 10.2 and pitfall 10 below no longer apply). Users without `basic_access` no longer receive notifications. Its main findings (AA 5.0 migration dependencies, `migrate aa_ticket zero`, `on_commit` without `robust=True`, committed `dump.rdb`) were fixed afterwards in the commits that follow `7cd0cf7`.
 
 # aa-ticket — AA App Checklist review
 
