@@ -51,6 +51,8 @@ def _event_text(ticket, event, department):
         return pgettext("aa_ticket", "Still unclaimed — please take a look")
     if event == Event.ESCALATION_REMINDER:
         return pgettext("aa_ticket", "A ticket of %(department)s is still unclaimed") % {"department": ticket.department.name}
+    if event == Event.ASSIGNEE_LEFT:
+        return pgettext("aa_ticket", "The assignee left the department — the ticket needs a new handler")
     if event == Event.AWAITING_STAFF_REMINDER:
         return pgettext("aa_ticket", "The requester is still waiting for a reply")
     return str(Event(event).label) if event in Event.values else event

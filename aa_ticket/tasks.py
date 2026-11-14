@@ -109,6 +109,33 @@ def _mark_and_emit(ticket, field, now, event, extra_filter=None):
     return True
 
 
+def _release_departed_assignees():
+    """Tickets whose assignee is no longer staff of the responsible department go back to unclaimed."""
+    from django.contrib.auth.models import User
+    from django.db import transaction
+
+    from . import access
+    from .constants import Event, Status
+    from .services import _emit
+
+    tickets = list(
+        Ticket.objects.filter(status=Status.IN_PROGRESS, assignee__isnull=False)
+        .select_related("department")
+        .order_by("pk")[:BATCH_SIZE]
+    )
+    users = {u.pk: u for u in User.objects.filter(pk__in={t.assignee_id for t in tickets})}
+    for ticket in tickets:
+        assignee = users.get(ticket.assignee_id)
+        if assignee is not None and assignee.is_active and access.is_controller(assignee, ticket):
+            continue
+        with transaction.atomic():
+            updated = Ticket.objects.filter(
+                pk=ticket.pk, status=Status.IN_PROGRESS, assignee_id=ticket.assignee_id
+            ).update(status=Status.OPEN, assignee=None, open_since=timezone.now(), reminded_at=None, escalated_at=None)
+            if updated:
+                _emit(Ticket.objects.get(pk=ticket.pk), Event.ASSIGNEE_LEFT)
+
+
 def _unclaimed_candidates():
     """Unclaimed tickets that still have a reminder or escalation to send."""
     from .constants import Status
@@ -136,6 +163,7 @@ def check_unclaimed(now=None):
     from .constants import Event, Status
 
     now = _now(now)
+    _release_departed_assignees()
     for ticket in _unclaimed_candidates()[:BATCH_SIZE]:
         prio = ticket.priority
         waited = now - ticket.open_since

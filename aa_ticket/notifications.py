@@ -4,6 +4,7 @@ See the design document, section 9.
 """
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.utils.translation import pgettext
 
 from allianceauth.notifications import notify
@@ -51,6 +52,8 @@ def _channel_targets(ticket, event, data):
         return [(ticket.department.parent_id, True)]
     if event == Event.AWAITING_STAFF_REMINDER:
         return [(ticket.department_id, False)]
+    if event == Event.ASSIGNEE_LEFT:
+        return [(ticket.department_id, mention_new)]
     return []
 
 
@@ -61,8 +64,10 @@ def _personal_recipient_ids(ticket, event, data):
     if event == Event.REPLIED:
         if data.get("by_staff"):
             ids.append(ticket.requester_id)
-        elif ticket.assignee_id:
+        if ticket.assignee_id:
             ids.append(ticket.assignee_id)
+    if event in (Event.CLOSED, Event.REOPENED) and ticket.assignee_id:
+        ids.append(ticket.assignee_id)
     if event == Event.ESCALATION_REQUESTED:
         if ticket.assignee_id:
             ids.append(ticket.assignee_id)
@@ -116,6 +121,14 @@ def personal_text(ticket, event, data, recipient_id=None):
     return str(Event(event).label) if event in Event.values else event
 
 
+def _clear_badges(ticket):
+    """The menu badge counts unclaimed tickets; refresh it for the department's staff."""
+    from .auth_hooks import badge_cache_key
+
+    staff_ids = access.department_staff(ticket.department).values_list("pk", flat=True)
+    cache.delete_many([badge_cache_key(User(pk=pk)) for pk in staff_ids])
+
+
 def personal_title(ticket):
     return f"{ticket.display_number} {ticket.title}"[:250]
 
@@ -140,13 +153,14 @@ def dispatch(event, ticket_id, actor_id, data):
         if department_id in existing:
             send_webhook.delay(department_id, ticket.pk, event, mention)
 
+    _clear_badges(ticket)
     dm_available = dm.is_available()
     url = ticket_url(ticket)
     for user_id in _personal_recipient_ids(ticket, event, data):
         if user_id == actor_id:
             continue
         user = User.objects.filter(pk=user_id, is_active=True).first()
-        if user is None or not access.can_view(user, ticket):
+        if user is None or not user.has_perm("aa_ticket.basic_access") or not access.can_view(user, ticket):
             continue
         with user_language(user):
             text = personal_text(ticket, event, data, recipient_id=user.pk)

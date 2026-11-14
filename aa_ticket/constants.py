@@ -38,6 +38,7 @@ class Event(models.TextChoices):
     ESCALATION_REMINDER = "escalation_reminder", pgettext_lazy("aa_ticket", "escalation reminder sent")
     AUTOCLOSE_WARNING = "autoclose_warning", pgettext_lazy("aa_ticket", "auto-close warning sent")
     AWAITING_STAFF_REMINDER = "awaiting_staff_reminder", pgettext_lazy("aa_ticket", "waiting-for-staff reminder sent")
+    ASSIGNEE_LEFT = "assignee_left", pgettext_lazy("aa_ticket", "assignee left the department, ticket is unclaimed again")
 
 
 PRIORITY_COLORS = (

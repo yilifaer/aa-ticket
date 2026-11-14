@@ -158,7 +158,8 @@ class TestPersonalRouting(NotifyFixture):
     def test_actor_not_notified(self):
         t = self.claimed()
         dispatch(Event.CLOSED, t.pk, self.requester.pk, {})
-        self.assertEqual(self.notified_users(), [])
+        self.assertNotIn(self.requester.pk, self.notified_users())
+        self.assertEqual(self.notified_users(), [self.staff.pk])
 
     def test_requester_staff_gets_requester_notifications_only(self):
         t = services.create_ticket(fresh(self.staff2), self.dip, priority("normal"), "Own", "Body")

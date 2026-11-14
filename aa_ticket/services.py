@@ -130,7 +130,7 @@ def _lock(ticket):
 
 
 @transaction.atomic
-def add_reply(user, ticket, body, images=()):
+def add_reply(user, ticket, body, images=(), notify=True):
     ticket = _lock(ticket)
     _require(user, ticket, "reply")
     body = _clean_text(body)
@@ -152,7 +152,8 @@ def add_reply(user, ticket, body, images=()):
     ticket.staff_reminded_at = None
     ticket.save(update_fields=["last_reply_at", "last_reply_by_staff", "autoclose_warned_at", "staff_reminded_at"])
     ticket_id, actor_id, data = ticket.pk, user.pk, {"by_staff": by_staff, "message_id": message.pk}
-    transaction.on_commit(lambda: dispatch(Event.REPLIED, ticket_id, actor_id, data), robust=True)
+    if notify:
+        transaction.on_commit(lambda: dispatch(Event.REPLIED, ticket_id, actor_id, data), robust=True)
     return message
 
 
@@ -334,7 +335,7 @@ def close(actor, ticket, reason, final_reply=""):
     elif ticket.status != Status.IN_PROGRESS or not ticket.last_reply_by_staff:
         return  # automatic close only while waiting for the requester (re-checked under lock)
     if _clean_text(final_reply):
-        add_reply(actor, ticket, final_reply)
+        add_reply(actor, ticket, final_reply, notify=False)
         ticket = _lock(ticket)
     ticket.status = Status.CLOSED
     ticket.closed_at = timezone.now()
