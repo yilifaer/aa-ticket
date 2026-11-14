@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.utils.translation import pgettext
 
-from .app_settings import MAX_IMAGE_PIXELS, MAX_IMAGES_PER_MESSAGE
+from .app_settings import MAX_ANIMATION_PIXELS, MAX_FRAMES, MAX_IMAGE_PIXELS, MAX_IMAGES_PER_MESSAGE
 from .models import Attachment, TicketSettings
 
 ALLOWED_FORMATS = {
@@ -57,7 +57,19 @@ def _detect_format(upload):
                 size = img.size
                 if size[0] * size[1] > MAX_IMAGE_PIXELS:
                     raise _too_large_error(size)
+                frames = getattr(img, "n_frames", 1)
+                if frames > MAX_FRAMES:
+                    raise ValidationError(
+                        pgettext("aa_ticket", "This animation has too many frames (%(count)d). Up to %(max)d frames are allowed.")
+                        % {"count": frames, "max": MAX_FRAMES}
+                    )
+                if frames * size[0] * size[1] > MAX_ANIMATION_PIXELS:
+                    raise _too_large_error(size)
                 img.verify()
+            # verify() does not decode pixel data; load once to catch truncated files.
+            upload.seek(0)
+            with Image.open(upload) as img:
+                img.load()
     except ValidationError:
         raise
     except Image.DecompressionBombError as exc:
@@ -85,6 +97,15 @@ def validate_images(files):
 
 def _reencode(upload, fmt):
     """Re-encode the image so metadata (EXIF, GPS, comments) and trailing bytes are dropped."""
+    try:
+        return _reencode_unchecked(upload, fmt)
+    except ValidationError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - corrupt data must become a user-facing error
+        raise _format_error() from exc
+
+
+def _reencode_unchecked(upload, fmt):
     upload.seek(0)
     out = io.BytesIO()
     with warnings.catch_warnings():
@@ -92,18 +113,19 @@ def _reencode(upload, fmt):
         with Image.open(upload) as img:
             frames = getattr(img, "n_frames", 1)
             if frames > 1 and fmt in ("GIF", "WEBP"):
-                options = {"save_all": True, "loop": img.info.get("loop", 0)}
-                if "duration" in img.info:
-                    options["duration"] = img.info["duration"]
-                img.save(out, format=fmt, **options)
+                # Without a duration option Pillow keeps each frame's own delay.
+                img.save(out, format=fmt, save_all=True, loop=img.info.get("loop", 0))
             else:
+                icc = img.info.get("icc_profile")
                 image = ImageOps.exif_transpose(img)
+                options = {"icc_profile": icc} if icc and fmt in ("JPEG", "PNG", "WEBP") else {}
                 if fmt == "JPEG":
                     if image.mode not in ("RGB", "L"):
                         image = image.convert("RGB")
-                    image.save(out, format="JPEG", quality=90)
+                        options = {}
+                    image.save(out, format="JPEG", quality=90, **options)
                 else:
-                    image.save(out, format=fmt)
+                    image.save(out, format=fmt, **options)
     return out.getvalue()
 
 

@@ -346,6 +346,28 @@ sudo supervisorctl restart myauth:
 
 升级后看一眼「管理 → 设置」里的两个语言选项：频道消息默认是英文，需要中文就改成「简体中文」。
 
+> **升级后的第一个 5 分钟：** 0.2.0 会把「处理人已经不在部门组里」的工单自动退回「待接手」，并在部门频道各发一条提示（**不会 @ 身份组**）。测试机上之前把真实账号移出了测试组，所以升级后外交测试频道可能会一次收到好几条这样的消息，这是正常的。
+
+### 升级出问题，退回 0.1.0（保留所有工单）
+
+**不要**用上面「出问题时怎么回滚」的办法，那会删掉所有工单。按下面做：
+
+```bash
+sudo su allianceserver
+cd ~
+source /home/allianceserver/venv/auth/bin/activate
+cd /home/allianceserver/myauth
+python manage.py migrate aa_ticket 0002
+cd ~
+pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@d77d042"
+cd /home/allianceserver/myauth
+python manage.py collectstatic --noinput
+exit
+sudo supervisorctl restart myauth:
+```
+
+**做完怎么确认：** `pip show aa-ticket` 显示 `0.1.0`，工单都还在。
+
 ---
 
 ## 以后升级
@@ -363,3 +385,5 @@ sudo supervisorctl restart myauth:
 ```
 
 升级前同样先做第 1 步的备份。
+
+> **正式服**请用版本号（tag）安装，比如 `@v0.2.0`，不要用开发分支名。开发分支上随时可能有新的提交，用分支名安装的话，每次重装拿到的代码可能都不一样。

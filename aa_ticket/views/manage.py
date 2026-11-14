@@ -116,7 +116,7 @@ def department_edit(request, pk):
     return _edit(
         request, pk, Department, DepartmentForm, "departments", "aa_ticket:manage_departments",
         pgettext("aa_ticket", "New department"), pgettext("aa_ticket", "Edit department"), template="aa_ticket/manage/department_form.html",
-        extra={"joinable": joinable_groups(Department.objects.get(pk=pk)) if pk else []},
+        extra={"joinable": joinable_groups(get_object_or_404(Department, pk=pk)) if pk else []},
     )
 
 

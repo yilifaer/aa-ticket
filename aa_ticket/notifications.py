@@ -53,7 +53,7 @@ def _channel_targets(ticket, event, data):
     if event == Event.AWAITING_STAFF_REMINDER:
         return [(ticket.department_id, False)]
     if event == Event.ASSIGNEE_LEFT:
-        return [(ticket.department_id, mention_new)]
+        return [(ticket.department_id, False)]
     return []
 
 

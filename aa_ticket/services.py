@@ -46,7 +46,10 @@ def _save_images(message, images):
         return
     from .attachments import save_images
 
-    save_images(message, images)
+    try:
+        save_images(message, images)
+    except ValidationError as exc:
+        raise TicketActionError(" ".join(exc.messages)) from exc
 
 
 def _author_department(user, ticket):

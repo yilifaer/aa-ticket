@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 16:44+0000\n"
+"POT-Creation-Date: 2026-11-14 17:00+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -32,13 +32,21 @@ msgctxt "aa_ticket"
 msgid "This image is too large. Please make it smaller and try again."
 msgstr "图片尺寸过大，请缩小后再上传。"
 
-#: attachments.py:77
+#: attachments.py:63
+#, python-format
+msgctxt "aa_ticket"
+msgid ""
+"This animation has too many frames (%(count)d). Up to %(max)d frames are "
+"allowed."
+msgstr "这个动图的帧数太多（%(count)d 帧），最多允许 %(max)d 帧。"
+
+#: attachments.py:89
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "每条消息最多附加 %(count)d 张图片。"
 
-#: attachments.py:82
+#: attachments.py:94
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
@@ -771,43 +779,43 @@ msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "提交人仍在等待回复。"
 
-#: services.py:79
+#: services.py:82
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "内容请少于 %(count)d 个字符。"
 
-#: services.py:90
+#: services.py:93
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "本服务器未开启图片上传。"
 
-#: services.py:104 templates/aa_ticket/submit.html:37
+#: services.py:107 templates/aa_ticket/submit.html:37
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "请输入标题。"
 
-#: services.py:106
+#: services.py:109
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "标题请少于 200 个字符。"
 
-#: services.py:108 templates/aa_ticket/submit.html:42
+#: services.py:111 templates/aa_ticket/submit.html:42
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "请描述你的问题。"
 
-#: services.py:110 services.py:317
+#: services.py:113 services.py:320
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "请选择一个可用的紧急程度。"
 
-#: services.py:112
+#: services.py:115
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "请选择所选部门下的分类。"
 
-#: services.py:118
+#: services.py:121
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -815,53 +823,53 @@ msgid ""
 "before opening a new one."
 msgstr "你已有 %(count)d 张未关闭的工单。请先关闭已处理完的工单，再提交新工单。"
 
-#: services.py:153 services.py:181
+#: services.py:156 services.py:184
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "请先写好内容再发送。"
 
-#: services.py:205
+#: services.py:208
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "已被 %(name)s 接手。"
 
-#: services.py:207
+#: services.py:210
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "这张工单已无法接手。"
 
-#: services.py:217
+#: services.py:220
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "请从负责部门中选择处理人。"
 
-#: services.py:233 services.py:257
+#: services.py:236 services.py:260
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "这个部门未启用。"
 
-#: services.py:235
+#: services.py:238
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "这个部门已经是负责部门。"
 
-#: services.py:237
+#: services.py:240
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "这个部门已经在协作处理这张工单。"
 
-#: services.py:247
+#: services.py:250
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "这个部门没有参与这张工单。"
 
-#: services.py:259
+#: services.py:262
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "工单已经在这个部门。"
 
-#: services.py:331
+#: services.py:334
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "请选择负责部门下的分类。"
