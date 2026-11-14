@@ -28,12 +28,9 @@ def create_defaults(apps, schema_editor):
         )
 
 
-def remove_defaults(apps, schema_editor):
-    Priority = apps.get_model("aa_ticket", "Priority")
-    Priority.objects.filter(name__in=[row[0] for row in DEFAULTS]).delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [("aa_ticket", "0001_initial")]
 
-    operations = [migrations.RunPython(create_defaults, remove_defaults)]
+    operations = [migrations.RunPython(create_defaults, migrations.RunPython.noop)]

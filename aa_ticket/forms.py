@@ -77,6 +77,22 @@ class DepartmentForm(forms.ModelForm):
         if self.instance.webhook_url:
             self.fields["new_webhook_url"].widget.attrs["placeholder"] = self.instance.masked_webhook()
 
+    def clean_is_active(self):
+        is_active = self.cleaned_data.get("is_active")
+        if self.instance.pk and self.instance.is_active and not is_active:
+            from .constants import Status
+
+            open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
+            if open_count:
+                raise forms.ValidationError(
+                    _(
+                        "This department still has %(count)d open tickets. "
+                        "Transfer or close them before deactivating it."
+                    )
+                    % {"count": open_count}
+                )
+        return is_active
+
     def clean_new_webhook_url(self):
         value = (self.cleaned_data.get("new_webhook_url") or "").strip()
         if value:

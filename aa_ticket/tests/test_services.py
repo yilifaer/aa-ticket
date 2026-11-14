@@ -279,10 +279,16 @@ class TestCloseReopen(ServiceFixture):
 
     def test_auto_close_without_actor(self):
         t = self.claimed_ticket()
-        services.close(None, t, ClosedReason.AUTO)
+        services.add_reply(fresh(self.dip_staff), t, "Please confirm.")
+        services.close(None, fresh(t), ClosedReason.AUTO)
         t = fresh(t)
         self.assertEqual(t.closed_reason, ClosedReason.AUTO)
         self.assertIsNone(t.closed_by)
+
+    def test_auto_close_refused_while_waiting_for_staff(self):
+        t = self.claimed_ticket()
+        services.close(None, t, ClosedReason.AUTO)
+        self.assertEqual(fresh(t).status, Status.IN_PROGRESS)
 
     def test_close_by_outsider_denied(self):
         with self.assertRaises(PermissionDenied):

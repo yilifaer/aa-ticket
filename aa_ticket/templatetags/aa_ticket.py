@@ -31,7 +31,7 @@ def display_name(user):
 
 
 @register.simple_tag
-def event_text(message):
+def event_text(message, is_staff=False):
     data = message.event_data or {}
     try:
         label = str(Event(message.event_type).label)
@@ -52,7 +52,8 @@ def event_text(message):
             detail = str(ClosedReason(data["reason"]).label)
         except ValueError:
             detail = ""
-    if data.get("reason") and event != Event.CLOSED:
+    staff_only_reason = event == Event.TRANSFERRED and not is_staff
+    if data.get("reason") and event != Event.CLOSED and not staff_only_reason:
         detail = f"{detail} — {data['reason']}" if detail else data["reason"]
     return f"{label}: {detail}" if detail else label
 

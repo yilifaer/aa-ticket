@@ -6,6 +6,7 @@ served through the permission-checked view in views/files.py.
 
 import os
 import uuid
+import warnings
 
 from PIL import Image
 
@@ -14,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.utils.translation import gettext as _
 
-from .app_settings import MAX_IMAGES_PER_MESSAGE
+from .app_settings import MAX_IMAGE_PIXELS, MAX_IMAGES_PER_MESSAGE
 from .models import Attachment, TicketSettings
 
 ALLOWED_FORMATS = {
@@ -36,13 +37,31 @@ def _format_error():
     return ValidationError(_("Only PNG, JPG, GIF and WEBP images are allowed."))
 
 
+def _too_large_error(size=None):
+    if size:
+        return ValidationError(
+            _("This image is too large (%(width)d × %(height)d pixels). Please make it smaller and try again.")
+            % {"width": size[0], "height": size[1]}
+        )
+    return ValidationError(_("This image is too large. Please make it smaller and try again."))
+
+
 def _detect_format(upload):
     upload.seek(0)
     try:
-        with Image.open(upload) as img:
-            fmt = img.format
-            img.verify()
-    except Exception as exc:  # noqa: BLE001 - Pillow raises many types, incl. DecompressionBombError
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", Image.DecompressionBombWarning)
+            with Image.open(upload) as img:
+                fmt = img.format
+                size = img.size
+                if size[0] * size[1] > MAX_IMAGE_PIXELS:
+                    raise _too_large_error(size)
+                img.verify()
+    except ValidationError:
+        raise
+    except Image.DecompressionBombError as exc:
+        raise _too_large_error() from exc
+    except Exception as exc:  # noqa: BLE001 - Pillow raises many types
         raise _format_error() from exc
     finally:
         upload.seek(0)

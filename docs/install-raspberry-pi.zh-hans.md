@@ -120,6 +120,8 @@ CELERYBEAT_SCHEDULE["aa_ticket_cleanup_attachments"] = {
 
 按 `Ctrl + O` 保存，回车，再按 `Ctrl + X` 退出。
 
+> **注意：** 不要让 nginx / Apache 直接对外提供这个 `media` 文件夹。图片只能通过插件自己带权限检查的页面查看。
+
 然后创建图片文件夹：
 
 ```bash
@@ -134,6 +136,31 @@ python manage.py check
 ```
 
 最后一行显示 `System check identified ... issues`，并且里面**没有** `aa_ticket.W001`。
+
+### 3.1 放宽上传大小（nginx）
+
+nginx 默认只允许上传 1 MB，超过就会报错。打开 AA 的 nginx 配置：
+
+```bash
+sudo nano /etc/nginx/sites-available/allianceauth.conf
+```
+
+（文件名可能不同，`ls /etc/nginx/sites-available/` 可以看到。）在 `server {` 下面加一行：
+
+```nginx
+client_max_body_size 30m;
+```
+
+保存后检查并重载：
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+**做完怎么确认：** `nginx -t` 显示 `syntax is ok` 和 `test is successful`。
+
+> 如果你们用的是 Apache，对应的设置是 `LimitRequestBody 31457280`。
 
 ---
 
@@ -186,6 +213,7 @@ sudo supervisorctl status
 
 1. 名称填「外交」，简介写一句给玩家看的说明。
 2. 「人员权限组」选外交人员所在的组（这个组要先在 AA 里建好）。
+   **这个组必须是「不公开、不能自己申请」的组**，否则谁都能加进来看工单和内部备注。
 3. Discord webhook：
    - 在 Discord 外交频道 → 编辑频道 → 整合 → Webhook → 新建 → 复制 Webhook URL；
    - 粘贴进来。

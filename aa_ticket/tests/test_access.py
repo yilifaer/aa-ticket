@@ -97,13 +97,16 @@ class TestAccessMatrix(AccessFixture):
         self.assertTrue(access.is_controller(u, t))
         self.assertEqual(access.staff_department_ids(u), set())
 
-    def test_assignee_from_other_department_is_controller(self):
+    def test_assignee_removed_from_department_loses_access(self):
         t = self.ticket
-        t.assignee = self.outsider
+        t.assignee = self.dip_staff
         t.save()
-        u = fresh(self.outsider)
-        self.assertTrue(access.can_view(u, t))
-        self.assertTrue(access.is_controller(u, t))
+        self.dip_staff.groups.remove(self.g_dip)
+        u = fresh(self.dip_staff)
+        self.assertFalse(access.can_view(u, t))
+        self.assertFalse(access.can_view_internal(u, t))
+        self.assertFalse(access.is_controller(u, t))
+        self.assertNotIn(t.pk, set(access.visible_tickets(u).values_list("pk", flat=True)))
 
     def test_inactive_department_staff_lose_access(self):
         self.dip.is_active = False

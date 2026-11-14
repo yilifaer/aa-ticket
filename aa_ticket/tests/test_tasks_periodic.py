@@ -125,7 +125,10 @@ class TestAutoClose(PeriodicFixture):
         check_auto_close(iso(base + timedelta(days=6, hours=2)))
         self.assertEqual(self.events(t, Event.AUTOCLOSE_WARNING), 1)
         self.assertEqual(fresh(t).status, Status.IN_PROGRESS)
+        # warned one hour late (at 6 d 1 h): the requester still gets the full 24 hours
         check_auto_close(iso(base + timedelta(days=7, minutes=1)))
+        self.assertEqual(fresh(t).status, Status.IN_PROGRESS)
+        check_auto_close(iso(base + timedelta(days=7, hours=1, minutes=1)))
         t = fresh(t)
         self.assertEqual(t.status, Status.CLOSED)
         self.assertEqual(t.closed_reason, ClosedReason.AUTO)

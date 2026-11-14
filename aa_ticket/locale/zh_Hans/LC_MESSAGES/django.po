@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 12:44+0000\n"
+"POT-Creation-Date: 2026-11-14 12:59+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -15,16 +15,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: attachments.py:36
+#: attachments.py:37
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "仅支持 PNG、JPG、GIF 和 WEBP 图片。"
 
-#: attachments.py:57
+#: attachments.py:43
+#, python-format
+msgid ""
+"This image is too large (%(width)d × %(height)d pixels). Please make it "
+"smaller and try again."
+msgstr "图片尺寸过大（%(width)d × %(height)d 像素），请缩小后再上传。"
+
+#: attachments.py:46
+msgid "This image is too large. Please make it smaller and try again."
+msgstr "图片尺寸过大，请缩小后再上传。"
+
+#: attachments.py:76
 #, python-format
 msgid "You can attach at most %(count)d images per message."
 msgstr "每条消息最多附加 %(count)d 张图片。"
 
-#: attachments.py:62
+#: attachments.py:81
 #, python-format
 msgid "Each image must be smaller than %(size)d MB."
 msgstr "每张图片必须小于 %(size)d MB。"
@@ -282,6 +293,13 @@ msgid ""
 "In Discord, enable Developer Mode, right-click the role and choose 'Copy "
 "Role ID'. Separate several IDs with commas."
 msgstr "在 Discord 中打开「开发者模式」，右键身份组选择「复制身份组 ID」。多个 ID 用逗号分隔。"
+
+#: forms.py:89
+#, python-format
+msgid ""
+"This department still has %(count)d open tickets. Transfer or close them "
+"before deactivating it."
+msgstr "这个部门还有 %(count)d 张未关闭的工单，请先移交或关闭这些工单，再停用部门。"
 
 #: models/config.py:21
 msgid "Enter Discord role IDs as numbers, separated by commas or spaces."
@@ -800,8 +818,8 @@ msgid ""
 msgstr "新部门成为负责部门。工单回到「待接手」，并提醒新部门。"
 
 #: templates/aa_ticket/detail.html:138
-msgid "Reason (optional)"
-msgstr "理由（选填）"
+msgid "Reason (optional, only staff can see it)"
+msgstr "理由（选填，只有工作人员能看到）"
 
 #: templates/aa_ticket/detail.html:142
 #, python-format
@@ -1130,17 +1148,17 @@ msgstr "从 %(from)s 到 %(to)s"
 msgid "to %(value)s"
 msgstr "改为 %(value)s"
 
-#: templatetags/aa_ticket.py:101
+#: templatetags/aa_ticket.py:102
 #, python-format
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d 天 %(h)d 小时"
 
-#: templatetags/aa_ticket.py:103
+#: templatetags/aa_ticket.py:104
 #, python-format
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d 小时 %(m)d 分钟"
 
-#: templatetags/aa_ticket.py:104
+#: templatetags/aa_ticket.py:105
 #, python-format
 msgid "%(m)d min"
 msgstr "%(m)d 分钟"

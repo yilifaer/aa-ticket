@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 12:44+0000\n"
+"POT-Creation-Date: 2026-11-14 12:59+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: ru\n"
@@ -14,16 +14,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: attachments.py:36
+#: attachments.py:37
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "Допускаются только изображения PNG, JPG, GIF и WEBP."
 
-#: attachments.py:57
+#: attachments.py:43
+#, python-format
+msgid ""
+"This image is too large (%(width)d × %(height)d pixels). Please make it "
+"smaller and try again."
+msgstr ""
+"Изображение слишком большое (%(width)d × %(height)d пикселей). Уменьшите его"
+" и попробуйте снова."
+
+#: attachments.py:46
+msgid "This image is too large. Please make it smaller and try again."
+msgstr "Изображение слишком большое. Уменьшите его и попробуйте снова."
+
+#: attachments.py:76
 #, python-format
 msgid "You can attach at most %(count)d images per message."
 msgstr "В одном сообщении можно прикрепить не более %(count)d изображений."
 
-#: attachments.py:62
+#: attachments.py:81
 #, python-format
 msgid "Each image must be smaller than %(size)d MB."
 msgstr "Каждое изображение должно быть меньше %(size)d МБ."
@@ -287,6 +300,15 @@ msgid ""
 msgstr ""
 "В Discord включите режим разработчика, щёлкните правой кнопкой мыши по роли "
 "и выберите «Копировать ID роли». Несколько ID разделяйте запятыми."
+
+#: forms.py:89
+#, python-format
+msgid ""
+"This department still has %(count)d open tickets. Transfer or close them "
+"before deactivating it."
+msgstr ""
+"В этом отделе ещё %(count)d открытых заявок. Передайте или закройте их, "
+"прежде чем отключать отдел."
 
 #: models/config.py:21
 msgid "Enter Discord role IDs as numbers, separated by commas or spaces."
@@ -835,8 +857,8 @@ msgstr ""
 "получит уведомление."
 
 #: templates/aa_ticket/detail.html:138
-msgid "Reason (optional)"
-msgstr "Причина (необязательно)"
+msgid "Reason (optional, only staff can see it)"
+msgstr "Причина (необязательно, видна только сотрудникам)"
 
 #: templates/aa_ticket/detail.html:142
 #, python-format
@@ -1177,17 +1199,17 @@ msgstr "с %(from)s на %(to)s"
 msgid "to %(value)s"
 msgstr "на %(value)s"
 
-#: templatetags/aa_ticket.py:101
+#: templatetags/aa_ticket.py:102
 #, python-format
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d д %(h)d ч"
 
-#: templatetags/aa_ticket.py:103
+#: templatetags/aa_ticket.py:104
 #, python-format
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d ч %(m)d мин"
 
-#: templatetags/aa_ticket.py:104
+#: templatetags/aa_ticket.py:105
 #, python-format
 msgid "%(m)d min"
 msgstr "%(m)d мин"

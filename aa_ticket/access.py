@@ -81,8 +81,6 @@ def is_controller(user, ticket):
         return False
     if has_view_all(user):
         return True
-    if ticket.assignee_id and ticket.assignee_id == user.pk:
-        return True
     return bool(staff_department_ids(user) & controller_department_ids(ticket))
 
 
@@ -146,10 +144,10 @@ def visible_tickets(user):
     if has_view_all(user):
         return Ticket.objects.all()
     expanded = _with_descendants(staff_department_ids(user))
-    staff_q = Q(assignee=user)
+    query = Q(requester=user)
     if expanded:
-        staff_q |= Q(department_id__in=expanded) | Q(collaborating_departments__in=expanded)
-    query = Q(requester=user) | (staff_q & ~Q(requester=user))
+        staff_q = Q(department_id__in=expanded) | Q(collaborating_departments__in=expanded)
+        query |= staff_q & ~Q(requester=user)
     return Ticket.objects.filter(query).distinct()
 
 

@@ -13,8 +13,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("auth", "0012_alter_user_first_name_max_length"),
-        ("authentication", "0026_alter_characterownership_user_and_more"),
-        ("eveonline", "0025_remove_evecharacter_last_updated_and_more"),
+        ("authentication", "0025_v5squash"),
+        ("eveonline", "0019_v5squash"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

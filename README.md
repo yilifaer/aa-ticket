@@ -84,6 +84,17 @@ MEDIA_ROOT = "/home/allianceserver/myauth/media/"
 Without `MEDIA_ROOT` the app still works, but image uploads are turned off and
 `python manage.py check` shows the warning `aa_ticket.W001`.
 
+**Do not serve `MEDIA_ROOT` publicly** from your web server (no `location /media/` that
+points to it for this folder). Images are delivered only through the app's
+permission-checked page.
+
+Your web server must accept uploads of a few MB. nginx allows only 1 MB by default; add this to
+the Alliance Auth `server` block and reload nginx:
+
+```nginx
+client_max_body_size 30m;
+```
+
 Add the periodic tasks:
 
 ```python
@@ -128,6 +139,10 @@ The app adds three permissions. It does not give them to anyone; you decide.
 
 Department staff are not set by a permission. They are the members of the groups you link
 to a department (see below).
+
+**Use closed groups for department staff.** Anyone who can join a staff group can read all
+tickets of that department and the departments below it, including internal notes. Do not
+use open, requestable or auto-assigned groups as staff groups.
 
 **Superusers** pass every permission check in Django, so they have `view_all` and `manage`.
 They are not staff of any department unless they are in a department's group, so they are

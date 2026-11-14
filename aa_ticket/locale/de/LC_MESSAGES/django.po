@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 12:44+0000\n"
+"POT-Creation-Date: 2026-11-14 12:59+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -15,16 +15,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: attachments.py:36
+#: attachments.py:37
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "Es sind nur PNG-, JPG-, GIF- und WEBP-Bilder erlaubt."
 
-#: attachments.py:57
+#: attachments.py:43
+#, python-format
+msgid ""
+"This image is too large (%(width)d × %(height)d pixels). Please make it "
+"smaller and try again."
+msgstr ""
+"Dieses Bild ist zu groß (%(width)d × %(height)d Pixel). Bitte verkleinere es"
+" und versuche es erneut."
+
+#: attachments.py:46
+msgid "This image is too large. Please make it smaller and try again."
+msgstr "Dieses Bild ist zu groß. Bitte verkleinere es und versuche es erneut."
+
+#: attachments.py:76
 #, python-format
 msgid "You can attach at most %(count)d images per message."
 msgstr "Du kannst höchstens %(count)d Bilder pro Nachricht anhängen."
 
-#: attachments.py:62
+#: attachments.py:81
 #, python-format
 msgid "Each image must be smaller than %(size)d MB."
 msgstr "Jedes Bild muss kleiner als %(size)d MB sein."
@@ -291,6 +304,15 @@ msgstr ""
 "Aktiviere in Discord den Entwicklermodus, klicke mit der rechten Maustaste "
 "auf die Rolle und wähle „Rollen-ID kopieren“. Mehrere IDs mit Kommas "
 "trennen."
+
+#: forms.py:89
+#, python-format
+msgid ""
+"This department still has %(count)d open tickets. Transfer or close them "
+"before deactivating it."
+msgstr ""
+"Diese Abteilung hat noch %(count)d offene Tickets. Übertrage oder schließe "
+"sie, bevor du die Abteilung deaktivierst."
 
 #: models/config.py:21
 msgid "Enter Discord role IDs as numbers, separated by commas or spaces."
@@ -846,8 +868,8 @@ msgstr ""
 "übernommen und die Abteilung wird benachrichtigt."
 
 #: templates/aa_ticket/detail.html:138
-msgid "Reason (optional)"
-msgstr "Grund (optional)"
+msgid "Reason (optional, only staff can see it)"
+msgstr "Grund (optional, nur für das Team sichtbar)"
 
 #: templates/aa_ticket/detail.html:142
 #, python-format
@@ -1190,17 +1212,17 @@ msgstr "von %(from)s zu %(to)s"
 msgid "to %(value)s"
 msgstr "zu %(value)s"
 
-#: templatetags/aa_ticket.py:101
+#: templatetags/aa_ticket.py:102
 #, python-format
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d T %(h)d Std."
 
-#: templatetags/aa_ticket.py:103
+#: templatetags/aa_ticket.py:104
 #, python-format
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d Std. %(m)d Min."
 
-#: templatetags/aa_ticket.py:104
+#: templatetags/aa_ticket.py:105
 #, python-format
 msgid "%(m)d min"
 msgstr "%(m)d Min."

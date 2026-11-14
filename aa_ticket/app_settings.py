@@ -1,6 +1,7 @@
 """Fixed values used across the app. Admin-editable settings live in TicketSettings."""
 
 MAX_IMAGES_PER_MESSAGE = 5
+MAX_IMAGE_PIXELS = 40_000_000
 BADGE_CACHE_SECONDS = 60
 WEBHOOK_TIMEOUT = 10
 WEBHOOK_TEST_TIMEOUT = 5

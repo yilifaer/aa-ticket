@@ -109,6 +109,25 @@ def _mark_and_emit(ticket, field, now, event, extra_filter=None):
     return True
 
 
+def _unclaimed_candidates():
+    """Unclaimed tickets that still have a reminder or escalation to send."""
+    from .constants import Status
+
+    return (
+        Ticket.objects.filter(status=Status.OPEN)
+        .select_related("priority", "department")
+        .filter(
+            models.Q(priority__remind_after_minutes__isnull=False, reminded_at__isnull=True)
+            | models.Q(
+                priority__escalate_after_minutes__isnull=False,
+                escalated_at__isnull=True,
+                department__parent__isnull=False,
+            )
+        )
+        .order_by("open_since")
+    )
+
+
 @shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
 def check_unclaimed(now=None):
     """Remind departments of unclaimed tickets and escalate to the parent."""
@@ -117,16 +136,7 @@ def check_unclaimed(now=None):
     from .constants import Event, Status
 
     now = _now(now)
-    tickets = (
-        Ticket.objects.filter(status=Status.OPEN)
-        .select_related("priority", "department")
-        .filter(
-            models.Q(priority__remind_after_minutes__isnull=False, reminded_at__isnull=True)
-            | models.Q(priority__escalate_after_minutes__isnull=False, escalated_at__isnull=True)
-        )
-        .order_by("open_since")[:BATCH_SIZE]
-    )
-    for ticket in tickets:
+    for ticket in _unclaimed_candidates()[:BATCH_SIZE]:
         prio = ticket.priority
         waited = now - ticket.open_since
         if (
@@ -159,13 +169,21 @@ def check_auto_close(now=None):
     close_after = timedelta(days=s.autoclose_days)
     warn_at = close_after - timedelta(hours=s.autoclose_warning_hours)
     oldest_due = now - min(warn_at, close_after)
-    tickets = Ticket.objects.filter(status=Status.IN_PROGRESS, last_reply_at__lte=oldest_due).order_by(
+    tickets = Ticket.objects.filter(
+        models.Q(last_reply_by_staff=True) | models.Q(staff_reminded_at__isnull=True),
+        status=Status.IN_PROGRESS,
+        last_reply_at__lte=oldest_due,
+    ).order_by(
         "last_reply_at"
     )[:BATCH_SIZE]
     for ticket in tickets:
         idle = now - ticket.last_reply_at
         if ticket.last_reply_by_staff:
-            if idle >= close_after:
+            warning = timedelta(hours=s.autoclose_warning_hours)
+            warned_long_enough = not s.autoclose_warning_hours or (
+                ticket.autoclose_warned_at is not None and now >= ticket.autoclose_warned_at + warning
+            )
+            if idle >= close_after and warned_long_enough:
                 close(None, ticket, ClosedReason.AUTO)
             elif s.autoclose_warning_hours and ticket.autoclose_warned_at is None and idle >= warn_at:
                 _mark_and_emit(

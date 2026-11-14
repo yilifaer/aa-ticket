@@ -326,8 +326,8 @@ def close(actor, ticket, reason, final_reply=""):
     ticket = _lock(ticket)
     if actor is not None:
         _require(actor, ticket, "close")
-    elif ticket.status == Status.CLOSED:
-        return
+    elif ticket.status != Status.IN_PROGRESS or not ticket.last_reply_by_staff:
+        return  # automatic close only while waiting for the requester (re-checked under lock)
     if _clean_text(final_reply):
         add_reply(actor, ticket, final_reply)
         ticket = _lock(ticket)

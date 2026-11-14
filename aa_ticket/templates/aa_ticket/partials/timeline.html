@@ -5,7 +5,7 @@
             {% if message|visible_event:is_staff %}
                 <li class="aa-ticket-event small text-body-secondary py-1">
                     <i class="fas fa-circle-info" aria-hidden="true"></i>
-                    <strong>{{ message.author|display_name }}</strong> {% event_text message %}
+                    <strong>{{ message.author|display_name }}</strong> {% event_text message is_staff %}
                     · <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"Y-m-d H:i" }}</time>
                 </li>
             {% endif %}
