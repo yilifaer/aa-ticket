@@ -39,7 +39,7 @@ def _get_or_new(model, pk):
     return get_object_or_404(model, pk=pk)
 
 
-def _edit(request, pk, model, form_class, section, list_url, title_new, title_edit, template="aa_ticket/manage/form.html", form_kwargs=None):
+def _edit(request, pk, model, form_class, section, list_url, title_new, title_edit, template="aa_ticket/manage/form.html", form_kwargs=None, extra=None):
     obj = _get_or_new(model, pk)
     form_kwargs = form_kwargs or {}
     if request.method == "POST":
@@ -53,7 +53,7 @@ def _edit(request, pk, model, form_class, section, list_url, title_new, title_ed
     return render(
         request,
         template,
-        _ctx(request, section, form=form, obj=obj, title=title_edit if obj.pk else title_new, list_url=list_url),
+        _ctx(request, section, form=form, obj=obj, title=title_edit if obj.pk else title_new, list_url=list_url, **(extra or {})),
     )
 
 
@@ -70,8 +70,18 @@ def _delete(request, obj, list_url, refused_message):
 # ----- departments ---------------------------------------------------------
 
 
+def joinable_groups(department):
+    """Staff groups that people can join or request themselves."""
+    result = []
+    for group in department.groups.all():
+        auth_group = getattr(group, "authgroup", None)
+        if auth_group is not None and not auth_group.internal:
+            result.append(group)
+    return result
+
+
 def _department_rows():
-    departments = list(Department.objects.prefetch_related("groups").order_by("order", "name"))
+    departments = list(Department.objects.prefetch_related("groups__authgroup").order_by("order", "name"))
     by_parent = {}
     for d in departments:
         by_parent.setdefault(d.parent_id, []).append(d)
@@ -82,13 +92,13 @@ def _department_rows():
             if d.pk in seen:
                 continue
             seen.add(d.pk)
-            rows.append({"department": d, "depth": depth, "indent": depth * 1.5})
+            rows.append({"department": d, "depth": depth, "indent": depth * 1.5, "joinable": joinable_groups(d)})
             walk(d.pk, depth + 1)
 
     walk(None, 0)
     for d in departments:  # anything left over (broken tree) is still shown
         if d.pk not in seen:
-            rows.append({"department": d, "depth": 0, "indent": 0})
+            rows.append({"department": d, "depth": 0, "indent": 0, "joinable": joinable_groups(d)})
     return rows
 
 
@@ -106,6 +116,7 @@ def department_edit(request, pk):
     return _edit(
         request, pk, Department, DepartmentForm, "departments", "aa_ticket:manage_departments",
         pgettext("aa_ticket", "New department"), pgettext("aa_ticket", "Edit department"), template="aa_ticket/manage/department_form.html",
+        extra={"joinable": joinable_groups(Department.objects.get(pk=pk)) if pk else []},
     )
 
 

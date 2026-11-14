@@ -82,6 +82,10 @@ class DepartmentForm(forms.ModelForm):
         if self.instance.pk and self.instance.is_active and not is_active:
             from .constants import Status
 
+            if self.instance.children.filter(is_active=True).exists():
+                raise forms.ValidationError(
+                    pgettext_lazy("aa_ticket", "This department still has active sub-departments. Deactivate or move them first.")
+                )
             open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
             if open_count:
                 raise forms.ValidationError(
@@ -153,4 +157,18 @@ class TicketSettingsForm(forms.ModelForm):
             "max_image_mb",
             "attachment_retention_days",
             "discord_dm_enabled",
+            "channel_language",
+            "dm_language_mode",
         )
+
+    def clean(self):
+        cleaned = super().clean()
+        days = cleaned.get("autoclose_days")
+        hours = cleaned.get("autoclose_warning_hours")
+        if days and hours is not None and hours >= days * 24:
+            self.add_error(
+                "autoclose_warning_hours",
+                pgettext_lazy("aa_ticket", "The warning time must be shorter than the auto-close time (%(hours)d hours).")
+                % {"hours": days * 24},
+            )
+        return cleaned

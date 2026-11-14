@@ -10,9 +10,9 @@ from django.utils.translation import pgettext_lazy
 
 from allianceauth.authentication.models import State
 
-from ..constants import PRIORITY_COLORS
+from ..constants import CHANNEL_LANGUAGES, DM_LANGUAGE_MODES, PRIORITY_COLORS
 
-_ROLE_IDS_RE = re.compile(r"^\s*\d+(\s*[,\s]\s*\d+)*\s*$")
+_ROLE_IDS_RE = re.compile(r"^\s*[0-9]+(\s*[,\s]\s*[0-9]+)*\s*$")
 
 
 def validate_role_ids(value):
@@ -30,7 +30,7 @@ class General(models.Model):
         default_permissions = ()
         permissions = (
             ("basic_access", "Can submit and view own tickets"),
-            ("view_all", "Can view all tickets"),
+            ("view_all", "Can view and handle all tickets"),
             ("manage", "Can manage ticket settings"),
         )
 
@@ -132,7 +132,7 @@ class Department(models.Model):
             )
 
     def mention_role_id_list(self):
-        return [int(x) for x in re.findall(r"\d+", self.mention_role_ids or "")]
+        return [int(x) for x in re.findall(r"[0-9]+", self.mention_role_ids or "")]
 
     def masked_webhook(self):
         if not self.webhook_url:
@@ -255,6 +255,20 @@ class TicketSettings(SingletonModel):
         pgettext_lazy("aa_ticket", "Discord direct messages"),
         default=True,
         help_text=pgettext_lazy("aa_ticket", "When on and aa-discordbot is installed, people also get notifications as Discord direct messages."),
+    )
+    channel_language = models.CharField(
+        pgettext_lazy("aa_ticket", "Language of Discord channel messages"),
+        max_length=10,
+        choices=CHANNEL_LANGUAGES,
+        default="en",
+        help_text=pgettext_lazy("aa_ticket", "All messages posted to department channels use this language."),
+    )
+    dm_language_mode = models.CharField(
+        pgettext_lazy("aa_ticket", "Language of Discord direct messages"),
+        max_length=10,
+        choices=DM_LANGUAGE_MODES,
+        default="personal",
+        help_text=pgettext_lazy("aa_ticket", "Direct messages can follow each person's language setting in Alliance Auth, or use the channel language."),
     )
 
     class Meta:

@@ -15,6 +15,9 @@
         {% endif %}
     </div>
 {% endif %}
+{% for g in joinable %}
+    <div class="alert alert-warning py-2">⚠️ {% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: anyone can join or request this group — they could read all tickets of this department.{% endblocktranslate %}</div>
+{% endfor %}
 <form method="post" class="aa-ticket-form" style="max-width: 48rem;">
     {% csrf_token %}
     {% include "aa_ticket/partials/form_fields.html" %}

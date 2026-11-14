@@ -41,6 +41,19 @@ class Event(models.TextChoices):
     ASSIGNEE_LEFT = "assignee_left", pgettext_lazy("aa_ticket", "assignee left the department, ticket is unclaimed again")
 
 
+CHANNEL_LANGUAGES = (
+    ("en", "English"),
+    ("zh-hans", "简体中文"),
+    ("de", "Deutsch"),
+    ("ru", "Русский"),
+    ("es", "Español"),
+)
+
+DM_LANGUAGE_MODES = (
+    ("personal", pgettext_lazy("aa_ticket", "Each person's own language")),
+    ("channel", pgettext_lazy("aa_ticket", "Same as the channel language")),
+)
+
 PRIORITY_COLORS = (
     ("secondary", pgettext_lazy("aa_ticket", "Grey")),
     ("primary", pgettext_lazy("aa_ticket", "Blue")),
