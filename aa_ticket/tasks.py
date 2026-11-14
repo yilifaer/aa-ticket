@@ -65,7 +65,7 @@ def send_dm(user_id, ticket_id, event, data=None):
     from .links import ticket_url
     from .models import UserPreference
     from .notifications import personal_text, personal_title
-    from .translation import user_language
+    from .translation import dm_language_active
 
     if not dm.is_available():
         return
@@ -75,7 +75,7 @@ def send_dm(user_id, ticket_id, event, data=None):
         return
     if not UserPreference.for_user(user).discord_dm_enabled:
         return
-    with user_language(user):
+    with dm_language_active(user):
         text = personal_text(ticket, event, data or {}, recipient_id=user.pk)
     try:
         dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket))

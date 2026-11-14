@@ -10,15 +10,14 @@ import re
 
 import requests
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils import translation
 from django.utils.translation import pgettext
 from django.utils.translation import pgettext_lazy
 
 from ..app_settings import WEBHOOK_TEST_TIMEOUT, WEBHOOK_TIMEOUT
 from ..constants import PRIORITY_HEX, Event
 from ..links import ticket_url
+from ..translation import channel_language_active
 from ..utils import display_name
 
 WEBHOOK_URL_RE = re.compile(
@@ -60,7 +59,7 @@ def _event_text(ticket, event, department):
 
 def build_payload(ticket, event, mention, department):
     role_ids = [str(x) for x in department.mention_role_id_list()] if mention else []
-    with translation.override(settings.LANGUAGE_CODE):
+    with channel_language_active():
         title = f"{ticket.display_number} {ticket.title}"
         if len(title) > TITLE_LIMIT:
             title = title[: TITLE_LIMIT - 1] + "…"
@@ -104,6 +103,11 @@ def send_test_message(department):
     """Send a test message right away. Returns (ok, user-facing text)."""
     if not department.webhook_url:
         return False, pgettext("aa_ticket", "No webhook configured.")
+    with channel_language_active():
+        return _send_test_message(department)
+
+
+def _send_test_message(department):
     payload = {
         "username": USERNAME,
         "content": "",

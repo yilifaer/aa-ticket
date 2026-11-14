@@ -11,7 +11,7 @@ from django.utils.translation import pgettext_lazy
 
 from .. import access
 from ..constants import Status
-from ..models import Category, Department, Priority, Ticket
+from ..models import Category, Department, Priority
 from ..stats import department_stats
 
 basic = permission_required("aa_ticket.basic_access", raise_exception=True)
