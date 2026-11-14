@@ -5,7 +5,7 @@ writes a system event to the ticket's timeline and hands the event to
 `notifications.dispatch` once the transaction has been committed.
 """
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -73,7 +73,10 @@ def _validate_images(images):
 
     if not uploads_enabled():
         raise TicketActionError(_("Image uploads are turned off on this server."))
-    validate_images(list(images))
+    try:
+        validate_images(list(images))
+    except ValidationError as exc:
+        raise TicketActionError(" ".join(exc.messages)) from exc
 
 
 @transaction.atomic

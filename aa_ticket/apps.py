@@ -8,3 +8,6 @@ class AaTicketConfig(AppConfig):
     label = "aa_ticket"
     verbose_name = f"Tickets v{__version__}"
     default_auto_field = "django.db.models.BigAutoField"
+
+    def ready(self):
+        from . import checks  # noqa: F401
