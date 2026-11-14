@@ -1,0 +1,29 @@
+{% load i18n humanize %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th scope="col">{% translate "Ticket" %}</th>
+                <th scope="col">{% translate "Department" %}</th>
+                <th scope="col">{% translate "Priority" %}</th>
+                <th scope="col">{% translate "Status" %}</th>
+                {% if show_requester %}<th scope="col">{% translate "Requester" %}</th>{% endif %}
+                <th scope="col">{% translate "Last activity" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+                <tr>
+                    <td><a href="{% url 'aa_ticket:detail' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.display_number }} {{ ticket.title }}</a>
+                        {% if ticket.status == "in_progress" and ticket.last_reply_by_staff and not show_requester %}<span class="badge text-bg-info ms-1">{% translate "Waiting for you" %}</span>{% endif %}
+                    </td>
+                    <td>{{ ticket.department.name }}</td>
+                    <td>{% include "aa_ticket/partials/priority_badge.html" %}</td>
+                    <td>{% include "aa_ticket/partials/status_badge.html" %}</td>
+                    {% if show_requester %}<td>{{ ticket.requester_character.character_name|default:ticket.requester.username }}</td>{% endif %}
+                    <td><span title="{{ ticket.last_reply_at|date:'Y-m-d H:i' }} UTC">{{ ticket.last_reply_at|naturaltime }}</span></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,25 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n %}
+
+{% block ticket_title %}{% translate "Submit ticket" %}{% endblock %}
+
+{% block ticket_content %}
+    <h1 class="h3 mb-1">{% translate "Submit ticket" %}</h1>
+    <p class="text-body-secondary mb-4">{% translate "Choose the department that can help you." %}</p>
+    {% if departments %}
+        <div class="row g-3">
+            {% for department in departments %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <a class="card h-100 text-decoration-none aa-ticket-card" href="{% url 'aa_ticket:submit_form' department.pk %}">
+                        <div class="card-body">
+                            <h2 class="h5 card-title text-body">{{ department.name }}</h2>
+                            {% if department.description %}<p class="card-text text-body-secondary mb-0">{{ department.description|linebreaksbr }}</p>{% endif %}
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">{% translate "No department accepts tickets from you at the moment. Please contact your leadership." %}</div>
+    {% endif %}
+{% endblock %}

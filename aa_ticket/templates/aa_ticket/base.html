@@ -1,0 +1,27 @@
+{% extends "allianceauth/base-bs5.html" %}
+{% load i18n static aa_ticket %}
+
+{% block page_title %}{% block ticket_title %}{% translate "Tickets" %}{% endblock %}{% endblock page_title %}
+
+{% block header_nav_brand %}{% translate "Tickets" %}{% endblock header_nav_brand %}
+
+{% block header_nav_collapse_left %}
+    {% aa_ticket_nav as nav %}
+    {% if nav.mine %}<li class="nav-item"><a class="nav-link{% if nav_active == 'mine' %} active{% endif %}" href="{{ nav.mine }}">{% translate "My tickets" %}</a></li>{% endif %}
+    {% if nav.workbench %}<li class="nav-item"><a class="nav-link{% if nav_active == 'workbench' %} active{% endif %}" href="{{ nav.workbench }}">{% translate "Workbench" %}</a></li>{% endif %}
+    {% if nav.stats %}<li class="nav-item"><a class="nav-link{% if nav_active == 'stats' %} active{% endif %}" href="{{ nav.stats }}">{% translate "Statistics" %}</a></li>{% endif %}
+    {% if nav.manage %}<li class="nav-item"><a class="nav-link{% if nav_active == 'manage' %} active{% endif %}" href="{{ nav.manage }}">{% translate "Manage" %}</a></li>{% endif %}
+    {% if nav.prefs %}<li class="nav-item"><a class="nav-link{% if nav_active == 'prefs' %} active{% endif %}" href="{{ nav.prefs }}">{% translate "Preferences" %}</a></li>{% endif %}
+{% endblock header_nav_collapse_left %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'aa_ticket/css/ticket.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+    <div class="aa-ticket">
+        {% block ticket_content %}{% endblock %}
+    </div>
+{% endblock content %}
+
+{% block extra_javascript %}{% endblock extra_javascript %}

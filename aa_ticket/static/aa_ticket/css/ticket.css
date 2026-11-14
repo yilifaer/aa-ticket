@@ -1,0 +1,24 @@
+/* aa-ticket: only small additions on top of Bootstrap 5. Colours use Bootstrap variables
+   so light and dark mode both work. */
+.aa-ticket .aa-ticket-body {
+    overflow-wrap: anywhere;
+}
+
+.aa-ticket .aa-ticket-internal .card-header {
+    background-color: var(--bs-warning-bg-subtle);
+}
+
+.aa-ticket .aa-ticket-thumb {
+    max-width: 160px;
+    max-height: 120px;
+    object-fit: cover;
+}
+
+.aa-ticket .aa-ticket-card:hover,
+.aa-ticket .aa-ticket-card:focus {
+    border-color: var(--bs-primary);
+}
+
+.aa-ticket .aa-ticket-timeline .aa-ticket-event {
+    padding-left: 0.25rem;
+}
