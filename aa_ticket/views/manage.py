@@ -6,8 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import ProtectedError
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
+from django.utils.translation import pgettext
+from django.utils.translation import pgettext_lazy
 from django.views.decorators.http import require_POST
 
 from .. import access
@@ -19,11 +19,11 @@ basic = permission_required("aa_ticket.basic_access", raise_exception=True)
 manage_perm = permission_required("aa_ticket.manage", raise_exception=True)
 
 SECTIONS = (
-    ("departments", gettext_lazy("Departments"), "aa_ticket:manage_departments"),
-    ("priorities", gettext_lazy("Priorities"), "aa_ticket:manage_priorities"),
-    ("categories", gettext_lazy("Categories"), "aa_ticket:manage_categories"),
-    ("canned", gettext_lazy("Canned replies"), "aa_ticket:manage_canned"),
-    ("settings", gettext_lazy("Settings"), "aa_ticket:manage_settings"),
+    ("departments", pgettext_lazy("aa_ticket", "Departments"), "aa_ticket:manage_departments"),
+    ("priorities", pgettext_lazy("aa_ticket", "Priorities"), "aa_ticket:manage_priorities"),
+    ("categories", pgettext_lazy("aa_ticket", "Categories"), "aa_ticket:manage_categories"),
+    ("canned", pgettext_lazy("aa_ticket", "Canned replies"), "aa_ticket:manage_canned"),
+    ("settings", pgettext_lazy("aa_ticket", "Settings"), "aa_ticket:manage_settings"),
 )
 
 
@@ -46,7 +46,7 @@ def _edit(request, pk, model, form_class, section, list_url, title_new, title_ed
         form = form_class(request.POST, instance=obj, **form_kwargs)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Saved."))
+            messages.success(request, pgettext("aa_ticket", "Saved."))
             return redirect(list_url)
     else:
         form = form_class(instance=obj, **form_kwargs)
@@ -63,7 +63,7 @@ def _delete(request, obj, list_url, refused_message):
     except ProtectedError:
         messages.error(request, refused_message)
     else:
-        messages.success(request, _("Deleted."))
+        messages.success(request, pgettext("aa_ticket", "Deleted."))
     return redirect(list_url)
 
 
@@ -103,7 +103,7 @@ def departments(request):
 def department_edit(request, pk):
     return _edit(
         request, pk, Department, DepartmentForm, "departments", "aa_ticket:manage_departments",
-        _("New department"), _("Edit department"), template="aa_ticket/manage/department_form.html",
+        pgettext("aa_ticket", "New department"), pgettext("aa_ticket", "Edit department"), template="aa_ticket/manage/department_form.html",
     )
 
 
@@ -113,11 +113,11 @@ def department_edit(request, pk):
 def department_delete(request, pk):
     department = get_object_or_404(Department, pk=pk)
     if department.children.exists() or department.tickets.exists():
-        messages.error(request, _("This department still has tickets or sub-departments. Deactivate it instead."))
+        messages.error(request, pgettext("aa_ticket", "This department still has tickets or sub-departments. Deactivate it instead."))
         return redirect("aa_ticket:manage_departments")
     return _delete(
         request, department, "aa_ticket:manage_departments",
-        _("This department still has tickets or sub-departments. Deactivate it instead."),
+        pgettext("aa_ticket", "This department still has tickets or sub-departments. Deactivate it instead."),
     )
 
 
@@ -143,7 +143,7 @@ def priorities(request):
 @login_required
 @manage_perm
 def priority_edit(request, pk):
-    return _edit(request, pk, Priority, PriorityForm, "priorities", "aa_ticket:manage_priorities", _("New priority"), _("Edit priority"))
+    return _edit(request, pk, Priority, PriorityForm, "priorities", "aa_ticket:manage_priorities", pgettext("aa_ticket", "New priority"), pgettext("aa_ticket", "Edit priority"))
 
 
 @login_required
@@ -152,7 +152,7 @@ def priority_edit(request, pk):
 def priority_delete(request, pk):
     return _delete(
         request, get_object_or_404(Priority, pk=pk), "aa_ticket:manage_priorities",
-        _("Tickets still use this priority. Deactivate it instead."),
+        pgettext("aa_ticket", "Tickets still use this priority. Deactivate it instead."),
     )
 
 
@@ -169,7 +169,7 @@ def categories(request):
 @login_required
 @manage_perm
 def category_edit(request, pk):
-    return _edit(request, pk, Category, CategoryForm, "categories", "aa_ticket:manage_categories", _("New category"), _("Edit category"))
+    return _edit(request, pk, Category, CategoryForm, "categories", "aa_ticket:manage_categories", pgettext("aa_ticket", "New category"), pgettext("aa_ticket", "Edit category"))
 
 
 @login_required
@@ -219,7 +219,7 @@ def canned_edit(request, pk):
     _obj, scope = _canned_object(request, pk)
     return _edit(
         request, pk, CannedReply, CannedReplyForm, "canned", "aa_ticket:manage_canned",
-        _("New canned reply"), _("Edit canned reply"), form_kwargs={"allowed_department_ids": scope},
+        pgettext("aa_ticket", "New canned reply"), pgettext("aa_ticket", "Edit canned reply"), form_kwargs={"allowed_department_ids": scope},
     )
 
 
@@ -244,12 +244,12 @@ def settings_view(request):
         form = TicketSettingsForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Settings saved."))
+            messages.success(request, pgettext("aa_ticket", "Settings saved."))
             return redirect("aa_ticket:manage_settings")
     else:
         form = TicketSettingsForm(instance=instance)
     return render(
         request,
         "aa_ticket/manage/form.html",
-        _ctx(request, "settings", form=form, obj=instance, title=_("Settings"), list_url=None),
+        _ctx(request, "settings", form=form, obj=instance, title=pgettext("aa_ticket", "Settings"), list_url=None),
     )

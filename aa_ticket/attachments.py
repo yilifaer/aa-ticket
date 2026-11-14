@@ -13,7 +13,7 @@ from PIL import Image
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 
 from .app_settings import MAX_IMAGE_PIXELS, MAX_IMAGES_PER_MESSAGE
 from .models import Attachment, TicketSettings
@@ -34,16 +34,16 @@ def uploads_enabled():
 
 
 def _format_error():
-    return ValidationError(_("Only PNG, JPG, GIF and WEBP images are allowed."))
+    return ValidationError(pgettext("aa_ticket", "Only PNG, JPG, GIF and WEBP images are allowed."))
 
 
 def _too_large_error(size=None):
     if size:
         return ValidationError(
-            _("This image is too large (%(width)d × %(height)d pixels). Please make it smaller and try again.")
+            pgettext("aa_ticket", "This image is too large (%(width)d × %(height)d pixels). Please make it smaller and try again.")
             % {"width": size[0], "height": size[1]}
         )
-    return ValidationError(_("This image is too large. Please make it smaller and try again."))
+    return ValidationError(pgettext("aa_ticket", "This image is too large. Please make it smaller and try again."))
 
 
 def _detect_format(upload):
@@ -73,12 +73,12 @@ def _detect_format(upload):
 def validate_images(files):
     if len(files) > MAX_IMAGES_PER_MESSAGE:
         raise ValidationError(
-            _("You can attach at most %(count)d images per message.") % {"count": MAX_IMAGES_PER_MESSAGE}
+            pgettext("aa_ticket", "You can attach at most %(count)d images per message.") % {"count": MAX_IMAGES_PER_MESSAGE}
         )
     max_mb = TicketSettings.get_solo().max_image_mb
     for upload in files:
         if upload.size > max_mb * 1024 * 1024:
-            raise ValidationError(_("Each image must be smaller than %(size)d MB.") % {"size": max_mb})
+            raise ValidationError(pgettext("aa_ticket", "Each image must be smaller than %(size)d MB.") % {"size": max_mb})
         _detect_format(upload)
 
 

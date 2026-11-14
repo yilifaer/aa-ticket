@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 from django.views.decorators.http import require_POST
 
 from .. import access, services
@@ -119,19 +119,19 @@ def action(request, pk, action):
     user = request.user
     post = request.POST
     if action == "claim":
-        return _run(request, ticket, services.claim, user, ticket, success=_("You are now handling this ticket."))
+        return _run(request, ticket, services.claim, user, ticket, success=pgettext("aa_ticket", "You are now handling this ticket."))
     if action == "assign":
         assignee = User.objects.filter(pk=_int(post.get("user_id"))).first()
-        return _run(request, ticket, services.assign, user, ticket, assignee, success=_("Ticket assigned."))
+        return _run(request, ticket, services.assign, user, ticket, assignee, success=pgettext("aa_ticket", "Ticket assigned."))
     if action in ("invite", "uninvite", "transfer"):
         department = Department.objects.filter(pk=_int(post.get("department_id"))).first()
         if department is None:
-            messages.error(request, _("Please pick a department."))
+            messages.error(request, pgettext("aa_ticket", "Please pick a department."))
             return redirect("aa_ticket:detail", pk=ticket.pk)
         if action == "invite":
-            return _run(request, ticket, services.invite, user, ticket, department, success=_("Department invited."))
+            return _run(request, ticket, services.invite, user, ticket, department, success=pgettext("aa_ticket", "Department invited."))
         if action == "uninvite":
-            return _run(request, ticket, services.uninvite, user, ticket, department, success=_("Department removed."))
+            return _run(request, ticket, services.uninvite, user, ticket, department, success=pgettext("aa_ticket", "Department removed."))
         keep = bool(post.get("keep")) if post.get("keep_present") else True
         return _run(
             request,
@@ -142,7 +142,7 @@ def action(request, pk, action):
             department,
             keep_as_collaborator=keep,
             reason=post.get("reason", ""),
-            success=_("Ticket transferred."),
+            success=pgettext("aa_ticket", "Ticket transferred."),
         )
     if action == "escalate":
         return _run(
@@ -152,12 +152,12 @@ def action(request, pk, action):
             user,
             ticket,
             reason=post.get("reason", ""),
-            success=_("Escalation requested. The department above has been notified."),
+            success=pgettext("aa_ticket", "Escalation requested. The department above has been notified."),
         )
     if action == "priority":
         prio = Priority.objects.filter(pk=_int(post.get("priority_id"))).first()
         if prio is None:
-            messages.error(request, _("Please pick a priority."))
+            messages.error(request, pgettext("aa_ticket", "Please pick a priority."))
             return redirect("aa_ticket:detail", pk=ticket.pk)
         return _run(request, ticket, services.change_priority, user, ticket, prio)
     if action == "category":
@@ -173,10 +173,10 @@ def action(request, pk, action):
             ticket,
             reason,
             final_reply=post.get("final_reply", ""),
-            success=_("Ticket closed."),
+            success=pgettext("aa_ticket", "Ticket closed."),
         )
     if action == "reopen":
-        return _run(request, ticket, services.reopen, user, ticket, success=_("Ticket reopened."))
+        return _run(request, ticket, services.reopen, user, ticket, success=pgettext("aa_ticket", "Ticket reopened."))
     raise PermissionDenied
 
 

@@ -13,8 +13,8 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import translation
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
+from django.utils.translation import pgettext
+from django.utils.translation import pgettext_lazy
 
 from ..app_settings import WEBHOOK_TEST_TIMEOUT, WEBHOOK_TIMEOUT
 from ..constants import PRIORITY_HEX, Event
@@ -31,7 +31,7 @@ USERNAME = "Tickets"
 def validate_webhook_url(value):
     if not value or not WEBHOOK_URL_RE.match(value):
         raise ValidationError(
-            gettext_lazy(
+            pgettext_lazy("aa_ticket", 
                 "Paste the full webhook URL from Discord. It starts with "
                 "https://discord.com/api/webhooks/"
             )
@@ -40,19 +40,19 @@ def validate_webhook_url(value):
 
 def _event_text(ticket, event, department):
     if event == Event.SUBMITTED:
-        return _("New ticket")
+        return pgettext("aa_ticket", "New ticket")
     if event == Event.TRANSFERRED:
-        return _("Ticket transferred to %(department)s") % {"department": ticket.department.name}
+        return pgettext("aa_ticket", "Ticket transferred to %(department)s") % {"department": ticket.department.name}
     if event == Event.INVITED:
-        return _("%(department)s was invited to help") % {"department": department.name}
+        return pgettext("aa_ticket", "%(department)s was invited to help") % {"department": department.name}
     if event == Event.ESCALATION_REQUESTED:
-        return _("The requester asked %(department)s to step in") % {"department": department.name}
+        return pgettext("aa_ticket", "The requester asked %(department)s to step in") % {"department": department.name}
     if event == Event.UNCLAIMED_REMINDER:
-        return _("Still unclaimed — please take a look")
+        return pgettext("aa_ticket", "Still unclaimed — please take a look")
     if event == Event.ESCALATION_REMINDER:
-        return _("A ticket of %(department)s is still unclaimed") % {"department": ticket.department.name}
+        return pgettext("aa_ticket", "A ticket of %(department)s is still unclaimed") % {"department": ticket.department.name}
     if event == Event.AWAITING_STAFF_REMINDER:
-        return _("The requester is still waiting for a reply")
+        return pgettext("aa_ticket", "The requester is still waiting for a reply")
     return str(Event(event).label) if event in Event.values else event
 
 
@@ -63,13 +63,13 @@ def build_payload(ticket, event, mention, department):
         if len(title) > TITLE_LIMIT:
             title = title[: TITLE_LIMIT - 1] + "…"
         fields = [
-            {"name": _("Department"), "value": ticket.department.name, "inline": True},
-            {"name": _("Priority"), "value": ticket.priority.name, "inline": True},
+            {"name": pgettext("aa_ticket", "Department"), "value": ticket.department.name, "inline": True},
+            {"name": pgettext("aa_ticket", "Priority"), "value": ticket.priority.name, "inline": True},
         ]
         if ticket.category_id:
-            fields.append({"name": _("Category"), "value": ticket.category.name, "inline": True})
+            fields.append({"name": pgettext("aa_ticket", "Category"), "value": ticket.category.name, "inline": True})
         fields.append(
-            {"name": _("Requester"), "value": display_name(ticket.requester) or "-", "inline": True}
+            {"name": pgettext("aa_ticket", "Requester"), "value": display_name(ticket.requester) or "-", "inline": True}
         )
         embed = {
             "title": title,
@@ -101,15 +101,15 @@ def retry_after_seconds(response):
 def send_test_message(department):
     """Send a test message right away. Returns (ok, user-facing text)."""
     if not department.webhook_url:
-        return False, _("No webhook configured.")
+        return False, pgettext("aa_ticket", "No webhook configured.")
     payload = {
         "username": USERNAME,
         "content": "",
         "allowed_mentions": {"parse": []},
         "embeds": [
             {
-                "title": _("Test message"),
-                "description": _("Tickets for %(department)s will be announced in this channel.")
+                "title": pgettext("aa_ticket", "Test message"),
+                "description": pgettext("aa_ticket", "Tickets for %(department)s will be announced in this channel.")
                 % {"department": department.name},
             }
         ],
@@ -117,9 +117,9 @@ def send_test_message(department):
     try:
         response = post_webhook(department.webhook_url, payload, timeout=WEBHOOK_TEST_TIMEOUT)
     except requests.RequestException as exc:
-        return False, _("Sending failed (%(reason)s).") % {"reason": type(exc).__name__}
+        return False, pgettext("aa_ticket", "Sending failed (%(reason)s).") % {"reason": type(exc).__name__}
     if response.ok:
-        return True, _("Test message sent. Check the Discord channel.")
-    return False, _("Discord refused the message (HTTP %(status)s). Check the webhook URL.") % {
+        return True, pgettext("aa_ticket", "Test message sent. Check the Discord channel.")
+    return False, pgettext("aa_ticket", "Discord refused the message (HTTP %(status)s). Check the webhook URL.") % {
         "status": response.status_code
     }

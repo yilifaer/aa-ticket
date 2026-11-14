@@ -4,7 +4,7 @@ See the design document, section 9.
 """
 
 from django.contrib.auth.models import User
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 
 from allianceauth.notifications import notify
 
@@ -83,32 +83,32 @@ def _personal_recipient_ids(ticket, event, data):
 def personal_text(ticket, event, data, recipient_id=None):
     """One-line, translated description of an event for one recipient."""
     if event == Event.CLAIMED:
-        return _("%(name)s is now handling your ticket.") % {"name": data.get("assignee", "")}
+        return pgettext("aa_ticket", "%(name)s is now handling your ticket.") % {"name": data.get("assignee", "")}
     if event == Event.ASSIGNED:
         if recipient_id and recipient_id == data.get("assignee_id"):
-            return _("You were assigned this ticket.")
-        return _("%(name)s is now handling your ticket.") % {"name": data.get("assignee", "")}
+            return pgettext("aa_ticket", "You were assigned this ticket.")
+        return pgettext("aa_ticket", "%(name)s is now handling your ticket.") % {"name": data.get("assignee", "")}
     if event == Event.REPLIED:
         if data.get("by_staff"):
-            return _("There is a new reply on your ticket.")
-        return _("The requester replied.")
+            return pgettext("aa_ticket", "There is a new reply on your ticket.")
+        return pgettext("aa_ticket", "The requester replied.")
     if event == Event.CLOSED:
-        return _("The ticket was closed.")
+        return pgettext("aa_ticket", "The ticket was closed.")
     if event == Event.REOPENED:
-        return _("The ticket was reopened.")
+        return pgettext("aa_ticket", "The ticket was reopened.")
     if event == Event.TRANSFERRED:
-        return _("The ticket was transferred to %(department)s.") % {"department": ticket.department.name}
+        return pgettext("aa_ticket", "The ticket was transferred to %(department)s.") % {"department": ticket.department.name}
     if event == Event.PRIORITY_CHANGED:
-        return _("The priority was changed to %(priority)s.") % {"priority": ticket.priority.name}
+        return pgettext("aa_ticket", "The priority was changed to %(priority)s.") % {"priority": ticket.priority.name}
     if event == Event.ESCALATION_REQUESTED:
-        return _("The requester asked %(department)s to step in.") % {"department": data.get("department", "")}
+        return pgettext("aa_ticket", "The requester asked %(department)s to step in.") % {"department": data.get("department", "")}
     if event == Event.AUTOCLOSE_WARNING:
         hours = TicketSettings.get_solo().autoclose_warning_hours
-        return _("This ticket will close automatically in %(hours)d hours unless someone replies.") % {
+        return pgettext("aa_ticket", "This ticket will close automatically in %(hours)d hours unless someone replies.") % {
             "hours": hours
         }
     if event == Event.AWAITING_STAFF_REMINDER:
-        return _("The requester is still waiting for a reply.")
+        return pgettext("aa_ticket", "The requester is still waiting for a reply.")
     return str(Event(event).label) if event in Event.values else event
 
 

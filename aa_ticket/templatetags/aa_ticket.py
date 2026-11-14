@@ -2,7 +2,7 @@ from django import template
 from django.template.defaultfilters import linebreaksbr, urlize
 from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 
 from .. import access
 from ..constants import ClosedReason, Event
@@ -27,7 +27,7 @@ def rich_text(value):
 
 @register.filter
 def display_name(user):
-    return _display_name(user) if user else _("System")
+    return _display_name(user) if user else pgettext("aa_ticket", "System")
 
 
 @register.simple_tag
@@ -40,11 +40,11 @@ def event_text(message, is_staff=False):
     event = message.event_type
     detail = ""
     if event == Event.TRANSFERRED:
-        detail = _("from %(from)s to %(to)s") % {"from": data.get("from", ""), "to": data.get("to", "")}
+        detail = pgettext("aa_ticket", "from %(from)s to %(to)s") % {"from": data.get("from", ""), "to": data.get("to", "")}
     elif event in (Event.INVITED, Event.UNINVITED, Event.ESCALATION_REQUESTED, Event.SUBMITTED):
         detail = data.get("department", "")
     elif event in (Event.PRIORITY_CHANGED, Event.CATEGORY_CHANGED):
-        detail = _("to %(value)s") % {"value": data.get("to") or "—"}
+        detail = pgettext("aa_ticket", "to %(value)s") % {"value": data.get("to") or "—"}
     elif event in (Event.CLAIMED, Event.ASSIGNED):
         detail = data.get("assignee", "")
     elif event == Event.CLOSED and data.get("reason"):
@@ -99,10 +99,10 @@ def duration(seconds):
     hours, rest = divmod(rest, 3600)
     minutes = rest // 60
     if days:
-        return _("%(d)d d %(h)d h") % {"d": days, "h": hours}
+        return pgettext("aa_ticket", "%(d)d d %(h)d h") % {"d": days, "h": hours}
     if hours:
-        return _("%(h)d h %(m)d min") % {"h": hours, "m": minutes}
-    return _("%(m)d min") % {"m": minutes}
+        return pgettext("aa_ticket", "%(h)d h %(m)d min") % {"h": hours, "m": minutes}
+    return pgettext("aa_ticket", "%(m)d min") % {"m": minutes}
 
 
 @register.filter

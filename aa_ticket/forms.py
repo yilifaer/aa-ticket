@@ -1,16 +1,16 @@
 from django import forms
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from .models import Category, Priority
 
 
 class SubmitForm(forms.Form):
     category = forms.ModelChoiceField(
-        label=_("Category"), queryset=Category.objects.none(), required=False, empty_label=_("Choose a category")
+        label=pgettext_lazy("aa_ticket", "Category"), queryset=Category.objects.none(), required=False, empty_label=pgettext_lazy("aa_ticket", "Choose a category")
     )
-    priority = forms.ModelChoiceField(label=_("Priority"), queryset=Priority.objects.none(), empty_label=None)
-    title = forms.CharField(label=_("Title"), max_length=200)
-    body = forms.CharField(label=_("Describe your request"), widget=forms.Textarea(attrs={"rows": 8}))
+    priority = forms.ModelChoiceField(label=pgettext_lazy("aa_ticket", "Priority"), queryset=Priority.objects.none(), empty_label=None)
+    title = forms.CharField(label=pgettext_lazy("aa_ticket", "Title"), max_length=200)
+    body = forms.CharField(label=pgettext_lazy("aa_ticket", "Describe your request"), widget=forms.Textarea(attrs={"rows": 8}))
 
     def __init__(self, *args, department=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,12 +34,12 @@ from .models import CannedReply, Department, TicketSettings  # noqa: E402
 
 class DepartmentForm(forms.ModelForm):
     new_webhook_url = forms.CharField(
-        label=_("Discord webhook"),
+        label=pgettext_lazy("aa_ticket", "Discord webhook"),
         required=False,
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
-        help_text=_("Paste a new webhook URL to change it. Leave empty to keep the current one."),
+        help_text=pgettext_lazy("aa_ticket", "Paste a new webhook URL to change it. Leave empty to keep the current one."),
     )
-    clear_webhook = forms.BooleanField(label=_("Remove the webhook"), required=False)
+    clear_webhook = forms.BooleanField(label=pgettext_lazy("aa_ticket", "Remove the webhook"), required=False)
 
     class Meta:
         model = Department
@@ -62,7 +62,7 @@ class DepartmentForm(forms.ModelForm):
             "submit_groups": forms.SelectMultiple(attrs={"size": 6}),
         }
         help_texts = {
-            "mention_role_ids": _(
+            "mention_role_ids": pgettext_lazy("aa_ticket", 
                 "In Discord, enable Developer Mode, right-click the role and choose 'Copy Role ID'. "
                 "Separate several IDs with commas."
             ),
@@ -85,7 +85,7 @@ class DepartmentForm(forms.ModelForm):
             open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
             if open_count:
                 raise forms.ValidationError(
-                    _(
+                    pgettext_lazy("aa_ticket", 
                         "This department still has %(count)d open tickets. "
                         "Transfer or close them before deactivating it."
                     )

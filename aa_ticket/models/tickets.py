@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from allianceauth.eveonline.models import EveCharacter
 
@@ -9,7 +9,7 @@ from .config import Category, Department, Priority
 
 
 class Ticket(models.Model):
-    title = models.CharField(_("title"), max_length=200)
+    title = models.CharField(pgettext_lazy("aa_ticket", "title"), max_length=200)
     requester = models.ForeignKey(User, on_delete=models.PROTECT, related_name="aa_tickets")
     requester_character = models.ForeignKey(
         EveCharacter, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"

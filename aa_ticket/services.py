@@ -8,7 +8,7 @@ writes a system event to the ticket's timeline and hands the event to
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 
 from . import access
 from .constants import ClosedReason, Event, MessageKind, Status
@@ -72,7 +72,7 @@ def _validate_images(images):
     from .attachments import uploads_enabled, validate_images
 
     if not uploads_enabled():
-        raise TicketActionError(_("Image uploads are turned off on this server."))
+        raise TicketActionError(pgettext("aa_ticket", "Image uploads are turned off on this server."))
     try:
         validate_images(list(images))
     except ValidationError as exc:
@@ -86,20 +86,20 @@ def create_ticket(user, department, priority, title, body, category=None, images
     title = _clean_text(title)
     body = _clean_text(body)
     if not title:
-        raise TicketActionError(_("Please enter a title."))
+        raise TicketActionError(pgettext("aa_ticket", "Please enter a title."))
     if len(title) > TITLE_MAX:
-        raise TicketActionError(_("Please keep the title under 200 characters."))
+        raise TicketActionError(pgettext("aa_ticket", "Please keep the title under 200 characters."))
     if not body:
-        raise TicketActionError(_("Please describe your request."))
+        raise TicketActionError(pgettext("aa_ticket", "Please describe your request."))
     if not priority.is_active:
-        raise TicketActionError(_("Please pick an available priority."))
+        raise TicketActionError(pgettext("aa_ticket", "Please pick an available priority."))
     if category is not None and (category.department_id != department.pk or not category.is_active):
-        raise TicketActionError(_("Please pick a category of the selected department."))
+        raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the selected department."))
     limit = TicketSettings.get_solo().max_open_tickets
     open_count = Ticket.objects.filter(requester=user).exclude(status=Status.CLOSED).count()
     if open_count >= limit:
         raise TicketActionError(
-            _(
+            pgettext("aa_ticket", 
                 "You already have %(count)d open tickets. Please close resolved tickets "
                 "before opening a new one."
             )
@@ -135,7 +135,7 @@ def add_reply(user, ticket, body, images=()):
     _require(user, ticket, "reply")
     body = _clean_text(body)
     if not body and not images:
-        raise TicketActionError(_("Please write a message before sending."))
+        raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
     _validate_images(images)
     by_staff = access.is_staff_for(user, ticket)
     message = TicketMessage.objects.create(
@@ -162,7 +162,7 @@ def add_note(user, ticket, body, images=()):
     _require(user, ticket, "note")
     body = _clean_text(body)
     if not body and not images:
-        raise TicketActionError(_("Please write a message before sending."))
+        raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
     _validate_images(images)
     message = TicketMessage.objects.create(
         ticket=ticket,
@@ -186,9 +186,9 @@ def claim(user, ticket):
         current = Ticket.objects.get(pk=ticket.pk)
         if current.assignee_id:
             raise TicketActionError(
-                _("Already claimed by %(name)s.") % {"name": display_name(current.assignee)}
+                pgettext("aa_ticket", "Already claimed by %(name)s.") % {"name": display_name(current.assignee)}
             )
-        raise TicketActionError(_("This ticket can no longer be claimed."))
+        raise TicketActionError(pgettext("aa_ticket", "This ticket can no longer be claimed."))
     ticket = Ticket.objects.get(pk=ticket.pk)
     _emit(ticket, Event.CLAIMED, user, {"assignee": display_name(user)})
 
@@ -198,7 +198,7 @@ def assign(actor, ticket, assignee):
     ticket = _lock(ticket)
     _require(actor, ticket, "assign")
     if assignee is None or not access.assignable_users(ticket).filter(pk=assignee.pk).exists():
-        raise TicketActionError(_("Pick someone from the responsible department."))
+        raise TicketActionError(pgettext("aa_ticket", "Pick someone from the responsible department."))
     ticket.assignee = assignee
     fields = ["assignee"]
     if ticket.status == Status.OPEN:
@@ -214,11 +214,11 @@ def invite(actor, ticket, department):
     ticket = _lock(ticket)
     _require(actor, ticket, "invite")
     if not department.is_active:
-        raise TicketActionError(_("This department is not active."))
+        raise TicketActionError(pgettext("aa_ticket", "This department is not active."))
     if department.pk == ticket.department_id:
-        raise TicketActionError(_("This department is already responsible for the ticket."))
+        raise TicketActionError(pgettext("aa_ticket", "This department is already responsible for the ticket."))
     if ticket.collaborating_departments.filter(pk=department.pk).exists():
-        raise TicketActionError(_("This department is already working on the ticket."))
+        raise TicketActionError(pgettext("aa_ticket", "This department is already working on the ticket."))
     ticket.collaborating_departments.add(department)
     _emit(ticket, Event.INVITED, actor, {"department": department.name, "department_id": department.pk})
 
@@ -228,7 +228,7 @@ def uninvite(actor, ticket, department):
     ticket = _lock(ticket)
     _require(actor, ticket, "uninvite")
     if not ticket.collaborating_departments.filter(pk=department.pk).exists():
-        raise TicketActionError(_("This department is not working on the ticket."))
+        raise TicketActionError(pgettext("aa_ticket", "This department is not working on the ticket."))
     ticket.collaborating_departments.remove(department)
     _emit(ticket, Event.UNINVITED, actor, {"department": department.name, "department_id": department.pk})
 
@@ -238,9 +238,9 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
     ticket = _lock(ticket)
     _require(actor, ticket, "transfer")
     if not department.is_active:
-        raise TicketActionError(_("This department is not active."))
+        raise TicketActionError(pgettext("aa_ticket", "This department is not active."))
     if department.pk == ticket.department_id:
-        raise TicketActionError(_("The ticket is already with this department."))
+        raise TicketActionError(pgettext("aa_ticket", "The ticket is already with this department."))
     old = ticket.department
     ticket.department = department
     ticket.status = Status.OPEN
@@ -293,7 +293,7 @@ def change_priority(actor, ticket, priority):
     ticket = _lock(ticket)
     _require(actor, ticket, "priority")
     if not priority.is_active:
-        raise TicketActionError(_("Please pick an available priority."))
+        raise TicketActionError(pgettext("aa_ticket", "Please pick an available priority."))
     if priority.pk == ticket.priority_id:
         return
     old = ticket.priority
@@ -307,7 +307,7 @@ def change_category(actor, ticket, category):
     ticket = _lock(ticket)
     _require(actor, ticket, "category")
     if category is not None and category.department_id != ticket.department_id:
-        raise TicketActionError(_("Please pick a category of the responsible department."))
+        raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the responsible department."))
     if (category.pk if category else None) == ticket.category_id:
         return
     old = ticket.category

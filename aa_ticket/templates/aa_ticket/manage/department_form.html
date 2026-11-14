@@ -6,12 +6,12 @@
 {% if obj.pk %}
     <div class="mb-3 small">
         {% if obj.webhook_url %}
-            {% translate "Current webhook" %}: <code>{{ obj.masked_webhook }}</code>
+            {% translate "Current webhook" context 'aa_ticket' %}: <code>{{ obj.masked_webhook }}</code>
             <form method="post" action="{% url 'aa_ticket:manage_department_test' obj.pk %}" class="d-inline">{% csrf_token %}
-                <button class="btn btn-sm btn-outline-primary ms-2">{% translate "Send test message" %}</button>
+                <button class="btn btn-sm btn-outline-primary ms-2">{% translate "Send test message" context 'aa_ticket' %}</button>
             </form>
         {% else %}
-            <span class="text-warning-emphasis">⚠️ {% translate "Discord channel not configured — new tickets will not be announced." %}</span>
+            <span class="text-warning-emphasis">⚠️ {% translate "Discord channel not configured — new tickets will not be announced." context 'aa_ticket' %}</span>
         {% endif %}
     </div>
 {% endif %}
@@ -19,8 +19,8 @@
     {% csrf_token %}
     {% include "aa_ticket/partials/form_fields.html" %}
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
-        <a class="btn btn-secondary" href="{% url 'aa_ticket:manage_departments' %}">{% translate "Cancel" %}</a>
+        <button type="submit" class="btn btn-primary">{% translate "Save" context 'aa_ticket' %}</button>
+        <a class="btn btn-secondary" href="{% url 'aa_ticket:manage_departments' %}">{% translate "Cancel" context 'aa_ticket' %}</a>
     </div>
 </form>
 {% endblock %}

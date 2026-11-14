@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
@@ -31,7 +31,7 @@ def unclaimed_count(user):
 class TicketMenuItem(MenuItemHook):
     def __init__(self):
         super().__init__(
-            _("Tickets"),
+            pgettext_lazy("aa_ticket", "Tickets"),
             "fas fa-ticket",
             "aa_ticket:index",
             navactive=["aa_ticket:"],

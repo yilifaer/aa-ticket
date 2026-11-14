@@ -3,19 +3,19 @@
     <table class="table table-hover align-middle mb-0">
         <thead>
             <tr>
-                <th scope="col">{% translate "Ticket" %}</th>
-                <th scope="col">{% translate "Department" %}</th>
-                <th scope="col">{% translate "Priority" %}</th>
-                <th scope="col">{% translate "Status" %}</th>
-                {% if show_requester %}<th scope="col">{% translate "Requester" %}</th>{% endif %}
-                <th scope="col">{% translate "Last activity" %}</th>
+                <th scope="col">{% translate "Ticket" context 'aa_ticket' %}</th>
+                <th scope="col">{% translate "Department" context 'aa_ticket' %}</th>
+                <th scope="col">{% translate "Priority" context 'aa_ticket' %}</th>
+                <th scope="col">{% translate "Status" context 'aa_ticket' %}</th>
+                {% if show_requester %}<th scope="col">{% translate "Requester" context 'aa_ticket' %}</th>{% endif %}
+                <th scope="col">{% translate "Last activity" context 'aa_ticket' %}</th>
             </tr>
         </thead>
         <tbody>
             {% for ticket in tickets %}
                 <tr>
                     <td><a href="{% url 'aa_ticket:detail' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.display_number }} {{ ticket.title }}</a>
-                        {% if ticket.status == "in_progress" and ticket.last_reply_by_staff and not show_requester %}<span class="badge text-bg-info ms-1">{% translate "Waiting for you" %}</span>{% endif %}
+                        {% if ticket.status == "in_progress" and ticket.last_reply_by_staff and not show_requester %}<span class="badge text-bg-info ms-1">{% translate "Waiting for you" context 'aa_ticket' %}</span>{% endif %}
                     </td>
                     <td>{{ ticket.department.name }}</td>
                     <td>{% include "aa_ticket/partials/priority_badge.html" %}</td>

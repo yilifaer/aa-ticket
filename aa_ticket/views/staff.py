@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from .. import access
 from ..constants import Status
@@ -17,12 +17,12 @@ from ..stats import department_stats
 basic = permission_required("aa_ticket.basic_access", raise_exception=True)
 
 TABS = (
-    ("unclaimed", _("Unclaimed")),
-    ("mine", _("Assigned to me")),
-    ("department", _("My departments")),
-    ("children", _("Sub-departments")),
-    ("collab", _("Helping")),
-    ("closed", _("Closed")),
+    ("unclaimed", pgettext_lazy("aa_ticket", "Unclaimed")),
+    ("mine", pgettext_lazy("aa_ticket", "Assigned to me")),
+    ("department", pgettext_lazy("aa_ticket", "My departments")),
+    ("children", pgettext_lazy("aa_ticket", "Sub-departments")),
+    ("collab", pgettext_lazy("aa_ticket", "Helping")),
+    ("closed", pgettext_lazy("aa_ticket", "Closed")),
 )
 PAGE_SIZE = 50
 STATS_RANGES = (7, 30, 90)

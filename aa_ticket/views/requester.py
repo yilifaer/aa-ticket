@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 
 from .. import access, services
 from ..attachments import uploads_enabled
@@ -71,7 +71,7 @@ def submit(request, department_id):
             except PermissionDenied as exc:
                 raise Http404 from exc
             else:
-                messages.success(request, _("Ticket %(number)s submitted.") % {"number": ticket.display_number})
+                messages.success(request, pgettext("aa_ticket", "Ticket %(number)s submitted.") % {"number": ticket.display_number})
                 return redirect("aa_ticket:detail", pk=ticket.pk)
     else:
         form = SubmitForm(department=department)

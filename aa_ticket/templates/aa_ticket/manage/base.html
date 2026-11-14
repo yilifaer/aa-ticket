@@ -1,7 +1,7 @@
 {% extends "aa_ticket/base.html" %}
 {% load i18n %}
 
-{% block ticket_title %}{% translate "Manage" %}{% endblock %}
+{% block ticket_title %}{% translate "Manage" context 'aa_ticket' %}{% endblock %}
 
 {% block ticket_content %}
 <ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">

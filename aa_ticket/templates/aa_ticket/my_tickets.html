@@ -1,23 +1,23 @@
 {% extends "aa_ticket/base.html" %}
 {% load i18n %}
 
-{% block ticket_title %}{% translate "My tickets" %}{% endblock %}
+{% block ticket_title %}{% translate "My tickets" context 'aa_ticket' %}{% endblock %}
 
 {% block ticket_content %}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h1 class="h3 mb-0">{% translate "My tickets" %}</h1>
-        <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Submit ticket" %}</a>
+        <h1 class="h3 mb-0">{% translate "My tickets" context 'aa_ticket' %}</h1>
+        <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Submit ticket" context 'aa_ticket' %}</a>
     </div>
     <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><a class="nav-link{% if tab == 'active' %} active{% endif %}" href="?tab=active">{% translate "Open" %} <span class="badge text-bg-secondary">{{ counts.active }}</span></a></li>
-        <li class="nav-item"><a class="nav-link{% if tab == 'closed' %} active{% endif %}" href="?tab=closed">{% translate "Closed" %}</a></li>
+        <li class="nav-item"><a class="nav-link{% if tab == 'active' %} active{% endif %}" href="?tab=active">{% translate "Open" context 'aa_ticket' %} <span class="badge text-bg-secondary">{{ counts.active }}</span></a></li>
+        <li class="nav-item"><a class="nav-link{% if tab == 'closed' %} active{% endif %}" href="?tab=closed">{% translate "Closed" context 'aa_ticket' %}</a></li>
     </ul>
     {% if tickets %}
         {% include "aa_ticket/partials/ticket_table.html" %}
     {% else %}
         <div class="text-center text-body-secondary py-5">
-            <p class="mb-3">{% if tab == 'closed' %}{% translate "No closed tickets." %}{% else %}{% translate "No tickets yet." %}{% endif %}</p>
-            <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}">{% translate "Submit ticket" %}</a>
+            <p class="mb-3">{% if tab == 'closed' %}{% translate "No closed tickets." context 'aa_ticket' %}{% else %}{% translate "No tickets yet." context 'aa_ticket' %}{% endif %}</p>
+            <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}">{% translate "Submit ticket" context 'aa_ticket' %}</a>
         </div>
     {% endif %}
 {% endblock %}

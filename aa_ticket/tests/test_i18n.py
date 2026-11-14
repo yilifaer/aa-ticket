@@ -50,3 +50,40 @@ class TestChinesePage(TestCase):
         self.assertContains(r, "接手")
         self.assertContains(r, "内部备注")
         self.assertContains(r, "关闭工单")
+
+
+class TestNoCollisions(TestCase):
+    """Other apps (allianceauth, aa-srp, ...) must not override our translations."""
+
+    def test_every_entry_has_app_context(self):
+        for lang in LANGUAGES:
+            po = polib.pofile(os.path.join(LOCALE_DIR, lang, "LC_MESSAGES", "django.po"))
+            self.assertEqual([e.msgid for e in po if e.msgctxt != "aa_ticket"], [], lang)
+
+    def test_runtime_lookup_returns_our_translation(self):
+        from django.utils import translation
+
+        for lang in LANGUAGES:
+            po = polib.pofile(os.path.join(LOCALE_DIR, lang, "LC_MESSAGES", "django.po"))
+            with translation.override(lang.lower().replace("_", "-")):
+                for e in po:
+                    if e.msgid_plural:
+                        continue
+                    self.assertEqual(translation.pgettext("aa_ticket", e.msgid), e.msgstr, f"{lang}: {e.msgid}")
+
+    def test_no_untagged_translate_calls(self):
+        import re
+
+        root = os.path.dirname(os.path.dirname(__file__))
+        for dirpath, _dirs, files in os.walk(root):
+            if "tests" in dirpath or "migrations" in dirpath:
+                continue
+            for name in files:
+                path = os.path.join(dirpath, name)
+                if name.endswith(".html"):
+                    text = open(path, encoding="utf-8").read()
+                    for tag in re.findall(r"\{% (?:block)?translate [^%]*%\}", text):
+                        self.assertIn("context 'aa_ticket'", tag, f"{path}: {tag}")
+                elif name.endswith(".py"):
+                    text = open(path, encoding="utf-8").read()
+                    self.assertIsNone(re.search(r"(?<![\w.])_\(|(?<!p)gettext(_lazy)?\(", text), path)

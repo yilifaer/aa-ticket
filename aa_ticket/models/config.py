@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from allianceauth.authentication.models import State
 
@@ -18,7 +18,7 @@ _ROLE_IDS_RE = re.compile(r"^\s*\d+(\s*[,\s]\s*\d+)*\s*$")
 def validate_role_ids(value):
     if value and not _ROLE_IDS_RE.match(value):
         raise ValidationError(
-            _("Enter Discord role IDs as numbers, separated by commas or spaces.")
+            pgettext_lazy("aa_ticket", "Enter Discord role IDs as numbers, separated by commas or spaces.")
         )
 
 
@@ -36,49 +36,49 @@ class General(models.Model):
 
 
 class Department(models.Model):
-    name = models.CharField(_("name"), max_length=100)
+    name = models.CharField(pgettext_lazy("aa_ticket", "name"), max_length=100)
     description = models.TextField(
-        _("description"), blank=True, help_text=_("Shown to players when they pick a department.")
+        pgettext_lazy("aa_ticket", "description"), blank=True, help_text=pgettext_lazy("aa_ticket", "Shown to players when they pick a department.")
     )
     parent = models.ForeignKey(
         "self",
-        verbose_name=_("parent department"),
+        verbose_name=pgettext_lazy("aa_ticket", "parent department"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="children",
-        help_text=_("Staff of the parent department can see all tickets of this department."),
+        help_text=pgettext_lazy("aa_ticket", "Staff of the parent department can see all tickets of this department."),
     )
     groups = models.ManyToManyField(
         Group,
-        verbose_name=_("staff groups"),
+        verbose_name=pgettext_lazy("aa_ticket", "staff groups"),
         blank=True,
         related_name="aa_ticket_departments",
-        help_text=_("Members of these groups are staff of this department."),
+        help_text=pgettext_lazy("aa_ticket", "Members of these groups are staff of this department."),
     )
     submit_states = models.ManyToManyField(
         State,
-        verbose_name=_("states allowed to submit"),
+        verbose_name=pgettext_lazy("aa_ticket", "states allowed to submit"),
         blank=True,
         related_name="+",
-        help_text=_("Leave both lists empty to allow everyone who can use tickets."),
+        help_text=pgettext_lazy("aa_ticket", "Leave both lists empty to allow everyone who can use tickets."),
     )
     submit_groups = models.ManyToManyField(
         Group,
-        verbose_name=_("groups allowed to submit"),
+        verbose_name=pgettext_lazy("aa_ticket", "groups allowed to submit"),
         blank=True,
         related_name="+",
     )
     accepts_submissions = models.BooleanField(
-        _("accepts tickets from players"),
+        pgettext_lazy("aa_ticket", "accepts tickets from players"),
         default=True,
-        help_text=_("When off, tickets can only reach this department by transfer or invitation."),
+        help_text=pgettext_lazy("aa_ticket", "When off, tickets can only reach this department by transfer or invitation."),
     )
-    is_active = models.BooleanField(_("active"), default=True)
-    order = models.IntegerField(_("order"), default=0)
-    webhook_url = models.CharField(_("Discord webhook"), max_length=255, blank=True)
+    is_active = models.BooleanField(pgettext_lazy("aa_ticket", "active"), default=True)
+    order = models.IntegerField(pgettext_lazy("aa_ticket", "order"), default=0)
+    webhook_url = models.CharField(pgettext_lazy("aa_ticket", "Discord webhook"), max_length=255, blank=True)
     mention_role_ids = models.CharField(
-        _("Discord role IDs to mention"),
+        pgettext_lazy("aa_ticket", "Discord role IDs to mention"),
         max_length=255,
         blank=True,
         validators=[validate_role_ids],
@@ -89,8 +89,8 @@ class Department(models.Model):
     class Meta:
         default_permissions = ()
         ordering = ("order", "name")
-        verbose_name = _("department")
-        verbose_name_plural = _("departments")
+        verbose_name = pgettext_lazy("aa_ticket", "department")
+        verbose_name_plural = pgettext_lazy("aa_ticket", "departments")
 
     def __str__(self):
         return self.name
@@ -125,10 +125,10 @@ class Department(models.Model):
         if self.parent_id is None:
             return
         if self.pk and self.parent_id == self.pk:
-            raise ValidationError({"parent": _("A department cannot be its own parent.")})
+            raise ValidationError({"parent": pgettext_lazy("aa_ticket", "A department cannot be its own parent.")})
         if self.pk and self.parent_id in self.descendant_ids():
             raise ValidationError(
-                {"parent": _("This parent would create a loop. Pick a department above this one.")}
+                {"parent": pgettext_lazy("aa_ticket", "This parent would create a loop. Pick a department above this one.")}
             )
 
     def mention_role_id_list(self):
@@ -141,35 +141,35 @@ class Department(models.Model):
 
 
 class Priority(models.Model):
-    name = models.CharField(_("name"), max_length=50)
-    color = models.CharField(_("colour"), max_length=20, choices=PRIORITY_COLORS, default="primary")
-    order = models.IntegerField(_("order"), default=0, help_text=_("Higher means more urgent."))
+    name = models.CharField(pgettext_lazy("aa_ticket", "name"), max_length=50)
+    color = models.CharField(pgettext_lazy("aa_ticket", "colour"), max_length=20, choices=PRIORITY_COLORS, default="primary")
+    order = models.IntegerField(pgettext_lazy("aa_ticket", "order"), default=0, help_text=pgettext_lazy("aa_ticket", "Higher means more urgent."))
     mention_on_new = models.BooleanField(
-        _("mention roles for new tickets"),
+        pgettext_lazy("aa_ticket", "mention roles for new tickets"),
         default=True,
-        help_text=_("When on, new tickets with this priority mention the department's Discord roles."),
+        help_text=pgettext_lazy("aa_ticket", "When on, new tickets with this priority mention the department's Discord roles."),
     )
     remind_after_minutes = models.PositiveIntegerField(
-        _("remind after (minutes)"),
+        pgettext_lazy("aa_ticket", "remind after (minutes)"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1)],
-        help_text=_("Mention the department again if nobody claims the ticket in time. Leave empty to turn off."),
+        help_text=pgettext_lazy("aa_ticket", "Mention the department again if nobody claims the ticket in time. Leave empty to turn off."),
     )
     escalate_after_minutes = models.PositiveIntegerField(
-        _("escalate after (minutes)"),
+        pgettext_lazy("aa_ticket", "escalate after (minutes)"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1)],
-        help_text=_("Mention the parent department if nobody claims the ticket in time. Leave empty to turn off."),
+        help_text=pgettext_lazy("aa_ticket", "Mention the parent department if nobody claims the ticket in time. Leave empty to turn off."),
     )
-    is_active = models.BooleanField(_("active"), default=True)
+    is_active = models.BooleanField(pgettext_lazy("aa_ticket", "active"), default=True)
 
     class Meta:
         default_permissions = ()
         ordering = ("order", "name")
-        verbose_name = _("priority")
-        verbose_name_plural = _("priorities")
+        verbose_name = pgettext_lazy("aa_ticket", "priority")
+        verbose_name_plural = pgettext_lazy("aa_ticket", "priorities")
 
     def __str__(self):
         return self.name
@@ -177,20 +177,20 @@ class Priority(models.Model):
 
 class Category(models.Model):
     department = models.ForeignKey(
-        Department, on_delete=models.CASCADE, related_name="categories", verbose_name=_("department")
+        Department, on_delete=models.CASCADE, related_name="categories", verbose_name=pgettext_lazy("aa_ticket", "department")
     )
-    name = models.CharField(_("name"), max_length=100)
+    name = models.CharField(pgettext_lazy("aa_ticket", "name"), max_length=100)
     template = models.TextField(
-        _("template"), blank=True, help_text=_("Pre-filled into the ticket text when a player picks this category.")
+        pgettext_lazy("aa_ticket", "template"), blank=True, help_text=pgettext_lazy("aa_ticket", "Pre-filled into the ticket text when a player picks this category.")
     )
-    order = models.IntegerField(_("order"), default=0)
-    is_active = models.BooleanField(_("active"), default=True)
+    order = models.IntegerField(pgettext_lazy("aa_ticket", "order"), default=0)
+    is_active = models.BooleanField(pgettext_lazy("aa_ticket", "active"), default=True)
 
     class Meta:
         default_permissions = ()
         ordering = ("order", "name")
-        verbose_name = _("category")
-        verbose_name_plural = _("categories")
+        verbose_name = pgettext_lazy("aa_ticket", "category")
+        verbose_name_plural = pgettext_lazy("aa_ticket", "categories")
 
     def __str__(self):
         return self.name
@@ -203,17 +203,17 @@ class CannedReply(models.Model):
         null=True,
         blank=True,
         related_name="canned_replies",
-        verbose_name=_("department"),
-        help_text=_("Leave empty to share with all departments."),
+        verbose_name=pgettext_lazy("aa_ticket", "department"),
+        help_text=pgettext_lazy("aa_ticket", "Leave empty to share with all departments."),
     )
-    title = models.CharField(_("title"), max_length=100)
-    body = models.TextField(_("text"))
+    title = models.CharField(pgettext_lazy("aa_ticket", "title"), max_length=100)
+    body = models.TextField(pgettext_lazy("aa_ticket", "text"))
 
     class Meta:
         default_permissions = ()
         ordering = ("title",)
-        verbose_name = _("canned reply")
-        verbose_name_plural = _("canned replies")
+        verbose_name = pgettext_lazy("aa_ticket", "canned reply")
+        verbose_name_plural = pgettext_lazy("aa_ticket", "canned replies")
 
     def __str__(self):
         return self.title
@@ -221,53 +221,53 @@ class CannedReply(models.Model):
 
 class TicketSettings(SingletonModel):
     autoclose_days = models.PositiveIntegerField(
-        _("auto-close after (days)"),
+        pgettext_lazy("aa_ticket", "auto-close after (days)"),
         default=7,
         validators=[MinValueValidator(1)],
-        help_text=_("Tickets waiting for the requester are closed automatically after this many days without a reply."),
+        help_text=pgettext_lazy("aa_ticket", "Tickets waiting for the requester are closed automatically after this many days without a reply."),
     )
     autoclose_warning_hours = models.PositiveIntegerField(
-        _("warn before auto-close (hours)"),
+        pgettext_lazy("aa_ticket", "warn before auto-close (hours)"),
         default=24,
-        help_text=_("The requester and the assignee are warned this many hours before a ticket closes automatically."),
+        help_text=pgettext_lazy("aa_ticket", "The requester and the assignee are warned this many hours before a ticket closes automatically."),
     )
     reopen_days = models.PositiveIntegerField(
-        _("requester can reopen for (days)"),
+        pgettext_lazy("aa_ticket", "requester can reopen for (days)"),
         default=7,
-        help_text=_("For this many days after closing, the requester can reopen the ticket. Staff can always reopen."),
+        help_text=pgettext_lazy("aa_ticket", "For this many days after closing, the requester can reopen the ticket. Staff can always reopen."),
     )
     max_open_tickets = models.PositiveIntegerField(
-        _("open tickets per person"),
+        pgettext_lazy("aa_ticket", "open tickets per person"),
         default=5,
         validators=[MinValueValidator(1)],
-        help_text=_("A person cannot submit a new ticket while this many of their tickets are still open."),
+        help_text=pgettext_lazy("aa_ticket", "A person cannot submit a new ticket while this many of their tickets are still open."),
     )
     max_image_mb = models.PositiveIntegerField(
-        _("maximum image size (MB)"), default=5, validators=[MinValueValidator(1)]
+        pgettext_lazy("aa_ticket", "maximum image size (MB)"), default=5, validators=[MinValueValidator(1)]
     )
     attachment_retention_days = models.PositiveIntegerField(
-        _("delete images after (days)"),
+        pgettext_lazy("aa_ticket", "delete images after (days)"),
         null=True,
         blank=True,
-        help_text=_("Images of tickets closed longer than this are deleted. Leave empty to keep them forever."),
+        help_text=pgettext_lazy("aa_ticket", "Images of tickets closed longer than this are deleted. Leave empty to keep them forever."),
     )
     discord_dm_enabled = models.BooleanField(
-        _("Discord direct messages"),
+        pgettext_lazy("aa_ticket", "Discord direct messages"),
         default=True,
-        help_text=_("When on and aa-discordbot is installed, people also get notifications as Discord direct messages."),
+        help_text=pgettext_lazy("aa_ticket", "When on and aa-discordbot is installed, people also get notifications as Discord direct messages."),
     )
 
     class Meta:
         default_permissions = ()
-        verbose_name = _("ticket settings")
+        verbose_name = pgettext_lazy("aa_ticket", "ticket settings")
 
     def __str__(self):
-        return str(_("Ticket settings"))
+        return str(pgettext_lazy("aa_ticket", "Ticket settings"))
 
 
 class UserPreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aa_ticket_pref")
-    discord_dm_enabled = models.BooleanField(_("Discord direct messages"), default=True)
+    discord_dm_enabled = models.BooleanField(pgettext_lazy("aa_ticket", "Discord direct messages"), default=True)
 
     class Meta:
         default_permissions = ()
