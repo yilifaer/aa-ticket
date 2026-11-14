@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import files, requester, ticket
+from .views import files, requester, staff, ticket
 
 app_name = "aa_ticket"
 
@@ -12,5 +12,7 @@ urlpatterns = [
     path("<int:pk>/", ticket.detail, name="detail"),
     path("<int:pk>/reply/", ticket.reply, name="reply"),
     path("<int:pk>/action/<str:action>/", ticket.action, name="action"),
+    path("staff/", staff.workbench, name="workbench"),
+    path("stats/", staff.stats, name="stats"),
     path("files/<int:pk>/", files.attachment, name="attachment"),
 ]

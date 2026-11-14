@@ -86,3 +86,26 @@ def aa_ticket_nav(context):
         ),
         "prefs": _url("aa_ticket:prefs") if dm.is_available() else "",
     }
+
+
+@register.filter
+def duration(seconds):
+    """Short human duration such as '2 h 5 min' or '3 d 4 h'."""
+    if seconds is None:
+        return "—"
+    seconds = int(seconds)
+    days, rest = divmod(seconds, 86400)
+    hours, rest = divmod(rest, 3600)
+    minutes = rest // 60
+    if days:
+        return _("%(d)d d %(h)d h") % {"d": days, "h": hours}
+    if hours:
+        return _("%(h)d h %(m)d min") % {"h": hours, "m": minutes}
+    return _("%(m)d min") % {"m": minutes}
+
+
+@register.filter
+def percent(value):
+    if value is None:
+        return "—"
+    return f"{round(value * 100)}%"

@@ -1,0 +1,43 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n aa_ticket %}
+
+{% block ticket_title %}{% translate "Statistics" %}{% endblock %}
+
+{% block ticket_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">{% translate "Statistics" %}</h1>
+    <div class="btn-group" role="group" aria-label="{% translate 'Time range' %}">
+        {% for r in ranges %}<a class="btn btn-outline-primary{% if r == days %} active{% endif %}" href="?days={{ r }}"{% if r == days %} aria-current="true"{% endif %}>{% blocktranslate count n=r %}{{ n }} day{% plural %}{{ n }} days{% endblocktranslate %}</a>{% endfor %}
+    </div>
+</div>
+{% if rows %}
+<div class="table-responsive">
+<table class="table align-middle">
+    <thead><tr>
+        <th scope="col">{% translate "Department" %}</th>
+        <th scope="col" class="text-end">{% translate "New" %}</th>
+        <th scope="col" class="text-end">{% translate "Closed" %}</th>
+        <th scope="col" class="text-end">{% translate "Unclaimed now" %}</th>
+        <th scope="col" class="text-end">{% translate "Avg. time to claim" %}</th>
+        <th scope="col" class="text-end">{% translate "Avg. time to close" %}</th>
+        <th scope="col" class="text-end">{% translate "Closed automatically" %}</th>
+    </tr></thead>
+    <tbody>
+    {% for row in rows %}
+        <tr>
+            <th scope="row">{{ row.department.name }}</th>
+            <td class="text-end">{{ row.created }}</td>
+            <td class="text-end">{{ row.closed }}</td>
+            <td class="text-end">{{ row.open_now }}</td>
+            <td class="text-end">{{ row.avg_claim_seconds|duration }}</td>
+            <td class="text-end">{{ row.avg_resolve_seconds|duration }}</td>
+            <td class="text-end">{{ row.auto_closed_ratio|percent }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+    <p class="text-body-secondary">{% translate "No departments to show." %}</p>
+{% endif %}
+{% endblock %}
