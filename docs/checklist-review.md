@@ -1,3 +1,5 @@
+> **Note:** this self-review was made against commit `7cd0cf7`. Its main findings (AA 5.0 migration dependencies, `migrate aa_ticket zero`, `on_commit` without `robust=True`, committed `dump.rdb`) were fixed afterwards in the commits that follow `7cd0cf7`.
+
 # aa-ticket — AA App Checklist review
 
 > **Self-review by the project, not an independent review.**

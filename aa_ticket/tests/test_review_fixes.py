@@ -138,3 +138,18 @@ class TestMigrationDependencies(TestCase):
         migration = importlib.import_module("aa_ticket.migrations.0001_initial").Migration
         deps = {d for d in migration.dependencies if d[0] in ("authentication", "eveonline")}
         self.assertEqual(deps, {("authentication", "0025_v5squash"), ("eveonline", "0019_v5squash")})
+
+
+class TestBrokerDown(TestCase):
+    def test_action_succeeds_when_notifications_fail(self):
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        requester = make_user("Pilot A")
+        staff = make_user("Diplomat B", groups=[g])
+        t = services.create_ticket(requester, dept, priority("normal"), "Help", "Body")
+        self.client.force_login(staff)
+        with patch("aa_ticket.services.dispatch", side_effect=ConnectionError("broker down")):
+            with self.captureOnCommitCallbacks(execute=True):
+                r = self.client.post(f"/ticket/{t.pk}/action/claim/")
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(Ticket.objects.get(pk=t.pk).assignee, staff)
