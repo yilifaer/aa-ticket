@@ -145,6 +145,17 @@ def action(request, pk, action):
             success=pgettext("aa_ticket", "Ticket transferred."),
         )
     if action == "escalate":
+        target = access.next_escalation_target(ticket)
+        if target is not None and target.webhook_url:
+            success = pgettext("aa_ticket", "Escalation requested. %(department)s has been notified in Discord.")
+        elif target is not None and access.department_staff(target).exists():
+            success = pgettext("aa_ticket", "Escalation requested. Staff of %(department)s have been notified in Alliance Auth.")
+        else:
+            success = pgettext(
+                "aa_ticket",
+                "Escalation requested, but %(department)s has no Discord channel or staff to notify. "
+                "Please contact them directly.",
+            )
         return _run(
             request,
             ticket,
@@ -152,7 +163,7 @@ def action(request, pk, action):
             user,
             ticket,
             reason=post.get("reason", ""),
-            success=pgettext("aa_ticket", "Escalation requested. The department above has been notified."),
+            success=success % {"department": target.name if target else ""},
         )
     if action == "priority":
         prio = Priority.objects.filter(pk=_int(post.get("priority_id"))).first()
@@ -161,7 +172,13 @@ def action(request, pk, action):
             return redirect("aa_ticket:detail", pk=ticket.pk)
         return _run(request, ticket, services.change_priority, user, ticket, prio)
     if action == "category":
-        category = Category.objects.filter(pk=_int(post.get("category_id"))).first()
+        raw = (post.get("category_id") or "").strip()
+        category = None
+        if raw:
+            category = Category.objects.filter(pk=_int(raw)).first()
+            if category is None:
+                messages.error(request, pgettext("aa_ticket", "Please pick a category."))
+                return redirect("aa_ticket:detail", pk=ticket.pk)
         return _run(request, ticket, services.change_category, user, ticket, category)
     if action == "close":
         reason = ClosedReason.REQUESTER if user.pk == ticket.requester_id else ClosedReason.STAFF

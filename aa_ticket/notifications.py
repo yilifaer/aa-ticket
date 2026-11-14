@@ -63,8 +63,12 @@ def _personal_recipient_ids(ticket, event, data):
             ids.append(ticket.requester_id)
         elif ticket.assignee_id:
             ids.append(ticket.assignee_id)
-    if event == Event.ESCALATION_REQUESTED and ticket.assignee_id:
-        ids.append(ticket.assignee_id)
+    if event == Event.ESCALATION_REQUESTED:
+        if ticket.assignee_id:
+            ids.append(ticket.assignee_id)
+        target = Department.objects.filter(pk=data.get("department_id")).first()
+        if target is not None and not target.webhook_url:
+            ids.extend(access.department_staff(target).values_list("pk", flat=True))
     if event == Event.ASSIGNED and data.get("assignee_id"):
         ids.append(data["assignee_id"])
     if event == Event.AUTOCLOSE_WARNING:

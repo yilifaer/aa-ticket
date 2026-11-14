@@ -249,6 +249,11 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
     ticket.reminded_at = None
     ticket.escalated_at = None
     ticket.escalation_cycle += 1
+    ticket.category = None
+    ticket.last_reply_at = timezone.now()
+    ticket.last_reply_by_staff = False
+    ticket.autoclose_warned_at = None
+    ticket.staff_reminded_at = None
     ticket.save()
     ticket.collaborating_departments.remove(department)
     if keep_as_collaborator:
@@ -306,7 +311,7 @@ def change_priority(actor, ticket, priority):
 def change_category(actor, ticket, category):
     ticket = _lock(ticket)
     _require(actor, ticket, "category")
-    if category is not None and category.department_id != ticket.department_id:
+    if category is not None and (category.department_id != ticket.department_id or not category.is_active):
         raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the responsible department."))
     if (category.pk if category else None) == ticket.category_id:
         return
@@ -357,5 +362,6 @@ def reopen(actor, ticket):
     ticket.autoclose_warned_at = None
     ticket.staff_reminded_at = None
     ticket.last_reply_at = now
+    ticket.last_reply_by_staff = False
     ticket.save()
     _emit(ticket, Event.REOPENED, actor, {})

@@ -93,12 +93,14 @@ def _department_rows():
 
 
 @login_required
+@basic
 @manage_perm
 def departments(request):
     return render(request, "aa_ticket/manage/departments.html", _ctx(request, "departments", rows=_department_rows()))
 
 
 @login_required
+@basic
 @manage_perm
 def department_edit(request, pk):
     return _edit(
@@ -108,6 +110,7 @@ def department_edit(request, pk):
 
 
 @login_required
+@basic
 @manage_perm
 @require_POST
 def department_delete(request, pk):
@@ -122,6 +125,7 @@ def department_delete(request, pk):
 
 
 @login_required
+@basic
 @manage_perm
 @require_POST
 def department_test(request, pk):
@@ -135,18 +139,21 @@ def department_test(request, pk):
 
 
 @login_required
+@basic
 @manage_perm
 def priorities(request):
     return render(request, "aa_ticket/manage/priorities.html", _ctx(request, "priorities", items=Priority.objects.all()))
 
 
 @login_required
+@basic
 @manage_perm
 def priority_edit(request, pk):
     return _edit(request, pk, Priority, PriorityForm, "priorities", "aa_ticket:manage_priorities", pgettext("aa_ticket", "New priority"), pgettext("aa_ticket", "Edit priority"))
 
 
 @login_required
+@basic
 @manage_perm
 @require_POST
 def priority_delete(request, pk):
@@ -160,6 +167,7 @@ def priority_delete(request, pk):
 
 
 @login_required
+@basic
 @manage_perm
 def categories(request):
     items = Category.objects.select_related("department").order_by("department__name", "order", "name")
@@ -167,12 +175,14 @@ def categories(request):
 
 
 @login_required
+@basic
 @manage_perm
 def category_edit(request, pk):
     return _edit(request, pk, Category, CategoryForm, "categories", "aa_ticket:manage_categories", pgettext("aa_ticket", "New category"), pgettext("aa_ticket", "Edit category"))
 
 
 @login_required
+@basic
 @manage_perm
 @require_POST
 def category_delete(request, pk):
@@ -237,6 +247,7 @@ def canned_delete(request, pk):
 
 
 @login_required
+@basic
 @manage_perm
 def settings_view(request):
     instance = TicketSettings.get_solo()

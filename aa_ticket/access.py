@@ -119,7 +119,9 @@ def can_act(user, ticket, action):
     if action == "reopen":
         if not closed:
             return False
-        return is_controller(user, ticket) or (is_requester and _requester_can_reopen(ticket))
+        return is_controller(user, ticket) or (
+            is_requester and ticket.department.is_active and _requester_can_reopen(ticket)
+        )
     if closed:
         return False
     if action == "reply":
@@ -149,6 +151,11 @@ def visible_tickets(user):
         staff_q = Q(department_id__in=expanded) | Q(collaborating_departments__in=expanded)
         query |= staff_q & ~Q(requester=user)
     return Ticket.objects.filter(query).distinct()
+
+
+def department_staff(department):
+    """Active users who are staff of this department."""
+    return User.objects.filter(is_active=True, groups__aa_ticket_departments=department).distinct()
 
 
 def assignable_users(ticket):

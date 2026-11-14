@@ -4,7 +4,7 @@
 {% block ticket_title %}{% translate "Submit ticket" context 'aa_ticket' %}{% endblock %}
 
 {% block ticket_content %}
-    <nav aria-label="breadcrumb"><ol class="breadcrumb">
+    <nav aria-label="{% translate 'Breadcrumb' context 'aa_ticket' %}"><ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'aa_ticket:submit' %}">{% translate "Submit ticket" context 'aa_ticket' %}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ department.name }}</li>
     </ol></nav>

@@ -44,9 +44,9 @@ def _tab_queryset(user, tab):
         return visible.filter(department_id__in=own).exclude(status=Status.CLOSED)
     if tab == "children":
         if access.has_view_all(user):
-            return access.visible_tickets(user).exclude(status=Status.CLOSED)
+            return visible.exclude(status=Status.CLOSED)
         children = access._with_descendants(own) - own
-        return access.visible_tickets(user).filter(department_id__in=children).exclude(status=Status.CLOSED)
+        return visible.filter(department_id__in=children).exclude(status=Status.CLOSED)
     if tab == "collab":
         return visible.filter(collaborating_departments__in=own).exclude(status=Status.CLOSED).distinct()
     return visible.filter(status=Status.CLOSED)
@@ -55,7 +55,7 @@ def _tab_queryset(user, tab):
 def _apply_filters(qs, params):
     for field, key in (("department_id", "department"), ("priority_id", "priority"), ("category_id", "category")):
         value = params.get(key)
-        if value and value.isdigit():
+        if value and value.isascii() and value.isdigit():
             qs = qs.filter(**{field: int(value)})
     status = params.get("status")
     if status in Status.values:
@@ -83,7 +83,10 @@ def workbench(request):
         qs = qs.order_by("-closed_at")
     else:
         qs = qs.order_by("-priority__order", "created_at")
-    page = Paginator(qs, PAGE_SIZE).get_page(request.GET.get("page"))
+    page_number = request.GET.get("page") or "1"
+    if not (page_number.isascii() and page_number.isdigit()) or int(page_number) < 1:
+        page_number = "1"
+    page = Paginator(qs, PAGE_SIZE).get_page(page_number)
     params = request.GET.copy()
     params.pop("page", None)
     return render(
