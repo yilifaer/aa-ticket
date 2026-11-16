@@ -127,7 +127,7 @@ def can_act(user, ticket, action):
     if action == "reply":
         # Public replies: the requester, or the current assignee while they still handle the ticket.
         return is_requester or (
-            ticket.status == Status.IN_PROGRESS and ticket.assignee_id == user.pk and is_staff_for(user, ticket)
+            ticket.status == Status.IN_PROGRESS and ticket.assignee_id == user.pk and is_controller(user, ticket)
         )
     if action == "note":
         return is_staff_for(user, ticket)

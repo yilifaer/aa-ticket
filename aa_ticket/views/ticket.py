@@ -104,7 +104,16 @@ def reply(request, pk):
     if hint:
         messages.error(request, hint)
         return redirect("aa_ticket:detail", pk=ticket.pk)
-    return _run(request, ticket, services.add_reply, request.user, ticket, body, images=images)
+    try:
+        return _run(request, ticket, services.add_reply, request.user, ticket, body, images=images)
+    except PermissionDenied:
+        # The ticket changed after the page was loaded (for example it was reassigned).
+        fresh_ticket = get_visible_ticket(request.user, pk)
+        hint = access.reply_hint(request.user, fresh_ticket)
+        if not hint:
+            raise
+        messages.error(request, hint)
+        return redirect("aa_ticket:detail", pk=pk)
 
 
 def _int(value):

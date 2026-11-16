@@ -123,3 +123,34 @@ class TestPage(Fixture):
         r = self.client.post(f"/ticket/{self.t.pk}/reply/", {"kind": "reply", "body": "sneaky"}, follow=True)
         self.assertContains(r, "Claim the ticket to reply to the requester.")
         self.assertFalse(self.t.messages.filter(body="sneaky").exists())
+
+
+class TestReviewFollowups(Fixture):
+    def test_stale_page_reply_after_reassign_shows_message(self):
+        from unittest.mock import patch
+
+        services.claim(fresh(self.officer), self.t)
+        services.assign(fresh(self.officer), fresh(self.t), self.colleague)
+        self.client.force_login(self.officer)
+        # the pre-check passes on stale state; the locked check inside add_reply must still explain
+        from aa_ticket import access as real_access
+
+        real_hint = real_access.reply_hint
+        calls = []
+
+        def stale_first(user, ticket):
+            calls.append(1)
+            return "" if len(calls) == 1 else real_hint(user, ticket)
+
+        with patch("aa_ticket.views.ticket.access.reply_hint", side_effect=stale_first):
+            r = self.client.post(f"/ticket/{self.t.pk}/reply/", {"kind": "reply", "body": "late"}, follow=True)
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "handled by Diplomat C")
+        self.assertFalse(self.t.messages.filter(body="late").exists())
+
+    def test_assignee_who_is_only_collaborator_cannot_reply(self):
+        self.officer.groups.add(self.g_fc)
+        services.claim(fresh(self.officer), self.t)
+        services.invite(fresh(self.officer), fresh(self.t), self.fc)
+        self.officer.groups.remove(self.g_dip)
+        self.assertFalse(self.can_reply(self.officer))
