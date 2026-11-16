@@ -30,7 +30,7 @@
                         <div class="small text-body-secondary">
                             {{ ticket.department.name }} ·
                             {% if section.key != "own" %}{{ ticket.requester|display_name }} · {% endif %}
-                            <span title="{{ ticket.last_reply_at|date:'Y-m-d H:i' }} UTC">{{ ticket.last_reply_at|naturaltime }}</span>
+                            <span title="{{ ticket.last_reply_at|eve_time }}">{{ ticket.last_reply_at|naturaltime }}</span>
                         </div>
                     </div>
                     {% include "aa_ticket/partials/priority_badge.html" %}

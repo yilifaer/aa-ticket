@@ -91,7 +91,7 @@
             {% if can.priority %}<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-priority">{% translate "Change priority" context 'aa_ticket' %}</button>{% endif %}
             {% if can.category and categories %}<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-category">{% translate "Change category" context 'aa_ticket' %}</button>{% endif %}
             {% if can.escalate %}<button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modal-escalate">{% translate "Request escalation" context 'aa_ticket' %}</button>{% endif %}
-            {% if can.close %}<button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-close">{% translate "Close ticket" context 'aa_ticket' %}</button>{% endif %}
+            {% if can.close %}<button class="btn btn-outline-danger aa-ticket-close-btn" data-bs-toggle="modal" data-bs-target="#modal-close">{% translate "Close ticket" context 'aa_ticket' %}</button>{% endif %}
             {% if can.reopen %}
                 <form method="post" action="{% url 'aa_ticket:action' ticket.pk 'reopen' %}" class="d-grid">{% csrf_token %}
                     <button class="btn btn-outline-primary">{% translate "Reopen" context 'aa_ticket' %}</button>
@@ -99,8 +99,8 @@
             {% endif %}
         </div>
         <dl class="small mt-3 mb-0">
-            <dt>{% translate "Submitted" context 'aa_ticket' %}</dt><dd>{{ ticket.created_at|date:"Y-m-d H:i" }} UTC</dd>
-            {% if ticket.closed_at %}<dt>{% translate "Closed" context 'aa_ticket' %}</dt><dd>{{ ticket.closed_at|date:"Y-m-d H:i" }} UTC · {{ ticket.get_closed_reason_display }}</dd>{% endif %}
+            <dt>{% translate "Submitted" context 'aa_ticket' %}</dt><dd>{{ ticket.created_at|eve_time }}</dd>
+            {% if ticket.closed_at %}<dt>{% translate "Closed" context 'aa_ticket' %}</dt><dd>{{ ticket.closed_at|eve_time }} · {{ ticket.get_closed_reason_display }}</dd>{% endif %}
         </dl>
         </div>
     </aside>

@@ -258,7 +258,7 @@ def claim(user, ticket):
 def assign(actor, ticket, assignee):
     ticket = _lock(ticket)
     _require(actor, ticket, "assign")
-    if assignee is None or not access.assignable_users(ticket).filter(pk=assignee.pk).exists():
+    if assignee is None or assignee.pk not in {user.pk for user in access.assignable_users(ticket)}:
         raise TicketActionError(pgettext("aa_ticket", "Pick someone from the responsible department."))
     previous_assignee_id = ticket.assignee_id
     ticket.assignee = assignee

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 09:54+0000\n"
+"POT-Creation-Date: 2026-11-16 23:27+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -37,20 +37,22 @@ msgctxt "aa_ticket"
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "仅支持 PNG、JPG、GIF 和 WEBP 图片。"
 
-#: attachments.py:44
+#: attachments.py:46
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"This image is too large (%(width)d × %(height)d pixels). Please make it "
-"smaller and try again."
-msgstr "图片尺寸过大（%(width)d × %(height)d 像素），请缩小后再上传。"
+"This image is too large (%(width)d × %(height)d pixels). Images up to "
+"%(max)d megapixels are accepted. Please use a smaller image."
+msgstr ""
+"图片太大（%(width)d × %(height)d 像素）。最大支持 %(max)d 百万像素，请换一张"
+"更小的图片。"
 
-#: attachments.py:47
+#: attachments.py:51
 msgctxt "aa_ticket"
 msgid "This image is too large. Please make it smaller and try again."
 msgstr "图片尺寸过大，请缩小后再上传。"
 
-#: attachments.py:63
+#: attachments.py:80
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -58,20 +60,20 @@ msgid ""
 "allowed."
 msgstr "这个动图的帧数太多（%(count)d 帧），最多允许 %(max)d 帧。"
 
-#: attachments.py:91 attachments.py:147
+#: attachments.py:109 attachments.py:185
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "每条消息最多附加 %(count)d 张图片。"
 
-#: attachments.py:96 attachments.py:153
+#: attachments.py:114 attachments.py:191
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
 msgstr "每张图片必须小于 %(size)d MB。"
 
 #: auth_hooks.py:42 templates/aa_ticket/base.html:4
-#: templates/aa_ticket/base.html:6 templates/aa_ticket/dashboard_card.html:5
+#: templates/aa_ticket/base.html:6 templates/aa_ticket/dashboard_card.html:6
 msgctxt "aa_ticket"
 msgid "Tickets"
 msgstr "工单"
@@ -310,8 +312,9 @@ msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply"
 msgstr "提交人仍在等待回复"
 
-#: discord/webhook.py:69 templates/aa_ticket/detail.html:125
-#: templates/aa_ticket/detail.html:134 templates/aa_ticket/detail.html:145
+#: discord/webhook.py:69 notifications.py:110
+#: templates/aa_ticket/detail.html:125 templates/aa_ticket/detail.html:134
+#: templates/aa_ticket/detail.html:145
 #: templates/aa_ticket/manage/categories.html:11
 #: templates/aa_ticket/partials/ticket_table.html:7
 #: templates/aa_ticket/stats.html:17 templates/aa_ticket/workbench.html:17
@@ -780,56 +783,66 @@ msgctxt "aa_ticket"
 msgid "Ticket settings"
 msgstr "工单设置"
 
-#: notifications.py:109 notifications.py:113
+#: notifications.py:112 templates/aa_ticket/detail.html:15
+msgctxt "aa_ticket"
+msgid "Assignee"
+msgstr "处理人"
+
+#: notifications.py:113
+msgctxt "aa_ticket"
+msgid "Nobody yet"
+msgstr "还没有"
+
+#: notifications.py:121 notifications.py:125
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(name)s is now handling your ticket."
 msgstr "%(name)s 正在处理你的工单。"
 
-#: notifications.py:112
+#: notifications.py:124
 msgctxt "aa_ticket"
 msgid "You were assigned this ticket."
 msgstr "你被指派处理这张工单。"
 
-#: notifications.py:116
+#: notifications.py:128
 msgctxt "aa_ticket"
 msgid "There is a new reply on your ticket."
 msgstr "你的工单有新回复。"
 
-#: notifications.py:117
+#: notifications.py:129
 msgctxt "aa_ticket"
 msgid "The requester replied."
 msgstr "提交人回复了。"
 
-#: notifications.py:119
+#: notifications.py:131
 msgctxt "aa_ticket"
 msgid "The ticket was closed."
 msgstr "工单已关闭。"
 
-#: notifications.py:121
+#: notifications.py:133
 msgctxt "aa_ticket"
 msgid "The ticket was reopened."
 msgstr "工单已重新打开。"
 
-#: notifications.py:123
+#: notifications.py:135
 #, python-format
 msgctxt "aa_ticket"
 msgid "The ticket was transferred to %(department)s."
 msgstr "工单已移交给 %(department)s。"
 
-#: notifications.py:125
+#: notifications.py:137
 #, python-format
 msgctxt "aa_ticket"
 msgid "The priority was changed to %(priority)s."
 msgstr "紧急程度已改为 %(priority)s。"
 
-#: notifications.py:127
+#: notifications.py:139
 #, python-format
 msgctxt "aa_ticket"
 msgid "The requester asked %(department)s to step in."
 msgstr "提交人请求 %(department)s 介入。"
 
-#: notifications.py:130
+#: notifications.py:142
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -837,7 +850,7 @@ msgid ""
 "replies."
 msgstr "如果没人回复，这张工单将在 %(hours)d 小时后自动关闭。"
 
-#: notifications.py:134
+#: notifications.py:146
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "提交人仍在等待回复。"
@@ -852,7 +865,7 @@ msgctxt "aa_ticket"
 msgid "No open tickets."
 msgstr "没有未关闭的工单。"
 
-#: overview.py:97 templates/aa_ticket/dashboard_card.html:21 views/staff.py:21
+#: overview.py:97 templates/aa_ticket/dashboard_card.html:22 views/staff.py:21
 msgctxt "aa_ticket"
 msgid "Assigned to me"
 msgstr "分配给我"
@@ -862,7 +875,7 @@ msgctxt "aa_ticket"
 msgid "No tickets assigned to you."
 msgstr "没有分配给你的工单。"
 
-#: overview.py:108 templates/aa_ticket/dashboard_card.html:22
+#: overview.py:108 templates/aa_ticket/dashboard_card.html:23
 msgctxt "aa_ticket"
 msgid "Unclaimed in my departments"
 msgstr "我的部门待接手"
@@ -1024,33 +1037,28 @@ msgctxt "aa_ticket"
 msgid "Preferences"
 msgstr "个人设置"
 
-#: templates/aa_ticket/dashboard_card.html:10
+#: templates/aa_ticket/dashboard_card.html:11
 msgctxt "aa_ticket"
 msgid "Urgent unclaimed"
 msgstr "紧急待接手"
 
-#: templates/aa_ticket/dashboard_card.html:15
+#: templates/aa_ticket/dashboard_card.html:16
 msgctxt "aa_ticket"
 msgid "My open tickets"
 msgstr "我的未关闭工单"
 
-#: templates/aa_ticket/dashboard_card.html:18
+#: templates/aa_ticket/dashboard_card.html:19
 #: templates/aa_ticket/overview.html:26 templates/aa_ticket/overview.html:28
 #: templates/aa_ticket/partials/ticket_table.html:18
 msgctxt "aa_ticket"
 msgid "Waiting for you"
 msgstr "等你回复"
 
-#: templates/aa_ticket/dashboard_card.html:31
+#: templates/aa_ticket/dashboard_card.html:32
 #: templates/aa_ticket/overview.html:17
 msgctxt "aa_ticket"
 msgid "View all"
 msgstr "查看全部"
-
-#: templates/aa_ticket/detail.html:15
-msgctxt "aa_ticket"
-msgid "Assignee"
-msgstr "处理人"
 
 #: templates/aa_ticket/detail.html:15
 msgctxt "aa_ticket"
@@ -1660,36 +1668,36 @@ msgctxt "aa_ticket"
 msgid "Nothing here right now."
 msgstr "这里暂时没有内容。"
 
-#: templatetags/aa_ticket.py:31
+#: templatetags/aa_ticket.py:42
 msgctxt "aa_ticket"
 msgid "System"
 msgstr "系统"
 
-#: templatetags/aa_ticket.py:44
+#: templatetags/aa_ticket.py:55
 #, python-format
 msgctxt "aa_ticket"
 msgid "from %(from)s to %(to)s"
 msgstr "从 %(from)s 到 %(to)s"
 
-#: templatetags/aa_ticket.py:48
+#: templatetags/aa_ticket.py:59
 #, python-format
 msgctxt "aa_ticket"
 msgid "to %(value)s"
 msgstr "改为 %(value)s"
 
-#: templatetags/aa_ticket.py:111
+#: templatetags/aa_ticket.py:122
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d 天 %(h)d 小时"
 
-#: templatetags/aa_ticket.py:113
+#: templatetags/aa_ticket.py:124
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d 小时 %(m)d 分钟"
 
-#: templatetags/aa_ticket.py:114
+#: templatetags/aa_ticket.py:125
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(m)d min"

@@ -25,7 +25,7 @@
 
 完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.3`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.4`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -43,6 +43,8 @@
 
 **超级用户**在 Django 里默认拥有所有权限，所以等同于有 `view_all` 和 `manage`。但超级用户不算任何部门的人员，除非他本人在部门的权限组里，因此不会被 @。
 
+**改了权限或权限组之后，首页卡片和菜单上的数字会晚一点更新**：首页卡片最多 30 秒，菜单上的数字最多 60 秒（这两处有缓存）。工单页面本身每次打开都会重新检查权限，不受影响。
+
 ## Discord 会收到什么
 
 - 新工单、移交进来、被邀请协作：发到对应部门的频道，是否 @ 身份组看紧急程度的设置。
@@ -57,7 +59,7 @@
 
 除了上面说的 Discord 消息（包含工单标题和提交人主角色名），不会把数据发到你的服务器以外。
 
-图片只能通过带权限检查的页面查看，没有公开链接。可以在设置里开启「删除图片（天）」，自动清理旧图片。
+图片只能通过带权限检查的页面查看，没有公开链接。上传时会去掉照片里的位置、拍摄设备等信息；长边超过 4096 像素的图片会按比例缩小到 4096 像素再保存，超过 1 亿像素的图片不收。可以在设置里开启「删除图片（天）」，自动清理旧图片。
 
 ## 卸载
 

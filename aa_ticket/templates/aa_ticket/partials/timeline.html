@@ -6,7 +6,7 @@
                 <li class="aa-ticket-event small text-body-secondary py-1">
                     <i class="fas fa-circle-info" aria-hidden="true"></i>
                     <strong>{{ message.author|display_name }}</strong> {% event_text message is_staff %}
-                    · <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                    · <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|eve_time }}</time>
                 </li>
             {% endif %}
         {% else %}
@@ -16,7 +16,7 @@
                     <strong>{{ message.author|display_name }}</strong>
                     {% if message.author_department %}<span class="badge aa-badge-muted">{{ message.author_department.name }}</span>{% endif %}
                     {% if message.kind == "internal" %}<span class="badge aa-prio-warning"><i class="fas fa-lock" aria-hidden="true"></i> {% translate "Internal note — only staff can see this" context 'aa_ticket' %}</span>{% endif %}
-                    <time class="ms-auto small text-body-secondary" datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                    <time class="ms-auto small text-body-secondary" datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|eve_time }}</time>
                 </div>
                 <div class="card-body">
                     {% if message.body %}<div class="aa-ticket-body">{{ message.body|rich_text }}</div>{% endif %}

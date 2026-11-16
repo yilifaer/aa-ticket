@@ -198,12 +198,15 @@ def assignable_users(ticket):
     department_ids = Department.objects.filter(
         pk__in=controller_department_ids(ticket), is_active=True
     ).values_list("pk", flat=True)
-    return (
+    candidates = (
         User.objects.filter(is_active=True, groups__aa_ticket_departments__in=department_ids)
         .exclude(pk=ticket.requester_id)
         .distinct()
+        .select_related("profile__main_character")
         .order_by("username")
     )
+    # Same standard as can_handle: without basic_access the person cannot open the ticket.
+    return [user for user in candidates if user.has_perm("aa_ticket.basic_access")]
 
 
 def submittable_departments(user):

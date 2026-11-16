@@ -1,5 +1,6 @@
-{% load i18n humanize %}
-<div class="col-12 col-xl-6 mb-3">
+{% load i18n humanize static aa_ticket %}
+<link rel="stylesheet" href="{% static 'aa_ticket/css/ticket.css' %}">
+<div class="col-12 col-xl-6 mb-3 aa-ticket-dash">
     <div class="card h-100">
         <div class="card-body">
             {% translate "Tickets" context 'aa_ticket' as widget_title %}
@@ -25,7 +26,7 @@
             <ul class="list-unstyled mb-2">
                 {% for ticket in summary.recent %}
                     <li class="text-truncate"><a href="{% url 'aa_ticket:detail' ticket.pk %}">{{ ticket.display_number }} {{ ticket.title }}</a>
-                        <span class="small text-body-secondary">· {{ ticket.department.name }} · {{ ticket.last_reply_at|naturaltime }}</span></li>
+                        <span class="small text-body-secondary">· {{ ticket.department.name }} · <span title="{{ ticket.last_reply_at|eve_time }}">{{ ticket.last_reply_at|naturaltime }}</span></span></li>
                 {% endfor %}
             </ul>
             <a class="small" href="{% url 'aa_ticket:index' %}">{% translate "View all" context 'aa_ticket' %}</a>

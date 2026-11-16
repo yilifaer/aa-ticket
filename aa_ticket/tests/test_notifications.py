@@ -22,6 +22,10 @@ def fresh(obj):
 class FakeEmbed:
     def __init__(self, title=None, description=None, url=None, color=None):
         self.title, self.description, self.url, self.color = title, description, url, color
+        self.fields = []
+
+    def add_field(self, name, value, inline=False):
+        self.fields.append((name, value))
 
 
 class NotifyFixture(TestCase):

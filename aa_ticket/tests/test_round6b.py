@@ -58,8 +58,12 @@ class TestRealDiscordBot(TestCase):
         from aa_ticket.discord import dm
 
         with patch("aadiscordbot.tasks.send_message", autospec=True) as send_message:
-            dm.send(42, "#1 Help", "The ticket was closed.", "https://auth.example.com/ticket/1/")
+            dm.send(
+                42, "#1 Help", "The ticket was closed.", "https://auth.example.com/ticket/1/",
+                [("Department", "Diplomacy"), ("Assignee", "Pilot")],
+            )
         kwargs = send_message.call_args.kwargs
+        self.assertEqual([(f.name, f.value) for f in kwargs["embed"].fields], [("Department", "Diplomacy"), ("Assignee", "Pilot")])
         self.assertEqual(kwargs["user_pk"], 42)
         self.assertIsInstance(kwargs["embed"], discord.Embed)
         self.assertEqual(kwargs["embed"].url, "https://auth.example.com/ticket/1/")

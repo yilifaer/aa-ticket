@@ -178,3 +178,115 @@
     outline: 2px solid var(--bs-body-color);
     outline-offset: 2px;
 }
+
+/* Notices (alerts). The dashboard card sits outside .aa-ticket, so it has its own class. */
+.aa-ticket .alert-warning,
+.aa-ticket-dash .alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffe69c;
+    color: #664d03;
+}
+
+.aa-ticket .alert-danger,
+.aa-ticket-dash .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f1aeb5;
+    color: #842029;
+}
+
+.aa-ticket .alert-secondary,
+.aa-ticket-dash .alert-secondary {
+    background-color: #e2e3e5;
+    border-color: #c4c8cb;
+    color: #41464b;
+}
+
+.aa-ticket .alert-info,
+.aa-ticket-dash .alert-info {
+    background-color: #cff4fc;
+    border-color: #9eeaf9;
+    color: #055160;
+}
+
+/* Links and headings inside a notice take the notice's own text colour. */
+.aa-ticket .alert a,
+.aa-ticket .alert a:hover,
+.aa-ticket .alert a:focus-visible,
+.aa-ticket .alert .alert-heading,
+.aa-ticket-dash .alert a,
+.aa-ticket-dash .alert a:hover,
+.aa-ticket-dash .alert a:focus-visible {
+    color: inherit;
+}
+
+.aa-ticket .alert a:focus-visible,
+.aa-ticket-dash .alert a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* Filled red and grey buttons (Delete, Close, Cancel). */
+.aa-ticket .btn-danger,
+.aa-ticket .btn-danger:hover,
+.aa-ticket .btn-danger:focus-visible,
+.aa-ticket .btn-danger:active,
+.aa-ticket-dash .btn-danger,
+.aa-ticket-dash .btn-danger:hover,
+.aa-ticket-dash .btn-danger:focus-visible,
+.aa-ticket-dash .btn-danger:active {
+    background-color: #b02a37;
+    border-color: #b02a37;
+    color: #fff;
+}
+
+.aa-ticket .btn-danger:hover,
+.aa-ticket .btn-danger:focus-visible,
+.aa-ticket .btn-danger:active,
+.aa-ticket-dash .btn-danger:hover,
+.aa-ticket-dash .btn-danger:focus-visible,
+.aa-ticket-dash .btn-danger:active {
+    background-color: #842029;
+    border-color: #842029;
+}
+
+.aa-ticket .btn-secondary,
+.aa-ticket .btn-secondary:hover,
+.aa-ticket .btn-secondary:focus-visible,
+.aa-ticket .btn-secondary:active,
+.aa-ticket-dash .btn-secondary,
+.aa-ticket-dash .btn-secondary:hover,
+.aa-ticket-dash .btn-secondary:focus-visible,
+.aa-ticket-dash .btn-secondary:active {
+    background-color: #5c636a;
+    border-color: #5c636a;
+    color: #fff;
+}
+
+.aa-ticket .btn-secondary:hover,
+.aa-ticket .btn-secondary:focus-visible,
+.aa-ticket .btn-secondary:active,
+.aa-ticket-dash .btn-secondary:hover,
+.aa-ticket-dash .btn-secondary:focus-visible,
+.aa-ticket-dash .btn-secondary:active {
+    background-color: #41464b;
+    border-color: #41464b;
+}
+
+/* "Close ticket" in the sidebar: red text, dark red on light themes, light red on dark themes. */
+.aa-ticket .aa-ticket-close-btn,
+.aa-ticket .aa-ticket-close-btn:hover,
+.aa-ticket .aa-ticket-close-btn:focus-visible,
+.aa-ticket .aa-ticket-close-btn:active {
+    color: #b02a37;
+}
+
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:hover,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:focus-visible,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:active,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:hover,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:focus-visible,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:active {
+    color: #ea868f;
+}

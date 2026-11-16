@@ -1,3 +1,5 @@
+import re
+
 import requests
 from celery import shared_task
 
@@ -73,7 +75,7 @@ def send_dm(user_id, ticket_id, event, data=None):
     from .discord import dm
     from .links import ticket_url
     from .models import UserPreference
-    from .notifications import personal_text, personal_title
+    from .notifications import dm_fields, personal_text, personal_title
     from .translation import dm_language_active
 
     if not dm.is_available():
@@ -86,8 +88,9 @@ def send_dm(user_id, ticket_id, event, data=None):
         return
     with dm_language_active(user):
         text = personal_text(ticket, event, data or {}, recipient_id=user.pk)
+        fields = dm_fields(ticket)
     try:
-        dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket))
+        dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket), fields)
     except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
         logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
 
@@ -290,32 +293,43 @@ def cleanup_attachments():
         logger.info("Deleted %d old ticket images.", count)
 
 
-def _delete_unreferenced_files():
-    """Remove files under MEDIA_ROOT/aa_ticket/ that no attachment refers to.
+ORPHAN_NAME = re.compile(r"^[0-9a-f]{32}\.(png|jpg|gif|webp)$")
 
-    Such files can be left behind when an action fails after an image was written. Files younger
-    than a day are kept, so an upload that is being saved right now is never touched.
+
+def _delete_unreferenced_files():
+    """Remove image files under <media>/aa_ticket/ that no attachment refers to.
+
+    Such files can be left behind when an action fails after an image was written. To stay on the
+    safe side only plain files with the names this app gives (32 hex characters and an image
+    extension) are removed, files younger than a day are kept, symbolic links are never followed or
+    removed, and nothing happens unless files are stored on the local disk.
     """
     import os
     import time
 
-    from django.conf import settings
+    from django.core.files.storage import FileSystemStorage, default_storage
 
     from .models import Attachment
 
-    root = getattr(settings, "MEDIA_ROOT", "")
+    if not isinstance(default_storage, FileSystemStorage):
+        return
+    root = default_storage.location
     folder = os.path.join(root, "aa_ticket") if root else ""
-    if not folder or not os.path.isdir(folder):
+    if not folder or os.path.islink(folder) or not os.path.isdir(folder):
         return
     referenced = set(Attachment.objects.values_list("file", flat=True))
     cutoff = time.time() - ORPHAN_FILE_MIN_AGE_SECONDS
     removed = 0
-    for dirpath, _dirs, files in os.walk(folder):
+    for dirpath, _dirs, files in os.walk(folder):  # os.walk does not follow linked folders
         for name in files:
+            if not ORPHAN_NAME.match(name):
+                continue
             path = os.path.join(dirpath, name)
             relative = os.path.relpath(path, root).replace(os.sep, "/")
             try:
-                if relative in referenced or os.path.getmtime(path) > cutoff:
+                if relative in referenced or os.path.islink(path) or not os.path.isfile(path):
+                    continue
+                if os.path.getmtime(path) > cutoff:
                     continue
                 os.remove(path)
                 removed += 1

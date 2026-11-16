@@ -103,6 +103,18 @@ def _personal_recipient_ids(ticket, event, data):
     return seen
 
 
+def dm_fields(ticket):
+    """Department and assignee for the DM. Never the message body."""
+    assignee = ticket.assignee
+    return [
+        (pgettext("aa_ticket", "Department"), ticket.department.name),
+        (
+            pgettext("aa_ticket", "Assignee"),
+            display_name(assignee) if assignee else pgettext("aa_ticket", "Nobody yet"),
+        ),
+    ]
+
+
 def personal_text(ticket, event, data, recipient_id=None):
     """One-line, translated description of an event for one recipient."""
     if event == Event.CLAIMED:

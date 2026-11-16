@@ -6,6 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.4]
+
+Changes from the 0.4.3 test round. No database changes.
+
+### Changed
+
+- Large images are no longer refused: an image whose longer edge is above 4096 pixels is scaled
+  down to 4096 pixels when it is saved (metadata is still removed). Only images above
+  100 megapixels are refused, with a message that names the limit.
+- Discord direct messages show the department and the assignee as extra fields (never the
+  message text).
+- All times are labelled "EVE" (EVE time is UTC): message times, the sidebar, the hover text in
+  lists and on the dashboard card, and the last webhook error on the department page.
+- The daily clean-up of unreferenced image files is more careful: it only runs when files are
+  stored on the local disk, skips a linked `aa_ticket` folder and linked files, and only removes
+  files with the names this app gives (32 hex characters and an image extension).
+- "Close ticket" on the ticket page has red text: dark red on light themes, light red on dark
+  themes.
+
+### Fixed
+
+- Only people who can handle a ticket (active, with `aa_ticket.basic_access`, in a responsible
+  department) are offered in *Assign* and can be assigned.
+- Fixed colour pairs (at least 4.5:1) for yellow, red, grey and blue notices and for red and grey
+  buttons, on the ticket pages and on the dashboard card, in all themes and states.
+
+### Documentation
+
+- Changes to permissions and groups reach the dashboard card within 30 seconds and the menu
+  badge within 60 seconds.
+
 ## [0.4.3]
 
 Fixes from the 0.4.2 test round. No database changes.

@@ -1,7 +1,8 @@
 """Fixed values used across the app. Admin-editable settings live in TicketSettings."""
 
 MAX_IMAGES_PER_MESSAGE = 5
-MAX_IMAGE_PIXELS = 25_000_000
+MAX_IMAGE_PIXELS = 100_000_000  # larger images are refused before decoding
+MAX_IMAGE_EDGE = 4096  # longer edges are scaled down to this when the image is saved
 MAX_FRAMES = 100
 MAX_ANIMATION_PIXELS = 100_000_000  # frames x width x height
 BADGE_CACHE_SECONDS = 60

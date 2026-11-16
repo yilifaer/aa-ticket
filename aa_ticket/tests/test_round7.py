@@ -192,8 +192,8 @@ class TestLow6OrphanFiles(Fixture):
         services.add_reply(fresh(self.requester), self.t, "x", images=[png()])
         kept = Attachment.objects.get().file.path
         folder = os.path.dirname(kept)
-        old_orphan = os.path.join(folder, "orphan_old.png")
-        new_orphan = os.path.join(folder, "orphan_new.png")
+        old_orphan = os.path.join(folder, "a" * 32 + ".png")
+        new_orphan = os.path.join(folder, "b" * 32 + ".png")
         for path in (old_orphan, new_orphan):
             with open(path, "wb") as fh:
                 fh.write(b"x")

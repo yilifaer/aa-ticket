@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.3
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.4
 ```
 
 ### 2. Change `local.py`
@@ -154,6 +154,10 @@ use open, requestable or auto-assigned groups as staff groups.
 **Superusers** pass every permission check in Django, so they have `view_all` and `manage`.
 They are not staff of any department unless they are in a department's group, so they are
 not pinged and do not see the *Unclaimed* badge.
+
+**Changes to permissions and groups show up with a short delay** on the dashboard card (up to
+30 seconds) and in the menu badge (up to 60 seconds), because both are cached. The ticket pages
+themselves check permissions on every request.
 
 ## Setting up departments
 
@@ -296,7 +300,9 @@ all replies and internal notes, uploaded images, who claimed, transferred and cl
 ticket, and when. Nothing is sent outside your server except the Discord messages described
 above, which contain the ticket title and the requester's main character name.
 
-Images are served only through a permission-checked page, never from a public URL. Use
+Images are served only through a permission-checked page, never from a public URL. Uploads are
+re-encoded, which removes location, camera and other metadata; images with a longer edge above
+4096 pixels are scaled down to 4096 pixels, and images above 100 megapixels are refused. Use
 *Delete images after (days)* to remove old images automatically. Superusers can delete single
 messages or images in the Django admin.
 

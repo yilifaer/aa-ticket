@@ -63,7 +63,7 @@ def detail_context(user, ticket):
             Q(department__isnull=True) | Q(department_id__in=staff_ids)
         ).order_by("title")
     if can["assign"]:
-        context["assignable_users"] = access.assignable_users(ticket).select_related("profile__main_character")
+        context["assignable_users"] = access.assignable_users(ticket)
     if can["invite"] or can["transfer"]:
         context["other_departments"] = Department.objects.filter(is_active=True).exclude(pk=ticket.department_id)
     if can["priority"]:

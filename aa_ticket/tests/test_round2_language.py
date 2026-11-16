@@ -16,6 +16,10 @@ from .factories import make_department, make_user, priority
 class FakeEmbed:
     def __init__(self, title=None, description=None, url=None, color=None):
         self.title, self.description, self.url = title, description, url
+        self.fields = []
+
+    def add_field(self, name, value, inline=False):
+        self.fields.append((name, value))
 
 
 class LanguageFixture(TestCase):

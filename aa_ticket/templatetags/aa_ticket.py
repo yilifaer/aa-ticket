@@ -1,6 +1,9 @@
+import datetime
+
 from django import template
 from django.template.defaultfilters import linebreaksbr, urlize
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import pgettext
 
@@ -24,6 +27,14 @@ STAFF_ONLY_EVENTS = {
 def rich_text(value):
     """Escape, make links clickable and keep line breaks. No HTML or Markdown."""
     return mark_safe(linebreaksbr(urlize(value or "", autoescape=True), autoescape=False))
+
+
+@register.filter
+def eve_time(value):
+    """EVE time is UTC. Shown with an explicit label so nobody reads it as their local time."""
+    if not value:
+        return ""
+    return timezone.localtime(value, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M") + " EVE"
 
 
 @register.filter

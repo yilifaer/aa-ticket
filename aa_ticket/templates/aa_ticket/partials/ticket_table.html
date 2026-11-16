@@ -1,4 +1,4 @@
-{% load i18n humanize %}
+{% load i18n humanize aa_ticket %}
 <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
         <thead>
@@ -21,7 +21,7 @@
                     <td>{% include "aa_ticket/partials/priority_badge.html" %}</td>
                     <td>{% include "aa_ticket/partials/status_badge.html" %}</td>
                     {% if show_requester %}<td>{{ ticket.requester_character.character_name|default:ticket.requester.username }}</td>{% endif %}
-                    <td><span title="{{ ticket.last_reply_at|date:'Y-m-d H:i' }} UTC">{{ ticket.last_reply_at|naturaltime }}</span></td>
+                    <td><span title="{{ ticket.last_reply_at|eve_time }}">{{ ticket.last_reply_at|naturaltime }}</span></td>
                 </tr>
             {% endfor %}
         </tbody>
