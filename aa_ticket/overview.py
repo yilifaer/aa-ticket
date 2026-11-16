@@ -3,7 +3,7 @@
 Users with view_all only see their own departments here; the workbench shows everything.
 """
 
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.urls import reverse
 from django.utils.translation import pgettext_lazy
 
@@ -13,7 +13,13 @@ from .models import Ticket
 
 PREVIEW = 5
 
-_RELATED = ("department", "priority", "requester", "requester_character", "assignee")
+_RELATED = (
+    "department",
+    "priority",
+    "requester__profile__main_character",
+    "requester_character",
+    "assignee__profile__main_character",
+)
 
 
 def _open():
@@ -22,7 +28,12 @@ def _open():
 
 def own_tickets(user):
     """Tickets the user submitted; waiting for the user (staff replied last) first."""
-    return _open().filter(requester=user).order_by("-last_reply_by_staff", "-last_reply_at")
+    waiting = Case(
+        When(status=Status.IN_PROGRESS, last_reply_by_staff=True, then=Value(1)),
+        default=Value(0),
+        output_field=IntegerField(),
+    )
+    return _open().filter(requester=user).annotate(waiting=waiting).order_by("-waiting", "-last_reply_at")
 
 
 def assigned_tickets(user):
@@ -70,6 +81,7 @@ def _section(key, title, empty, queryset, url):
 
 def sections_for(user):
     department_ids = access.staff_department_ids(user)
+    is_staff = access.is_department_staff(user)
     own = _section(
         "own",
         pgettext_lazy("aa_ticket", "My submitted tickets"),
@@ -77,17 +89,20 @@ def sections_for(user):
         own_tickets(user),
         reverse("aa_ticket:my_tickets"),
     )
-    if not department_ids:
+    if not is_staff:
         return [own]
     workbench = reverse("aa_ticket:workbench")
+    mine = _section(
+        "mine",
+        pgettext_lazy("aa_ticket", "Assigned to me"),
+        pgettext_lazy("aa_ticket", "No tickets assigned to you."),
+        assigned_tickets(user),
+        f"{workbench}?tab=mine",
+    )
+    if not department_ids:  # view_all without own departments
+        return [mine, own]
     return [
-        _section(
-            "mine",
-            pgettext_lazy("aa_ticket", "Assigned to me"),
-            pgettext_lazy("aa_ticket", "No tickets assigned to you."),
-            assigned_tickets(user),
-            f"{workbench}?tab=mine",
-        ),
+        mine,
         _section(
             "unclaimed",
             pgettext_lazy("aa_ticket", "Unclaimed in my departments"),
@@ -109,25 +124,26 @@ def sections_for(user):
 def dashboard_summary(user):
     """Counts and a few recent tickets for the dashboard card, or None if there is nothing to show."""
     department_ids = access.staff_department_ids(user)
+    is_staff = access.is_department_staff(user)
     own = own_tickets(user)
     summary = {
-        "is_staff": bool(department_ids),
+        "is_staff": is_staff,
         "open": own.count(),
         "waiting": own.filter(status=Status.IN_PROGRESS, last_reply_by_staff=True).count(),
         "assigned": 0,
-        "assigned_waiting": 0,
         "unclaimed": 0,
         "urgent": 0,
     }
     recent_q = Q(requester=user)
-    if department_ids:
+    if is_staff:
         assigned = assigned_tickets(user)
-        unclaimed = unclaimed_tickets(user, department_ids)
         summary["assigned"] = assigned.count()
-        summary["assigned_waiting"] = assigned.filter(last_reply_by_staff=False).count()
+        recent_q |= Q(pk__in=assigned.values("pk"))
+    if department_ids:
+        unclaimed = unclaimed_tickets(user, department_ids)
         summary["unclaimed"] = unclaimed.count()
         summary["urgent"] = unclaimed.filter(priority__is_urgent=True).count()
-        recent_q |= Q(pk__in=assigned.values("pk")) | Q(status=Status.OPEN, department_id__in=department_ids)
+        recent_q |= Q(status=Status.OPEN, department_id__in=department_ids)
     if not any(summary[k] for k in ("open", "assigned", "unclaimed")):
         return None
     summary["recent"] = list(_open().filter(recent_q).distinct().order_by("-last_reply_at")[:PREVIEW])

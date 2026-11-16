@@ -48,7 +48,9 @@ def _tab_queryset(user, tab):
         children = access._with_descendants(own) - own
         return visible.filter(department_id__in=children).exclude(status=Status.CLOSED)
     if tab == "collab":
-        return visible.filter(collaborating_departments__in=own).exclude(status=Status.CLOSED).distinct()
+        from ..overview import escalated_tickets
+
+        return escalated_tickets(user, own)
     return visible.filter(status=Status.CLOSED)
 
 

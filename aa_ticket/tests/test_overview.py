@@ -182,7 +182,7 @@ class TestDashboardCard(Fixture):
         user.has_perm("aa_ticket.basic_access")
         request = RequestFactory().get("/dashboard/")
         request.user = user
-        with self.assertNumQueries(9):
+        with self.assertNumQueries(8):
             TicketDashboardHook().render(request)
 
 

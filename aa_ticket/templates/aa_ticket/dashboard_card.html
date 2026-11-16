@@ -11,8 +11,12 @@
                 </div>
             {% endif %}
             <div class="d-flex flex-wrap gap-3 mb-2">
-                <div>{% translate "My open tickets" context 'aa_ticket' %}: <strong data-count="open">{{ summary.open }}</strong></div>
-                <div class="{% if summary.waiting %}fw-bold{% endif %}">{% translate "Waiting for you" context 'aa_ticket' %}: <strong data-count="waiting">{{ summary.waiting }}</strong></div>
+                {% if not summary.is_staff or summary.open %}
+                    <div>{% translate "My open tickets" context 'aa_ticket' %}: <strong data-count="open">{{ summary.open }}</strong></div>
+                {% endif %}
+                {% if not summary.is_staff or summary.waiting %}
+                    <div class="{% if summary.waiting %}fw-bold{% endif %}">{% translate "Waiting for you" context 'aa_ticket' %}: <strong data-count="waiting">{{ summary.waiting }}</strong></div>
+                {% endif %}
                 {% if summary.is_staff %}
                     <div>{% translate "Assigned to me" context 'aa_ticket' %}: <strong data-count="assigned">{{ summary.assigned }}</strong></div>
                     <div>{% translate "Unclaimed in my departments" context 'aa_ticket' %}: <strong data-count="unclaimed">{{ summary.unclaimed }}</strong></div>

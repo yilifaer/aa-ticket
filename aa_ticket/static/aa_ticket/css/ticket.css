@@ -5,7 +5,9 @@
 }
 
 .aa-ticket .aa-ticket-internal .card-header {
-    background-color: var(--bs-warning-bg-subtle);
+    /* Translucent yellow works on light and dark themes; text keeps the theme's body colour. */
+    background-color: rgba(255, 193, 7, 0.18);
+    color: var(--bs-body-color);
 }
 
 .aa-ticket .aa-ticket-thumb {
@@ -21,4 +23,13 @@
 
 .aa-ticket .aa-ticket-timeline .aa-ticket-event {
     padding-left: 0.25rem;
+}
+
+/* Comfortable tap targets on touch screens (44 px). */
+.aa-ticket .aa-tap {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }

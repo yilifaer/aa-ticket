@@ -80,42 +80,56 @@ def joinable_groups(department):
     return result
 
 
+def _parent_note(department, by_pk):
+    parent = by_pk.get(department.parent_id)
+    if parent is None:
+        return ""
+    if parent.is_active:
+        return pgettext("aa_ticket", "Parent: %(name)s") % {"name": parent.name}
+    return pgettext("aa_ticket", "Parent: %(name)s (inactive)") % {"name": parent.name}
+
+
 def _department_rows():
+    """Active departments as a tree, inactive ones as a flat list with their parent named."""
     departments = list(Department.objects.prefetch_related("groups__authgroup").order_by("order", "name"))
-    by_parent = {}
-    for d in departments:
-        by_parent.setdefault(d.parent_id, []).append(d)
+    by_pk = {d.pk: d for d in departments}
+    active = [d for d in departments if d.is_active]
+    children = {}
+    for d in active:
+        parent = by_pk.get(d.parent_id)
+        key = d.parent_id if parent is not None and parent.is_active else None
+        children.setdefault(key, []).append(d)
     rows, seen = [], set()
 
+    def row(d, depth, note=""):
+        return {"department": d, "depth": depth, "indent": depth * 1.5, "joinable": joinable_groups(d), "parent_note": note}
+
     def walk(parent_id, depth):
-        for d in by_parent.get(parent_id, []):
+        for d in children.get(parent_id, []):
             if d.pk in seen:
                 continue
             seen.add(d.pk)
-            rows.append({"department": d, "depth": depth, "indent": depth * 1.5, "joinable": joinable_groups(d)})
+            note = _parent_note(d, by_pk) if depth == 0 else ""
+            rows.append(row(d, depth, note))
             walk(d.pk, depth + 1)
 
     walk(None, 0)
-    for d in departments:  # anything left over (broken tree) is still shown
+    for d in active:  # anything left over (broken tree) is still shown
         if d.pk not in seen:
-            rows.append({"department": d, "depth": 0, "indent": 0, "joinable": joinable_groups(d)})
-    return rows
+            rows.append(row(d, 0, _parent_note(d, by_pk)))
+    inactive_rows = [row(d, 0, _parent_note(d, by_pk)) for d in departments if not d.is_active]
+    return rows, inactive_rows
 
 
 @login_required
 @basic
 @manage_perm
 def departments(request):
-    rows = _department_rows()
+    rows, inactive_rows = _department_rows()
     return render(
         request,
         "aa_ticket/manage/departments.html",
-        _ctx(
-            request,
-            "departments",
-            rows=[r for r in rows if r["department"].is_active],
-            inactive_rows=[r for r in rows if not r["department"].is_active],
-        ),
+        _ctx(request, "departments", rows=rows, inactive_rows=inactive_rows),
     )
 
 

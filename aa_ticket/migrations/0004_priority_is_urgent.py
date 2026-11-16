@@ -9,7 +9,7 @@ def flag_default_urgent(apps, schema_editor):
     active = Priority.objects.filter(is_active=True)
     if Priority.objects.filter(is_urgent=True).exists() or active.count() < 2:
         return
-    target = active.filter(name__iexact="Urgent").first() or active.order_by("-order").first()
+    target = active.filter(name__iexact="Urgent").first() or active.order_by("-order", "-pk").first()
     if target is not None:
         target.is_urgent = True
         target.save(update_fields=["is_urgent"])

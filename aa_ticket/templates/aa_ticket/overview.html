@@ -14,7 +14,7 @@
         <div class="d-flex align-items-baseline gap-2 mb-2">
             <h2 class="h5 mb-0" id="sec-{{ section.key }}">{{ section.title }}</h2>
             <span class="badge text-bg-secondary">{{ section.count }}</span>
-            {% if section.count %}<a class="ms-auto small" href="{{ section.url }}">{% translate "View all" context 'aa_ticket' %}</a>{% endif %}
+            {% if section.count %}<a class="ms-auto aa-tap" href="{{ section.url }}">{% translate "View all" context 'aa_ticket' %}</a>{% endif %}
         </div>
         {% if section.items %}
             <div class="list-group">
@@ -37,7 +37,7 @@
                     {% include "aa_ticket/partials/status_badge.html" %}
                     {% if section.key == "unclaimed" %}
                         <form method="post" action="{% url 'aa_ticket:action' ticket.pk 'claim' %}">{% csrf_token %}
-                            <button class="btn btn-sm btn-success">{% translate "Claim" context 'aa_ticket' %}</button>
+                            <button class="btn btn-success aa-tap">{% translate "Claim" context 'aa_ticket' %}</button>
                         </form>
                     {% endif %}
                 </div>

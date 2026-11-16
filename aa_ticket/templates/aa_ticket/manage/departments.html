@@ -7,9 +7,13 @@
     <a class="btn btn-primary" href="{% url 'aa_ticket:manage_department_edit' 0 %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Add department" context 'aa_ticket' %}</a>
 </div>
 {% if rows or inactive_rows %}
+{% if rows %}
 <div class="list-group">
 {% for row in rows %}{% include "aa_ticket/partials/department_row.html" %}{% endfor %}
 </div>
+{% else %}
+<p class="text-body-secondary">{% translate "No active departments." context 'aa_ticket' %}</p>
+{% endif %}
 {% if inactive_rows %}
 <details class="mt-3">
     <summary class="text-body-secondary">{% blocktranslate context 'aa_ticket' count n=inactive_rows|length %}Inactive ({{ n }}){% plural %}Inactive ({{ n }}){% endblocktranslate %}</summary>

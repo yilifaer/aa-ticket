@@ -71,6 +71,13 @@ def _url(name):
         return ""
 
 
+@register.simple_tag
+def aa_ticket_version():
+    from .. import __version__
+
+    return __version__
+
+
 @register.simple_tag(takes_context=True)
 def aa_ticket_nav(context):
     request = context.get("request")
