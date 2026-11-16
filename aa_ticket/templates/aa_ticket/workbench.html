@@ -7,7 +7,7 @@
 <h1 class="h3 mb-3">{% translate "Workbench" context 'aa_ticket' %}</h1>
 <ul class="nav nav-tabs mb-3 flex-nowrap overflow-auto">
     {% for key, label in tabs %}
-        <li class="nav-item"><a class="nav-link text-nowrap{% if tab == key %} active{% endif %}" href="?tab={{ key }}">{{ label }}</a></li>
+        <li class="nav-item"><a class="nav-link text-nowrap{% if tab == key %} active{% endif %}"{% if tab == key %} aria-current="page"{% endif %} href="?tab={{ key }}">{{ label }}</a></li>
     {% endfor %}
 </ul>
 <form method="get" class="row g-2 align-items-end mb-3">
@@ -20,17 +20,15 @@
         <select class="form-select" id="f-prio" name="priority"><option value="">{% translate "All" context 'aa_ticket' %}</option>{% for p in priorities %}<option value="{{ p.pk }}"{% if filters.priority == p.pk|stringformat:'s' %} selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
     <div class="col-6 col-md-2"><label class="form-label small" for="f-status">{% translate "Status" context 'aa_ticket' %}</label>
         <select class="form-select" id="f-status" name="status"><option value="">{% translate "All" context 'aa_ticket' %}</option>{% for value, label in statuses %}<option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    {% if categories %}
+    <div class="col-6 col-md-2"><label class="form-label small" for="f-cat">{% translate "Category" context 'aa_ticket' %}</label>
+        <select class="form-select" id="f-cat" name="category"><option value="">{% translate "All" context 'aa_ticket' %}</option>{% for c in categories %}<option value="{{ c.pk }}"{% if filters.category == c.pk|stringformat:'s' %} selected{% endif %}>{{ c.department.name }} · {{ c.name }}</option>{% endfor %}</select></div>
+    {% endif %}
     <div class="col-6 col-md-2"><button class="btn btn-primary w-100">{% translate "Filter" context 'aa_ticket' %}</button></div>
 </form>
 {% if tickets %}
     {% include "aa_ticket/partials/ticket_table.html" with show_requester=True %}
-    {% if page.has_other_pages %}
-        <nav class="mt-3" aria-label="{% translate 'Pages' context 'aa_ticket' %}"><ul class="pagination">
-            {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" context 'aa_ticket' %}</a></li>{% endif %}
-            <li class="page-item disabled"><span class="page-link">{{ page.number }} / {{ page.paginator.num_pages }}</span></li>
-            {% if page.has_next %}<li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" context 'aa_ticket' %}</a></li>{% endif %}
-        </ul></nav>
-    {% endif %}
+    {% include "aa_ticket/partials/pagination.html" %}
 {% else %}
     <p class="text-body-secondary text-center py-5">{% translate "Nothing here right now." context 'aa_ticket' %}</p>
 {% endif %}

@@ -28,6 +28,11 @@ class Fixture(TestCase):
         cls.player = make_user("Pilot A")
         cls.officer = make_user("Diplomat B", groups=[cls.g_dip])
 
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
     def new(self, user=None, dept=None, prio="normal", title="T"):
         return services.create_ticket(fresh(user or self.player), dept or self.dip, priority(prio), title, "Body")
 

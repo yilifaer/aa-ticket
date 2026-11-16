@@ -9,11 +9,12 @@
         <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Submit ticket" context 'aa_ticket' %}</a>
     </div>
     <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><a class="nav-link{% if tab == 'active' %} active{% endif %}" href="?tab=active">{% translate "Open" context 'aa_ticket' %} <span class="badge text-bg-secondary">{{ counts.active }}</span></a></li>
-        <li class="nav-item"><a class="nav-link{% if tab == 'closed' %} active{% endif %}" href="?tab=closed">{% translate "Closed" context 'aa_ticket' %}</a></li>
+        <li class="nav-item"><a class="nav-link{% if tab == 'active' %} active{% endif %}"{% if tab == 'active' %} aria-current="page"{% endif %} href="?tab=active">{% translate "Open" context 'aa_ticket' %} <span class="badge text-bg-secondary">{{ counts.active }}</span></a></li>
+        <li class="nav-item"><a class="nav-link{% if tab == 'closed' %} active{% endif %}"{% if tab == 'closed' %} aria-current="page"{% endif %} href="?tab=closed">{% translate "Closed" context 'aa_ticket' %}</a></li>
     </ul>
     {% if tickets %}
         {% include "aa_ticket/partials/ticket_table.html" %}
+        {% include "aa_ticket/partials/pagination.html" with querystring="tab="|add:tab %}
     {% else %}
         <div class="text-center text-body-secondary py-5">
             <p class="mb-3">{% if tab == 'closed' %}{% translate "No closed tickets." context 'aa_ticket' %}{% else %}{% translate "No tickets yet." context 'aa_ticket' %}{% endif %}</p>

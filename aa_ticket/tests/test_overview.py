@@ -31,6 +31,11 @@ class Fixture(TestCase):
         cls.leader = make_user("Leader D", groups=[cls.g_lead])
         cls.noperm = make_user("Guest E", perms=())
 
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
     def new(self, user=None, dept=None, prio="normal", title="Ticket"):
         return services.create_ticket(fresh(user or self.player), dept or self.dip, priority(prio), title, "Body")
 

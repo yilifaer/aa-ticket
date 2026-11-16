@@ -52,6 +52,7 @@ def detail_context(user, ticket):
         "collaborators": ticket.collaborating_departments.all(),
         "escalation_target": access.next_escalation_target(ticket) if can["escalate"] else None,
         "reply_hint": access.reply_hint(user, ticket),
+        "nav_active": "workbench" if is_staff else "mine",
         "autoclose_eta": _autoclose_eta(ticket),
         "uploads_enabled": uploads_enabled(),
         "statuses": Status,

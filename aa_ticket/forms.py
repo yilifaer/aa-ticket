@@ -77,6 +77,17 @@ class DepartmentForm(forms.ModelForm):
         if self.instance.webhook_url:
             self.fields["new_webhook_url"].widget.attrs["placeholder"] = self.instance.masked_webhook()
 
+    def clean_name(self):
+        name = (self.cleaned_data.get("name") or "").strip()
+        clash = Department.objects.filter(name__iexact=name)
+        if self.instance.pk:
+            clash = clash.exclude(pk=self.instance.pk)
+        if name and clash.exists():
+            raise forms.ValidationError(
+                pgettext_lazy("aa_ticket", "Another department already has this name. Please pick a different one.")
+            )
+        return name
+
     def clean_is_active(self):
         is_active = self.cleaned_data.get("is_active")
         if self.instance.pk and self.instance.is_active and not is_active:
@@ -132,6 +143,22 @@ class PriorityForm(forms.ModelForm):
             "escalate_after_minutes",
             "is_active",
         )
+
+    def clean_is_active(self):
+        is_active = self.cleaned_data.get("is_active")
+        if self.instance.pk and self.instance.is_active and not is_active:
+            from .constants import Status
+
+            open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
+            if open_count:
+                raise forms.ValidationError(
+                    pgettext_lazy(
+                        "aa_ticket",
+                        "%(count)d open tickets still use this priority. Change their priority or close them first.",
+                    )
+                    % {"count": open_count}
+                )
+        return is_active
 
 
 class CategoryForm(forms.ModelForm):

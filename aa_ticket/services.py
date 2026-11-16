@@ -281,6 +281,7 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
         actor,
         {
             "from": old.name,
+            "from_department_id": old.pk,
             "to": department.name,
             "department_id": department.pk,
             "reason": _clean_text(reason, REASON_MAX),

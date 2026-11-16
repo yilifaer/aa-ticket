@@ -5,11 +5,15 @@ from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 
 from . import urls
-from .app_settings import BADGE_CACHE_SECONDS
+from .app_settings import BADGE_CACHE_SECONDS, CARD_CACHE_SECONDS
 
 
 def badge_cache_key(user):
     return f"aa_ticket:badge:{user.pk}"
+
+
+def card_cache_key(user_pk):
+    return f"aa_ticket:card:{user_pk}"
 
 
 def unclaimed_count(user):
@@ -58,10 +62,18 @@ def dashboard_card(request):
     user = request.user
     if not user.is_authenticated or not user.has_perm("aa_ticket.basic_access"):
         return ""
+    from django.utils import translation
+
+    key = card_cache_key(user.pk)
+    language = translation.get_language() or ""
+    cached = cache.get(key) or {}
+    if language in cached:
+        return cached[language]
     summary = dashboard_summary(user)
-    if summary is None:
-        return ""
-    return render_to_string("aa_ticket/dashboard_card.html", {"summary": summary}, request=request)
+    html = "" if summary is None else render_to_string("aa_ticket/dashboard_card.html", {"summary": summary})
+    cached[language] = html
+    cache.set(key, cached, CARD_CACHE_SECONDS)
+    return html
 
 
 class TicketDashboardHook(hooks.DashboardItemHook):

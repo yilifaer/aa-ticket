@@ -6,7 +6,7 @@
 {% block ticket_content %}
 <ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">
     {% for key, label, url_name in sections %}
-        <li class="nav-item"><a class="nav-link text-nowrap{% if key == section %} active{% endif %}" href="{% url url_name %}">{{ label }}</a></li>
+        <li class="nav-item"><a class="nav-link text-nowrap{% if key == section %} active{% endif %}"{% if key == section %} aria-current="page"{% endif %} href="{% url url_name %}">{{ label }}</a></li>
     {% endfor %}
 </ul>
 {% block manage_content %}{% endblock %}

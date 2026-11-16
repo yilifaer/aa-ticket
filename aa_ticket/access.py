@@ -170,9 +170,13 @@ def visible_tickets(user):
     expanded = _with_descendants(staff_department_ids(user))
     query = Q(requester=user)
     if expanded:
-        staff_q = Q(department_id__in=expanded) | Q(collaborating_departments__in=expanded)
-        query |= staff_q & ~Q(requester=user)
-    return Ticket.objects.filter(query).distinct()
+        # A subquery on the link table instead of a join keeps the result free of duplicates,
+        # so no DISTINCT is needed and the (status, ...) indexes stay usable.
+        helping = Ticket.collaborating_departments.through.objects.filter(department_id__in=expanded).values(
+            "ticket_id"
+        )
+        query |= Q(department_id__in=expanded) | Q(pk__in=helping)
+    return Ticket.objects.filter(query)
 
 
 def department_staff(department):
