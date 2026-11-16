@@ -8,7 +8,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("aa_ticket", "0004_priority_is_urgent"),
-        ("eveonline", "0025_remove_evecharacter_last_updated_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

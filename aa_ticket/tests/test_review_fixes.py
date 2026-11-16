@@ -200,3 +200,19 @@ class TestExifStripped(TestCase):
         with t.messages.get(kind="reply").attachments.get().file.open("rb") as fh:
             with Image.open(io.BytesIO(fh.read())) as saved:
                 self.assertEqual(getattr(saved, "n_frames", 1), 2)
+
+
+class TestAllMigrationDependencies(TestCase):
+    def test_no_migration_depends_on_alliance_auth_migrations_newer_than_5_0(self):
+        """Auto-generated migrations pick up the newest AA migrations; AA 5.0 does not have them."""
+        import importlib
+        import os
+
+        allowed = {("authentication", "0025_v5squash"), ("eveonline", "0019_v5squash")}
+        folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), "migrations")
+        for name in sorted(os.listdir(folder)):
+            if not name[:4].isdigit():
+                continue
+            migration = importlib.import_module(f"aa_ticket.migrations.{name[:-3]}").Migration
+            foreign = {d for d in migration.dependencies if d[0] in ("authentication", "eveonline", "groupmanagement")}
+            self.assertLessEqual(foreign, allowed, name)
