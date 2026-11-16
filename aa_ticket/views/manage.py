@@ -106,7 +106,17 @@ def _department_rows():
 @basic
 @manage_perm
 def departments(request):
-    return render(request, "aa_ticket/manage/departments.html", _ctx(request, "departments", rows=_department_rows()))
+    rows = _department_rows()
+    return render(
+        request,
+        "aa_ticket/manage/departments.html",
+        _ctx(
+            request,
+            "departments",
+            rows=[r for r in rows if r["department"].is_active],
+            inactive_rows=[r for r in rows if not r["department"].is_active],
+        ),
+    )
 
 
 @login_required

@@ -9,6 +9,7 @@
 <div class="table-responsive"><table class="table align-middle">
     <thead><tr>
         <th scope="col">{% translate "Name" context 'aa_ticket' %}</th>
+        <th scope="col">{% translate "Urgent" context 'aa_ticket' %}</th>
         <th scope="col">{% translate "Mention roles" context 'aa_ticket' %}</th>
         <th scope="col">{% translate "Remind after" context 'aa_ticket' %}</th>
         <th scope="col">{% translate "Escalate after" context 'aa_ticket' %}</th>
@@ -18,6 +19,7 @@
     {% for p in items %}
         <tr>
             <td><a href="{% url 'aa_ticket:manage_priority_edit' p.pk %}"><span class="badge text-bg-{{ p.color }}">{{ p.name }}</span></a>{% if not p.is_active %} <span class="badge text-bg-secondary">{% translate "inactive" context 'aa_ticket' %}</span>{% endif %}</td>
+            <td>{% if p.is_urgent %}<i class="fas fa-triangle-exclamation text-danger" aria-hidden="true"></i> {% translate "Yes" context 'aa_ticket' %}{% else %}— {% translate "No" context 'aa_ticket' %}{% endif %}</td>
             <td>{% if p.mention_on_new %}✅ {% translate "Yes" context 'aa_ticket' %}{% else %}— {% translate "No" context 'aa_ticket' %}{% endif %}</td>
             <td>{% if p.remind_after_minutes %}{% blocktranslate context 'aa_ticket' with n=p.remind_after_minutes %}{{ n }} min{% endblocktranslate %}{% else %}—{% endif %}</td>
             <td>{% if p.escalate_after_minutes %}{% blocktranslate context 'aa_ticket' with n=p.escalate_after_minutes %}{{ n }} min{% endblocktranslate %}{% else %}—{% endif %}</td>

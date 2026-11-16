@@ -79,6 +79,7 @@ def aa_ticket_nav(context):
         return {}
     is_staff = access.is_department_staff(user)
     return {
+        "overview": _url("aa_ticket:index"),
         "mine": _url("aa_ticket:my_tickets"),
         "new": _url("aa_ticket:submit"),
         "workbench": _url("aa_ticket:workbench") if is_staff else "",

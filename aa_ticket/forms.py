@@ -122,7 +122,16 @@ class DepartmentForm(forms.ModelForm):
 class PriorityForm(forms.ModelForm):
     class Meta:
         model = Priority
-        fields = ("name", "color", "order", "mention_on_new", "remind_after_minutes", "escalate_after_minutes", "is_active")
+        fields = (
+            "name",
+            "color",
+            "order",
+            "is_urgent",
+            "mention_on_new",
+            "remind_after_minutes",
+            "escalate_after_minutes",
+            "is_active",
+        )
 
 
 class CategoryForm(forms.ModelForm):

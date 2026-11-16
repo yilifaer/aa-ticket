@@ -7,6 +7,7 @@
 
 {% block header_nav_collapse_left %}
     {% aa_ticket_nav as nav %}
+    {% if nav.overview %}<li class="nav-item"><a class="nav-link{% if nav_active == 'overview' %} active{% endif %}" href="{{ nav.overview }}">{% translate "Overview" context 'aa_ticket' %}</a></li>{% endif %}
     {% if nav.mine %}<li class="nav-item"><a class="nav-link{% if nav_active == 'mine' %} active{% endif %}" href="{{ nav.mine }}">{% translate "My tickets" context 'aa_ticket' %}</a></li>{% endif %}
     {% if nav.workbench %}<li class="nav-item"><a class="nav-link{% if nav_active == 'workbench' %} active{% endif %}" href="{{ nav.workbench }}">{% translate "Workbench" context 'aa_ticket' %}</a></li>{% endif %}
     {% if nav.stats %}<li class="nav-item"><a class="nav-link{% if nav_active == 'stats' %} active{% endif %}" href="{{ nav.stats }}">{% translate "Statistics" context 'aa_ticket' %}</a></li>{% endif %}

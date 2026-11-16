@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 17:00+0000\n"
+"POT-Creation-Date: 2026-11-16 00:56+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -57,7 +57,7 @@ msgid "Each image must be smaller than %(size)d MB."
 msgstr "Jedes Bild muss kleiner als %(size)d MB sein."
 
 #: auth_hooks.py:34 templates/aa_ticket/base.html:4
-#: templates/aa_ticket/base.html:6
+#: templates/aa_ticket/base.html:6 templates/aa_ticket/dashboard_card.html:5
 msgctxt "aa_ticket"
 msgid "Tickets"
 msgstr "Tickets"
@@ -418,7 +418,7 @@ msgstr ""
 "Diese Abteilung hat noch %(count)d offene Tickets. Übertrage oder schließe "
 "sie, bevor du die Abteilung deaktivierst."
 
-#: forms.py:171
+#: forms.py:180
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -434,7 +434,7 @@ msgstr ""
 "Gib Discord-Rollen-IDs als Zahlen ein, getrennt durch Kommas oder "
 "Leerzeichen."
 
-#: models/config.py:39 models/config.py:144 models/config.py:182
+#: models/config.py:39 models/config.py:144 models/config.py:187
 msgctxt "aa_ticket"
 msgid "name"
 msgstr "Name"
@@ -500,12 +500,12 @@ msgstr ""
 "Wenn aus, erreichen Tickets diese Abteilung nur durch Weiterleitung oder "
 "Einladung."
 
-#: models/config.py:77 models/config.py:166 models/config.py:187
+#: models/config.py:77 models/config.py:171 models/config.py:192
 msgctxt "aa_ticket"
 msgid "active"
 msgstr "aktiv"
 
-#: models/config.py:78 models/config.py:146 models/config.py:186
+#: models/config.py:78 models/config.py:146 models/config.py:191
 msgctxt "aa_ticket"
 msgid "order"
 msgstr "Reihenfolge"
@@ -515,7 +515,7 @@ msgctxt "aa_ticket"
 msgid "Discord role IDs to mention"
 msgstr "Zu erwähnende Discord-Rollen-IDs"
 
-#: models/config.py:92 models/config.py:180 models/config.py:206
+#: models/config.py:92 models/config.py:185 models/config.py:211
 msgctxt "aa_ticket"
 msgid "department"
 msgstr "Abteilung"
@@ -589,69 +589,83 @@ msgstr ""
 "Die übergeordnete Abteilung erwähnen, wenn niemand das Ticket rechtzeitig "
 "übernimmt. Leer lassen, um es auszuschalten."
 
-#: models/config.py:171
+#: models/config.py:167
+msgctxt "aa_ticket"
+msgid "counts as urgent"
+msgstr "gilt als dringend"
+
+#: models/config.py:169
+msgctxt "aa_ticket"
+msgid ""
+"Urgent tickets are listed first and highlighted on the overview and the "
+"Alliance Auth dashboard."
+msgstr ""
+"Dringende Tickets stehen oben und werden in der Übersicht und auf dem "
+"Alliance-Auth-Dashboard hervorgehoben."
+
+#: models/config.py:176
 msgctxt "aa_ticket"
 msgid "priority"
 msgstr "Priorität"
 
-#: models/config.py:172
+#: models/config.py:177
 msgctxt "aa_ticket"
 msgid "priorities"
 msgstr "Prioritäten"
 
-#: models/config.py:184
+#: models/config.py:189
 msgctxt "aa_ticket"
 msgid "template"
 msgstr "Vorlage"
 
-#: models/config.py:184
+#: models/config.py:189
 msgctxt "aa_ticket"
 msgid "Pre-filled into the ticket text when a player picks this category."
 msgstr ""
 "Wird in den Tickettext vorausgefüllt, wenn ein Spieler diese Kategorie "
 "wählt."
 
-#: models/config.py:192
+#: models/config.py:197
 msgctxt "aa_ticket"
 msgid "category"
 msgstr "Kategorie"
 
-#: models/config.py:193
+#: models/config.py:198
 msgctxt "aa_ticket"
 msgid "categories"
 msgstr "Kategorien"
 
-#: models/config.py:207
+#: models/config.py:212
 msgctxt "aa_ticket"
 msgid "Leave empty to share with all departments."
 msgstr "Leer lassen, um sie mit allen Abteilungen zu teilen."
 
-#: models/config.py:209 models/tickets.py:12
+#: models/config.py:214 models/tickets.py:12
 msgctxt "aa_ticket"
 msgid "title"
 msgstr "Titel"
 
-#: models/config.py:210
+#: models/config.py:215
 msgctxt "aa_ticket"
 msgid "text"
 msgstr "Text"
 
-#: models/config.py:215
+#: models/config.py:220
 msgctxt "aa_ticket"
 msgid "canned reply"
 msgstr "Textbaustein"
 
-#: models/config.py:216
+#: models/config.py:221
 msgctxt "aa_ticket"
 msgid "canned replies"
 msgstr "Textbausteine"
 
-#: models/config.py:224
+#: models/config.py:229
 msgctxt "aa_ticket"
 msgid "auto-close after (days)"
 msgstr "Automatisch schließen nach (Tagen)"
 
-#: models/config.py:227
+#: models/config.py:232
 msgctxt "aa_ticket"
 msgid ""
 "Tickets waiting for the requester are closed automatically after this many "
@@ -660,12 +674,12 @@ msgstr ""
 "Tickets, die auf den Ersteller warten, werden nach so vielen Tagen ohne "
 "Antwort automatisch geschlossen."
 
-#: models/config.py:230
+#: models/config.py:235
 msgctxt "aa_ticket"
 msgid "warn before auto-close (hours)"
 msgstr "Warnen vor automatischem Schließen (Stunden)"
 
-#: models/config.py:232
+#: models/config.py:237
 msgctxt "aa_ticket"
 msgid ""
 "The requester and the assignee are warned this many hours before a ticket "
@@ -674,12 +688,12 @@ msgstr ""
 "Ersteller und Bearbeiter werden so viele Stunden vor dem automatischen "
 "Schließen eines Tickets gewarnt."
 
-#: models/config.py:235
+#: models/config.py:240
 msgctxt "aa_ticket"
 msgid "requester can reopen for (days)"
 msgstr "Ersteller kann wieder öffnen für (Tage)"
 
-#: models/config.py:237
+#: models/config.py:242
 msgctxt "aa_ticket"
 msgid ""
 "For this many days after closing, the requester can reopen the ticket. Staff"
@@ -688,12 +702,12 @@ msgstr ""
 "So viele Tage nach dem Schließen kann der Ersteller das Ticket wieder "
 "öffnen. Das Team kann es immer wieder öffnen."
 
-#: models/config.py:240
+#: models/config.py:245
 msgctxt "aa_ticket"
 msgid "open tickets per person"
 msgstr "Offene Tickets pro Person"
 
-#: models/config.py:243
+#: models/config.py:248
 msgctxt "aa_ticket"
 msgid ""
 "A person cannot submit a new ticket while this many of their tickets are "
@@ -702,17 +716,17 @@ msgstr ""
 "Eine Person kann kein neues Ticket einreichen, solange so viele ihrer "
 "Tickets noch offen sind."
 
-#: models/config.py:246
+#: models/config.py:251
 msgctxt "aa_ticket"
 msgid "maximum image size (MB)"
 msgstr "Maximale Bildgröße (MB)"
 
-#: models/config.py:249
+#: models/config.py:254
 msgctxt "aa_ticket"
 msgid "delete images after (days)"
 msgstr "Bilder löschen nach (Tagen)"
 
-#: models/config.py:252
+#: models/config.py:257
 msgctxt "aa_ticket"
 msgid ""
 "Images of tickets closed longer than this are deleted. Leave empty to keep "
@@ -721,12 +735,12 @@ msgstr ""
 "Bilder von Tickets, die länger als dies geschlossen sind, werden gelöscht. "
 "Leer lassen, um sie dauerhaft zu behalten."
 
-#: models/config.py:255 models/config.py:284 templates/aa_ticket/prefs.html:13
+#: models/config.py:260 models/config.py:289 templates/aa_ticket/prefs.html:13
 msgctxt "aa_ticket"
 msgid "Discord direct messages"
 msgstr "Discord-Direktnachrichten"
 
-#: models/config.py:257
+#: models/config.py:262
 msgctxt "aa_ticket"
 msgid ""
 "When on and aa-discordbot is installed, people also get notifications as "
@@ -735,22 +749,22 @@ msgstr ""
 "Wenn an und aa-discordbot installiert ist, erhalten Personen "
 "Benachrichtigungen zusätzlich als Discord-Direktnachrichten."
 
-#: models/config.py:260
+#: models/config.py:265
 msgctxt "aa_ticket"
 msgid "Language of Discord channel messages"
 msgstr "Sprache der Discord-Kanalnachrichten"
 
-#: models/config.py:264
+#: models/config.py:269
 msgctxt "aa_ticket"
 msgid "All messages posted to department channels use this language."
 msgstr "Alle Nachrichten in Abteilungskanälen verwenden diese Sprache."
 
-#: models/config.py:267
+#: models/config.py:272
 msgctxt "aa_ticket"
 msgid "Language of Discord direct messages"
 msgstr "Sprache der Discord-Direktnachrichten"
 
-#: models/config.py:271
+#: models/config.py:276
 msgctxt "aa_ticket"
 msgid ""
 "Direct messages can follow each person's language setting in Alliance Auth, "
@@ -759,12 +773,12 @@ msgstr ""
 "Direktnachrichten können der Spracheinstellung jeder Person in Alliance Auth"
 " folgen oder die Kanalsprache verwenden."
 
-#: models/config.py:276
+#: models/config.py:281
 msgctxt "aa_ticket"
 msgid "ticket settings"
 msgstr "Ticket-Einstellungen"
 
-#: models/config.py:279
+#: models/config.py:284
 msgctxt "aa_ticket"
 msgid "Ticket settings"
 msgstr "Ticket-Einstellungen"
@@ -832,6 +846,46 @@ msgstr ""
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "Der Ersteller wartet noch auf eine Antwort."
+
+#: overview.py:69
+msgctxt "aa_ticket"
+msgid "My submitted tickets"
+msgstr "Meine eingereichten Tickets"
+
+#: overview.py:70
+msgctxt "aa_ticket"
+msgid "No open tickets."
+msgstr "Keine offenen Tickets."
+
+#: overview.py:80 templates/aa_ticket/dashboard_card.html:17 views/staff.py:21
+msgctxt "aa_ticket"
+msgid "Assigned to me"
+msgstr "Mir zugewiesen"
+
+#: overview.py:81
+msgctxt "aa_ticket"
+msgid "No tickets assigned to you."
+msgstr "Keine Tickets für dich."
+
+#: overview.py:87 templates/aa_ticket/dashboard_card.html:18
+msgctxt "aa_ticket"
+msgid "Unclaimed in my departments"
+msgstr "Offen in meinen Abteilungen"
+
+#: overview.py:88
+msgctxt "aa_ticket"
+msgid "No unclaimed tickets."
+msgstr "Keine offenen Tickets ohne Bearbeiter."
+
+#: overview.py:94
+msgctxt "aa_ticket"
+msgid "Escalated or shared with my departments"
+msgstr "An meine Abteilungen eskaliert oder geteilt"
+
+#: overview.py:95
+msgctxt "aa_ticket"
+msgid "No escalated tickets."
+msgstr "Keine eskalierten Tickets."
 
 #: services.py:82
 #, python-format
@@ -930,34 +984,63 @@ msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Bitte wähle eine Kategorie der zuständigen Abteilung."
 
-#: templates/aa_ticket/base.html:10 templates/aa_ticket/my_tickets.html:4
+#: templates/aa_ticket/base.html:10 templates/aa_ticket/overview.html:4
+#: templates/aa_ticket/overview.html:8
+msgctxt "aa_ticket"
+msgid "Overview"
+msgstr "Übersicht"
+
+#: templates/aa_ticket/base.html:11 templates/aa_ticket/my_tickets.html:4
 #: templates/aa_ticket/my_tickets.html:8
 msgctxt "aa_ticket"
 msgid "My tickets"
 msgstr "Meine Tickets"
 
-#: templates/aa_ticket/base.html:11 templates/aa_ticket/workbench.html:4
+#: templates/aa_ticket/base.html:12 templates/aa_ticket/workbench.html:4
 #: templates/aa_ticket/workbench.html:7
 msgctxt "aa_ticket"
 msgid "Workbench"
 msgstr "Arbeitsplatz"
 
-#: templates/aa_ticket/base.html:12 templates/aa_ticket/stats.html:4
+#: templates/aa_ticket/base.html:13 templates/aa_ticket/stats.html:4
 #: templates/aa_ticket/stats.html:8
 msgctxt "aa_ticket"
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: templates/aa_ticket/base.html:13 templates/aa_ticket/manage/base.html:4
+#: templates/aa_ticket/base.html:14 templates/aa_ticket/manage/base.html:4
 msgctxt "aa_ticket"
 msgid "Manage"
 msgstr "Verwalten"
 
-#: templates/aa_ticket/base.html:14 templates/aa_ticket/prefs.html:4
+#: templates/aa_ticket/base.html:15 templates/aa_ticket/prefs.html:4
 #: templates/aa_ticket/prefs.html:7
 msgctxt "aa_ticket"
 msgid "Preferences"
 msgstr "Einstellungen"
+
+#: templates/aa_ticket/dashboard_card.html:10
+msgctxt "aa_ticket"
+msgid "Urgent unclaimed"
+msgstr "Dringend und unbearbeitet"
+
+#: templates/aa_ticket/dashboard_card.html:14
+msgctxt "aa_ticket"
+msgid "My open tickets"
+msgstr "Meine offenen Tickets"
+
+#: templates/aa_ticket/dashboard_card.html:15
+#: templates/aa_ticket/overview.html:26 templates/aa_ticket/overview.html:28
+#: templates/aa_ticket/partials/ticket_table.html:18
+msgctxt "aa_ticket"
+msgid "Waiting for you"
+msgstr "Wartet auf dich"
+
+#: templates/aa_ticket/dashboard_card.html:27
+#: templates/aa_ticket/overview.html:17
+msgctxt "aa_ticket"
+msgid "View all"
+msgstr "Alle anzeigen"
 
 #: templates/aa_ticket/detail.html:15
 msgctxt "aa_ticket"
@@ -1015,7 +1098,7 @@ msgctxt "aa_ticket"
 msgid "Reopen it to continue the conversation."
 msgstr "Öffne es wieder, um das Gespräch fortzusetzen."
 
-#: templates/aa_ticket/detail.html:70
+#: templates/aa_ticket/detail.html:70 templates/aa_ticket/overview.html:40
 msgctxt "aa_ticket"
 msgid "Claim"
 msgstr "Übernehmen"
@@ -1191,8 +1274,8 @@ msgstr "Diesen Textbaustein löschen?"
 
 #: templates/aa_ticket/manage/canned.html:22
 #: templates/aa_ticket/manage/categories.html:18
-#: templates/aa_ticket/manage/departments.html:30
-#: templates/aa_ticket/manage/priorities.html:24
+#: templates/aa_ticket/manage/priorities.html:26
+#: templates/aa_ticket/partials/department_row.html:21
 msgctxt "aa_ticket"
 msgid "Delete"
 msgstr "Löschen"
@@ -1224,8 +1307,8 @@ msgid "Template"
 msgstr "Vorlage"
 
 #: templates/aa_ticket/manage/categories.html:16
-#: templates/aa_ticket/manage/departments.html:15
-#: templates/aa_ticket/manage/priorities.html:20
+#: templates/aa_ticket/manage/priorities.html:21
+#: templates/aa_ticket/partials/department_row.html:6
 msgctxt "aa_ticket"
 msgid "inactive"
 msgstr "inaktiv"
@@ -1255,14 +1338,14 @@ msgid "Send test message"
 msgstr "Testnachricht senden"
 
 #: templates/aa_ticket/manage/department_form.html:14
-#: templates/aa_ticket/manage/departments.html:24
+#: templates/aa_ticket/partials/department_row.html:15
 msgctxt "aa_ticket"
 msgid "Discord channel not configured — new tickets will not be announced."
 msgstr ""
 "Discord-Kanal nicht konfiguriert — neue Tickets werden nicht angekündigt."
 
 #: templates/aa_ticket/manage/department_form.html:19
-#: templates/aa_ticket/manage/departments.html:21
+#: templates/aa_ticket/partials/department_row.html:12
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1278,41 +1361,20 @@ msgid "Departments"
 msgstr "Abteilungen"
 
 #: templates/aa_ticket/manage/departments.html:7
-#: templates/aa_ticket/manage/departments.html:38
+#: templates/aa_ticket/manage/departments.html:24
 msgctxt "aa_ticket"
 msgid "Add department"
 msgstr "Abteilung hinzufügen"
 
-#: templates/aa_ticket/manage/departments.html:16
-msgctxt "aa_ticket"
-msgid "no player tickets"
-msgstr "keine Spieler-Tickets"
-
-#: templates/aa_ticket/manage/departments.html:18
-msgctxt "aa_ticket"
-msgid "Staff groups"
-msgstr "Team-Gruppen"
-
-#: templates/aa_ticket/manage/departments.html:18
-msgctxt "aa_ticket"
-msgid "none — nobody can handle tickets here"
-msgstr "keine — niemand kann hier Tickets bearbeiten"
-
-#: templates/aa_ticket/manage/departments.html:26
+#: templates/aa_ticket/manage/departments.html:15
 #, python-format
 msgctxt "aa_ticket"
-msgid "Last delivery failed (%(when)s: %(reason)s)"
-msgstr "Letzte Zustellung fehlgeschlagen (%(when)s: %(reason)s)"
+msgid "Inactive (%(n)s)"
+msgid_plural "Inactive (%(n)s)"
+msgstr[0] "Inaktiv (%(n)s)"
+msgstr[1] "Inaktiv (%(n)s)"
 
-#: templates/aa_ticket/manage/departments.html:29
-msgctxt "aa_ticket"
-msgid ""
-"Delete this department? Its categories and canned replies are deleted too."
-msgstr ""
-"Diese Abteilung löschen? Ihre Kategorien und Textbausteine werden ebenfalls "
-"gelöscht."
-
-#: templates/aa_ticket/manage/departments.html:37
+#: templates/aa_ticket/manage/departments.html:23
 msgctxt "aa_ticket"
 msgid "No departments yet. Add the first one so players can submit tickets."
 msgstr ""
@@ -1331,44 +1393,51 @@ msgstr "Priorität hinzufügen"
 
 #: templates/aa_ticket/manage/priorities.html:12
 msgctxt "aa_ticket"
+msgid "Urgent"
+msgstr "Dringend"
+
+#: templates/aa_ticket/manage/priorities.html:13
+msgctxt "aa_ticket"
 msgid "Mention roles"
 msgstr "Rollen erwähnen"
 
-#: templates/aa_ticket/manage/priorities.html:13
+#: templates/aa_ticket/manage/priorities.html:14
 msgctxt "aa_ticket"
 msgid "Remind after"
 msgstr "Erinnern nach"
 
-#: templates/aa_ticket/manage/priorities.html:14
+#: templates/aa_ticket/manage/priorities.html:15
 msgctxt "aa_ticket"
 msgid "Escalate after"
 msgstr "Eskalieren nach"
 
-#: templates/aa_ticket/manage/priorities.html:21
+#: templates/aa_ticket/manage/priorities.html:22
+#: templates/aa_ticket/manage/priorities.html:23
 msgctxt "aa_ticket"
 msgid "Yes"
 msgstr "Ja"
 
-#: templates/aa_ticket/manage/priorities.html:21
+#: templates/aa_ticket/manage/priorities.html:22
+#: templates/aa_ticket/manage/priorities.html:23
 msgctxt "aa_ticket"
 msgid "No"
 msgstr "Nein"
 
-#: templates/aa_ticket/manage/priorities.html:22
-#: templates/aa_ticket/manage/priorities.html:23
+#: templates/aa_ticket/manage/priorities.html:24
+#: templates/aa_ticket/manage/priorities.html:25
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(n)s min"
 msgstr "%(n)s Min."
 
-#: templates/aa_ticket/manage/priorities.html:24
+#: templates/aa_ticket/manage/priorities.html:26
 msgctxt "aa_ticket"
 msgid "Delete this priority?"
 msgstr "Diese Priorität löschen?"
 
 #: templates/aa_ticket/my_tickets.html:9
-#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/submit.html:4
-#: templates/aa_ticket/submit.html:8
+#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/overview.html:9
+#: templates/aa_ticket/submit.html:4 templates/aa_ticket/submit.html:8
 #: templates/aa_ticket/submit_choose_department.html:4
 #: templates/aa_ticket/submit_choose_department.html:7
 msgctxt "aa_ticket"
@@ -1390,6 +1459,35 @@ msgctxt "aa_ticket"
 msgid "No tickets yet."
 msgstr "Noch keine Tickets."
 
+#: templates/aa_ticket/partials/department_row.html:7
+msgctxt "aa_ticket"
+msgid "no player tickets"
+msgstr "keine Spieler-Tickets"
+
+#: templates/aa_ticket/partials/department_row.html:9
+msgctxt "aa_ticket"
+msgid "Staff groups"
+msgstr "Team-Gruppen"
+
+#: templates/aa_ticket/partials/department_row.html:9
+msgctxt "aa_ticket"
+msgid "none — nobody can handle tickets here"
+msgstr "keine — niemand kann hier Tickets bearbeiten"
+
+#: templates/aa_ticket/partials/department_row.html:17
+#, python-format
+msgctxt "aa_ticket"
+msgid "Last delivery failed (%(when)s: %(reason)s)"
+msgstr "Letzte Zustellung fehlgeschlagen (%(when)s: %(reason)s)"
+
+#: templates/aa_ticket/partials/department_row.html:20
+msgctxt "aa_ticket"
+msgid ""
+"Delete this department? Its categories and canned replies are deleted too."
+msgstr ""
+"Diese Abteilung löschen? Ihre Kategorien und Textbausteine werden ebenfalls "
+"gelöscht."
+
 #: templates/aa_ticket/partials/ticket_table.html:6
 msgctxt "aa_ticket"
 msgid "Ticket"
@@ -1405,11 +1503,6 @@ msgstr "Status"
 msgctxt "aa_ticket"
 msgid "Last activity"
 msgstr "Letzte Aktivität"
-
-#: templates/aa_ticket/partials/ticket_table.html:18
-msgctxt "aa_ticket"
-msgid "Waiting for you"
-msgstr "Wartet auf dich"
 
 #: templates/aa_ticket/partials/timeline.html:18
 msgctxt "aa_ticket"
@@ -1564,25 +1657,25 @@ msgctxt "aa_ticket"
 msgid "to %(value)s"
 msgstr "zu %(value)s"
 
-#: templatetags/aa_ticket.py:103
+#: templatetags/aa_ticket.py:104
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d T %(h)d Std."
 
-#: templatetags/aa_ticket.py:105
+#: templatetags/aa_ticket.py:106
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d Std. %(m)d Min."
 
-#: templatetags/aa_ticket.py:106
+#: templatetags/aa_ticket.py:107
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(m)d min"
 msgstr "%(m)d Min."
 
-#: views/manage.py:26 views/manage.py:276
+#: views/manage.py:26 views/manage.py:286
 msgctxt "aa_ticket"
 msgid "Settings"
 msgstr "Einstellungen"
@@ -1597,17 +1690,17 @@ msgctxt "aa_ticket"
 msgid "Deleted."
 msgstr "Gelöscht."
 
-#: views/manage.py:118
+#: views/manage.py:128
 msgctxt "aa_ticket"
 msgid "New department"
 msgstr "Neue Abteilung"
 
-#: views/manage.py:118
+#: views/manage.py:128
 msgctxt "aa_ticket"
 msgid "Edit department"
 msgstr "Abteilung bearbeiten"
 
-#: views/manage.py:130 views/manage.py:134
+#: views/manage.py:140 views/manage.py:144
 msgctxt "aa_ticket"
 msgid ""
 "This department still has tickets or sub-departments. Deactivate it instead."
@@ -1615,42 +1708,42 @@ msgstr ""
 "Diese Abteilung hat noch Tickets oder Unterabteilungen. Deaktiviere sie "
 "stattdessen."
 
-#: views/manage.py:163
+#: views/manage.py:173
 msgctxt "aa_ticket"
 msgid "New priority"
 msgstr "Neue Priorität"
 
-#: views/manage.py:163
+#: views/manage.py:173
 msgctxt "aa_ticket"
 msgid "Edit priority"
 msgstr "Priorität bearbeiten"
 
-#: views/manage.py:173
+#: views/manage.py:183
 msgctxt "aa_ticket"
 msgid "Tickets still use this priority. Deactivate it instead."
 msgstr "Tickets verwenden diese Priorität noch. Deaktiviere sie stattdessen."
 
-#: views/manage.py:192
+#: views/manage.py:202
 msgctxt "aa_ticket"
 msgid "New category"
 msgstr "Neue Kategorie"
 
-#: views/manage.py:192
+#: views/manage.py:202
 msgctxt "aa_ticket"
 msgid "Edit category"
 msgstr "Kategorie bearbeiten"
 
-#: views/manage.py:243
+#: views/manage.py:253
 msgctxt "aa_ticket"
 msgid "New canned reply"
 msgstr "Neuer Textbaustein"
 
-#: views/manage.py:243
+#: views/manage.py:253
 msgctxt "aa_ticket"
 msgid "Edit canned reply"
 msgstr "Textbaustein bearbeiten"
 
-#: views/manage.py:269
+#: views/manage.py:279
 msgctxt "aa_ticket"
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
@@ -1660,16 +1753,11 @@ msgctxt "aa_ticket"
 msgid "Preferences saved."
 msgstr "Einstellungen gespeichert."
 
-#: views/requester.py:74
+#: views/requester.py:80
 #, python-format
 msgctxt "aa_ticket"
 msgid "Ticket %(number)s submitted."
 msgstr "Ticket %(number)s eingereicht."
-
-#: views/staff.py:21
-msgctxt "aa_ticket"
-msgid "Assigned to me"
-msgstr "Mir zugewiesen"
 
 #: views/staff.py:22
 msgctxt "aa_ticket"

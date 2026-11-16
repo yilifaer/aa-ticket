@@ -1,0 +1,51 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n humanize aa_ticket %}
+
+{% block ticket_title %}{% translate "Overview" context 'aa_ticket' %}{% endblock %}
+
+{% block ticket_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">{% translate "Overview" context 'aa_ticket' %}</h1>
+    <a class="btn btn-primary" href="{% url 'aa_ticket:submit' %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Submit ticket" context 'aa_ticket' %}</a>
+</div>
+
+{% for section in sections %}
+    <section class="mb-4" aria-labelledby="sec-{{ section.key }}">
+        <div class="d-flex align-items-baseline gap-2 mb-2">
+            <h2 class="h5 mb-0" id="sec-{{ section.key }}">{{ section.title }}</h2>
+            <span class="badge text-bg-secondary">{{ section.count }}</span>
+            {% if section.count %}<a class="ms-auto small" href="{{ section.url }}">{% translate "View all" context 'aa_ticket' %}</a>{% endif %}
+        </div>
+        {% if section.items %}
+            <div class="list-group">
+            {% for ticket in section.items %}
+                <div class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                    <div class="me-auto text-break">
+                        <a class="fw-semibold text-decoration-none" href="{% url 'aa_ticket:detail' ticket.pk %}">{{ ticket.display_number }} {{ ticket.title }}</a>
+                        {% if section.key == "own" and ticket.status == "in_progress" and ticket.last_reply_by_staff %}
+                            <span class="badge text-bg-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
+                        {% elif section.key == "mine" and not ticket.last_reply_by_staff %}
+                            <span class="badge text-bg-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
+                        {% endif %}
+                        <div class="small text-body-secondary">
+                            {{ ticket.department.name }} ·
+                            {% if section.key != "own" %}{{ ticket.requester|display_name }} · {% endif %}
+                            <span title="{{ ticket.last_reply_at|date:'Y-m-d H:i' }} UTC">{{ ticket.last_reply_at|naturaltime }}</span>
+                        </div>
+                    </div>
+                    {% include "aa_ticket/partials/priority_badge.html" %}
+                    {% include "aa_ticket/partials/status_badge.html" %}
+                    {% if section.key == "unclaimed" %}
+                        <form method="post" action="{% url 'aa_ticket:action' ticket.pk 'claim' %}">{% csrf_token %}
+                            <button class="btn btn-sm btn-success">{% translate "Claim" context 'aa_ticket' %}</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-body-secondary mb-0">{{ section.empty }}</p>
+        {% endif %}
+    </section>
+{% endfor %}
+{% endblock %}

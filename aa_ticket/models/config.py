@@ -163,6 +163,11 @@ class Priority(models.Model):
         validators=[MinValueValidator(1)],
         help_text=pgettext_lazy("aa_ticket", "Mention the parent department if nobody claims the ticket in time. Leave empty to turn off."),
     )
+    is_urgent = models.BooleanField(
+        pgettext_lazy("aa_ticket", "counts as urgent"),
+        default=False,
+        help_text=pgettext_lazy("aa_ticket", "Urgent tickets are listed first and highlighted on the overview and the Alliance Auth dashboard."),
+    )
     is_active = models.BooleanField(pgettext_lazy("aa_ticket", "active"), default=True)
 
     class Meta:

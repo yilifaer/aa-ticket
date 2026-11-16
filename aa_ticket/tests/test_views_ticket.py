@@ -188,7 +188,8 @@ class TestTemplates(TestCase):
             if "partials" in dirpath:
                 continue
             for name in files:
-                if not name.endswith(".html") or name == "base.html" and dirpath == root:
+                # dashboard_card.html is a fragment rendered into the Alliance Auth dashboard
+                if not name.endswith(".html") or name == "dashboard_card.html" or name == "base.html" and dirpath == root:
                     continue
                 with open(os.path.join(dirpath, name), encoding="utf-8") as fh:
                     first = fh.readline().strip()

@@ -11,7 +11,7 @@
                 <button class="btn btn-sm btn-outline-primary ms-2">{% translate "Send test message" context 'aa_ticket' %}</button>
             </form>
         {% else %}
-            <span class="text-warning-emphasis">⚠️ {% translate "Discord channel not configured — new tickets will not be announced." context 'aa_ticket' %}</span>
+            <span class="text-body"><i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i> {% translate "Discord channel not configured — new tickets will not be announced." context 'aa_ticket' %}</span>
         {% endif %}
     </div>
 {% endif %}

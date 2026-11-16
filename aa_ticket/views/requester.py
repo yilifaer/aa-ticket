@@ -18,7 +18,13 @@ basic = permission_required("aa_ticket.basic_access", raise_exception=True)
 @login_required
 @basic
 def index(request):
-    return redirect("aa_ticket:my_tickets")
+    from ..overview import sections_for
+
+    return render(
+        request,
+        "aa_ticket/overview.html",
+        {"sections": sections_for(request.user), "nav_active": "overview"},
+    )
 
 
 @login_required

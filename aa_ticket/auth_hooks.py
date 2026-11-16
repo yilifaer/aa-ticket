@@ -50,6 +50,30 @@ class TicketMenuItem(MenuItemHook):
         return MenuItemHook.render(self, request)
 
 
+def dashboard_card(request):
+    from django.template.loader import render_to_string
+
+    from .overview import dashboard_summary
+
+    user = request.user
+    if not user.is_authenticated or not user.has_perm("aa_ticket.basic_access"):
+        return ""
+    summary = dashboard_summary(user)
+    if summary is None:
+        return ""
+    return render_to_string("aa_ticket/dashboard_card.html", {"summary": summary}, request=request)
+
+
+class TicketDashboardHook(hooks.DashboardItemHook):
+    def __init__(self):
+        super().__init__(dashboard_card, 5)
+
+
+@hooks.register("dashboard_hook")
+def register_dashboard():
+    return TicketDashboardHook()
+
+
 @hooks.register("menu_item_hook")
 def register_menu():
     return TicketMenuItem()

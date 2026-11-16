@@ -92,9 +92,11 @@ class TestMyTickets(ViewFixture):
         r = self.client.get("/ticket/mine/")
         self.assertContains(r, 'href="/ticket/new/"')
 
-    def test_index_redirects(self):
+    def test_index_is_overview(self):
         self.client.force_login(self.requester)
-        self.assertRedirects(self.client.get("/ticket/"), "/ticket/mine/")
+        r = self.client.get("/ticket/")
+        self.assertEqual(r.status_code, 200)
+        self.assertTemplateUsed(r, "aa_ticket/overview.html")
 
 
 class TestSubmit(ViewFixture):
