@@ -11,7 +11,7 @@ from PIL import Image
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils import translation
 
 from aa_ticket import access, services
@@ -309,3 +309,87 @@ class TestWording(TestCase):
         self.assertIn("自动申请上级介入", zh["escalate after (minutes)"].msgstr)
         self.assertEqual(zh["escalation reminder sent"].msgstr, "已自动申请上级介入")
         self.assertEqual(zh["Escalated or shared with my departments"].msgstr, "申请上级介入或邀请协作的工单")
+
+
+class TestReleaseReview(Fixture):
+    """Findings of the pre-release review of 0.4.3."""
+
+    def test_reopen_that_drops_the_assignee_tells_the_department(self):
+        services.claim(fresh(self.officer), self.t)
+        services.close(fresh(self.requester), fresh(self.t), ClosedReason.REQUESTER)
+        self.officer.groups.remove(self.g_dip)
+        with patch("aa_ticket.services.dispatch") as dispatched, self.captureOnCommitCallbacks(execute=True):
+            services.reopen(fresh(self.requester), fresh(self.t))
+        events = {c.args[0]: c.args[3] for c in dispatched.call_args_list}
+        self.assertIn(Event.ASSIGNEE_LEFT, events)
+        self.assertEqual(events[Event.ASSIGNEE_LEFT]["previous_assignee_id"], self.officer.pk)
+
+    def test_reopen_with_valid_assignee_sends_no_assignee_left(self):
+        services.claim(fresh(self.officer), self.t)
+        services.close(fresh(self.requester), fresh(self.t), ClosedReason.REQUESTER)
+        with patch("aa_ticket.services.dispatch") as dispatched, self.captureOnCommitCallbacks(execute=True):
+            services.reopen(fresh(self.requester), fresh(self.t))
+        self.assertNotIn(Event.ASSIGNEE_LEFT, [c.args[0] for c in dispatched.call_args_list])
+
+    @patch("aa_ticket.discord.webhook.requests.post")
+    def test_read_timeout_keeps_the_quota(self, post):
+        import requests
+
+        with patch("aa_ticket.notifications.send_webhook") as wh, patch("aa_ticket.notifications.notify"), \
+                patch("aa_ticket.notifications.dm.is_available", return_value=False):
+            dispatch(Event.REPLIED, self.t.pk, self.requester.pk, {"by_staff": False})
+            post.side_effect = requests.ReadTimeout("slow")
+            with self.assertLogs("extensions.aa_ticket", level="WARNING"):
+                send_webhook.apply(args=[self.dip.pk, self.t.pk, Event.REPLIED, False])
+            wh.reset_mock()
+            dispatch(Event.REPLIED, self.t.pk, self.requester.pk, {"by_staff": False})
+        self.assertEqual(wh.delay.call_count, 0)
+
+    def test_racing_second_escalation_says_already_asked(self):
+        from aa_ticket.exceptions import TicketActionError
+
+        services.request_escalation(fresh(self.requester), self.t, expected_target=self.lead)
+        with self.assertRaises(TicketActionError) as ctx:
+            services.request_escalation(fresh(self.requester), fresh(self.t), expected_target=self.lead)
+        self.assertIn("Lead has already been asked", ctx.exception.message)
+
+    def test_low_priority_badge_uses_fixed_colours(self):
+        low = services.create_ticket(fresh(self.requester), self.dip, priority("low"), "Low one", "Body")
+        self.client.force_login(self.officer)
+        html = self.client.get(f"/ticket/{low.pk}/").content.decode()
+        self.assertIn("aa-prio-secondary", html)
+        self.assertNotIn("text-bg-secondary", html)
+        admin = make_user("Admin F", perms=("basic_access", "manage"))
+        self.client.force_login(admin)
+        html = self.client.get("/ticket/manage/priorities/").content.decode()
+        self.assertNotIn("text-bg-", html.split('class="aa-ticket"')[1])
+
+    def test_css_covers_focus_and_fixed_pairs(self):
+        css = open(os.path.join(os.path.dirname(TEMPLATES), "static", "aa_ticket", "css", "ticket.css"), encoding="utf-8").read()
+        for needle in (":focus-visible", ".aa-ticket .btn-warning", ".aa-prio-secondary", ".aa-prio-success", ".aa-prio-info", ".aa-prio-primary", ".aa-prio-danger", ".aa-prio-warning"):
+            self.assertIn(needle, css, needle)
+
+    def test_no_theme_dependent_badges_left(self):
+        for dirpath, _d, files in os.walk(TEMPLATES):
+            for name in files:
+                if name == "dashboard_card.html":
+                    continue
+                text = open(os.path.join(dirpath, name), encoding="utf-8").read()
+                self.assertNotRegex(text, r"badge[^\"]*text-bg-", name)
+
+
+class TestFilesAfterCommit(TransactionTestCase):
+    def test_files_survive_a_failure_after_commit(self):
+        from .test_round6b import seed_priorities
+
+        seed_priorities(Priority)
+        dept = make_department("Dip")
+        requester = make_user("Pilot A")
+        ticket = services.create_ticket(requester, dept, priority("normal"), "Help", "Body")
+        # the worker is killed (SystemExit) while the after-commit notifications run
+        with patch("aa_ticket.services.dispatch", side_effect=SystemExit):
+            with self.assertRaises(SystemExit):
+                services.add_reply(requester, ticket, "x", images=[png()])
+        attachment = Attachment.objects.get()
+        self.assertTrue(os.path.exists(attachment.file.path))
+        attachment.file.delete(save=False)

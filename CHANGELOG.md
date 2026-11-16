@@ -23,9 +23,14 @@ Fixes from the 0.4.2 test round. No database changes.
 - The hourly limit for "requester added a reply" channel notices is only used when a message is
   really sent, and released when sending fails.
 - Singular/plural wording for "open ticket(s)" messages (all languages, Russian plural forms).
-- Contrast of at least 4.5:1 in the Flatly and Darkly themes for the yellow "internal note" and
-  "unclaimed" marks, grey labels, the urgent mark, "waiting for you", the Claim button and the
-  outline buttons on the ticket page.
+- Contrast of at least 4.5:1 through fixed colour pairs for the yellow "internal note" and
+  "unclaimed" marks, grey labels, all priority marks, the urgent mark, "waiting for you", the
+  Claim and escalation buttons and the outline buttons on the ticket page — at rest, on hover
+  and with keyboard focus. Measured in the Flatly, Darkly, Bootstrap and Bootstrap Dark themes.
+  (In the Materia theme the theme's own primary buttons remain white on blue, 3.1:1.)
+- Reopening a ticket whose assignee had to be removed also tells the department channel.
+- Image files of a saved ticket or reply are never removed by a failure that happens after the
+  database commit.
 - Spanish: "Responsable" for assignee everywhere. Chinese: one term, 申请上级介入, for
   escalation (the automatic one is 自动申请上级介入).
 

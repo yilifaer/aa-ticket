@@ -66,6 +66,9 @@ def _removes_files_on_failure(func):
         token = _written_files.set(written)
         try:
             with transaction.atomic():
+                # Once the transaction is committed the files belong to saved data: forget them
+                # first, so a failure in a later after-commit step can never delete them.
+                transaction.on_commit(written.clear)
                 result = func(*args, **kwargs)
         except BaseException:
             for name in written:
@@ -352,6 +355,16 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
 @transaction.atomic
 def request_escalation(user, ticket, reason="", expected_target=None):
     ticket = _lock(ticket)
+    if expected_target is not None and user.pk == ticket.requester_id and ticket.status != Status.CLOSED:
+        # a second click that arrived while the first was still being saved
+        already = EscalationRequest.objects.filter(
+            ticket=ticket, cycle=ticket.escalation_cycle, to_department=expected_target
+        ).exists()
+        if already:
+            raise TicketActionError(
+                pgettext("aa_ticket", "%(department)s has already been asked to step in.")
+                % {"department": expected_target.name}
+            )
     _require(user, ticket, "escalate")
     target = access.next_escalation_target(ticket)
     if expected_target is not None and target.pk != expected_target.pk:
@@ -438,10 +451,12 @@ def reopen(actor, ticket):
     ticket = _lock(ticket)
     _require(actor, ticket, "reopen")
     now = timezone.now()
+    dropped_assignee_id = None
     if ticket.assignee_id and access.can_handle(ticket.assignee, ticket):
         ticket.status = Status.IN_PROGRESS
     else:
         # nobody, or someone who has left the department meanwhile: back to the unclaimed queue
+        dropped_assignee_id = ticket.assignee_id
         ticket.assignee = None
         ticket.status = Status.OPEN
         ticket.open_since = now
@@ -456,3 +471,7 @@ def reopen(actor, ticket):
     ticket.last_reply_by_staff = False
     ticket.save()
     _emit(ticket, Event.REOPENED, actor, {})
+    if dropped_assignee_id:
+        # same notice as when the periodic task finds a departed assignee: the department
+        # channel learns that the ticket needs a new handler
+        _emit(ticket, Event.ASSIGNEE_LEFT, None, {"previous_assignee_id": dropped_assignee_id})

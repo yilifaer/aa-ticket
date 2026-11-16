@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 09:30+0000\n"
+"POT-Creation-Date: 2026-11-16 09:54+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -25,8 +25,8 @@ msgstr ""
 #: access.py:168
 msgctxt "aa_ticket"
 msgid ""
-"Your department is helping with this ticket. You can write an internal note;"
-" the responsible department replies to the requester."
+"Your department is helping with this ticket. You can write an internal note; "
+"the responsible department replies to the requester."
 msgstr ""
 "Deine Abteilung hilft bei diesem Ticket. Du kannst eine interne Notiz "
 "schreiben; die zuständige Abteilung antwortet dem Ersteller."
@@ -48,8 +48,8 @@ msgid ""
 "This image is too large (%(width)d × %(height)d pixels). Please make it "
 "smaller and try again."
 msgstr ""
-"Dieses Bild ist zu groß (%(width)d × %(height)d Pixel). Bitte verkleinere es"
-" und versuche es erneut."
+"Dieses Bild ist zu groß (%(width)d × %(height)d Pixel). Bitte verkleinere es "
+"und versuche es erneut."
 
 #: attachments.py:47
 msgctxt "aa_ticket"
@@ -263,11 +263,11 @@ msgstr "Rot"
 #: discord/webhook.py:34
 msgctxt "aa_ticket"
 msgid ""
-"Paste the full webhook URL from Discord. It starts with "
-"https://discord.com/api/webhooks/"
+"Paste the full webhook URL from Discord. It starts with https://discord.com/"
+"api/webhooks/"
 msgstr ""
-"Füge die vollständige Webhook-URL aus Discord ein. Sie beginnt mit "
-"https://discord.com/api/webhooks/"
+"Füge die vollständige Webhook-URL aus Discord ein. Sie beginnt mit https://"
+"discord.com/api/webhooks/"
 
 #: discord/webhook.py:42
 msgctxt "aa_ticket"
@@ -380,8 +380,7 @@ msgstr "Testnachricht gesendet. Prüfe den Discord-Kanal."
 msgctxt "aa_ticket"
 msgid "Discord refused the message (HTTP %(status)s). Check the webhook URL."
 msgstr ""
-"Discord hat die Nachricht abgelehnt (HTTP %(status)s). Prüfe die Webhook-"
-"URL."
+"Discord hat die Nachricht abgelehnt (HTTP %(status)s). Prüfe die Webhook-URL."
 
 #: forms.py:9 templates/aa_ticket/submit.html:19
 msgctxt "aa_ticket"
@@ -423,8 +422,7 @@ msgid ""
 "Role ID'. Separate several IDs with commas."
 msgstr ""
 "Aktiviere in Discord den Entwicklermodus, klicke mit der rechten Maustaste "
-"auf die Rolle und wähle „Rollen-ID kopieren“. Mehrere IDs mit Kommas "
-"trennen."
+"auf die Rolle und wähle „Rollen-ID kopieren“. Mehrere IDs mit Kommas trennen."
 
 #: forms.py:87
 msgctxt "aa_ticket"
@@ -445,8 +443,8 @@ msgstr ""
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"This department still has %(count)d open ticket. Transfer or close it before"
-" deactivating the department."
+"This department still has %(count)d open ticket. Transfer or close it before "
+"deactivating the department."
 msgid_plural ""
 "This department still has %(count)d open tickets. Transfer or close them "
 "before deactivating the department."
@@ -461,14 +459,14 @@ msgstr[1] ""
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"%(count)d open ticket still uses this priority. Change its priority or close"
-" it first."
+"%(count)d open ticket still uses this priority. Change its priority or close "
+"it first."
 msgid_plural ""
 "%(count)d open tickets still use this priority. Change their priority or "
 "close them first."
 msgstr[0] ""
-"%(count)d offenes Ticket verwendet diese Priorität noch. Ändere zuerst seine"
-" Priorität oder schließe es."
+"%(count)d offenes Ticket verwendet diese Priorität noch. Ändere zuerst seine "
+"Priorität oder schließe es."
 msgstr[1] ""
 "%(count)d offene Tickets verwenden diese Priorität noch. Ändere zuerst ihre "
 "Priorität oder schließe sie."
@@ -677,8 +675,7 @@ msgstr "Vorlage"
 msgctxt "aa_ticket"
 msgid "Pre-filled into the ticket text when a player picks this category."
 msgstr ""
-"Wird in den Tickettext vorausgefüllt, wenn ein Spieler diese Kategorie "
-"wählt."
+"Wird in den Tickettext vorausgefüllt, wenn ein Spieler diese Kategorie wählt."
 
 #: models/config.py:197
 msgctxt "aa_ticket"
@@ -751,8 +748,8 @@ msgstr "Ersteller kann wieder öffnen für (Tage)"
 #: models/config.py:242
 msgctxt "aa_ticket"
 msgid ""
-"For this many days after closing, the requester can reopen the ticket. Staff"
-" can always reopen."
+"For this many days after closing, the requester can reopen the ticket. Staff "
+"can always reopen."
 msgstr ""
 "So viele Tage nach dem Schließen kann der Ersteller das Ticket wieder "
 "öffnen. Das Team kann es immer wieder öffnen."
@@ -825,8 +822,8 @@ msgid ""
 "Direct messages can follow each person's language setting in Alliance Auth, "
 "or use the channel language."
 msgstr ""
-"Direktnachrichten können der Spracheinstellung jeder Person in Alliance Auth"
-" folgen oder die Kanalsprache verwenden."
+"Direktnachrichten können der Spracheinstellung jeder Person in Alliance Auth "
+"folgen oder die Kanalsprache verwenden."
 
 #: models/config.py:281
 msgctxt "aa_ticket"
@@ -942,43 +939,43 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "Keine eskalierten Tickets."
 
-#: services.py:98
+#: services.py:101
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "Bild-Uploads sind auf diesem Server deaktiviert."
 
-#: services.py:132
+#: services.py:135
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "Bitte halte den Text unter %(count)d Zeichen."
 
-#: services.py:144 templates/aa_ticket/submit.html:40
+#: services.py:147 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "Bitte gib einen Titel ein."
 
-#: services.py:146
+#: services.py:149
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "Bitte halte den Titel unter 200 Zeichen."
 
-#: services.py:148 templates/aa_ticket/submit.html:45
+#: services.py:151 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Bitte beschreibe dein Anliegen."
 
-#: services.py:150 services.py:384 templates/aa_ticket/submit.html:34
+#: services.py:153 services.py:397 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Bitte wähle eine verfügbare Priorität."
 
-#: services.py:152 templates/aa_ticket/submit.html:24
+#: services.py:155 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Bitte wähle eine Kategorie der gewählten Abteilung."
 
-#: services.py:158
+#: services.py:161
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -988,64 +985,64 @@ msgstr ""
 "Du hast bereits %(count)d offene Tickets. Bitte schließe erledigte Tickets, "
 "bevor du ein neues öffnest."
 
-#: services.py:192 services.py:221
+#: services.py:195 services.py:224
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Bitte schreibe eine Nachricht, bevor du sie sendest."
 
-#: services.py:247
+#: services.py:250
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Bereits von %(name)s übernommen."
 
-#: services.py:249
+#: services.py:252
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Dieses Ticket kann nicht mehr übernommen werden."
 
-#: services.py:259
+#: services.py:262
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Wähle jemanden aus der zuständigen Abteilung."
 
-#: services.py:285 services.py:309
+#: services.py:288 services.py:312
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Diese Abteilung ist nicht aktiv."
 
-#: services.py:287
+#: services.py:290
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Diese Abteilung ist bereits für das Ticket zuständig."
 
-#: services.py:289
+#: services.py:292
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Diese Abteilung arbeitet bereits an dem Ticket."
 
-#: services.py:299
+#: services.py:302
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Diese Abteilung arbeitet nicht an dem Ticket."
 
-#: services.py:311
+#: services.py:314
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Das Ticket liegt bereits bei dieser Abteilung."
 
-#: services.py:359 views/ticket.py:219
+#: services.py:365 services.py:372 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "%(department)s wurde bereits um Unterstützung gebeten."
 
-#: services.py:398
+#: services.py:411
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Bitte wähle eine Kategorie der zuständigen Abteilung."
 
-#: services.py:419
+#: services.py:432
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr ""
@@ -1436,11 +1433,11 @@ msgstr "Diese Kategorie löschen? Tickets mit dieser Kategorie verlieren sie."
 #: templates/aa_ticket/manage/categories.html:24
 msgctxt "aa_ticket"
 msgid ""
-"No categories yet. Categories are optional; without them players only pick a"
-" department."
+"No categories yet. Categories are optional; without them players only pick a "
+"department."
 msgstr ""
-"Noch keine Kategorien. Kategorien sind optional; ohne sie wählen Spieler nur"
-" eine Abteilung."
+"Noch keine Kategorien. Kategorien sind optional; ohne sie wählen Spieler nur "
+"eine Abteilung."
 
 #: templates/aa_ticket/manage/department_form.html:9
 msgctxt "aa_ticket"
@@ -1630,8 +1627,8 @@ msgstr ""
 #: templates/aa_ticket/prefs.html:19
 msgctxt "aa_ticket"
 msgid ""
-"Discord direct messages are not available on this server. You get all ticket"
-" notifications in Alliance Auth."
+"Discord direct messages are not available on this server. You get all ticket "
+"notifications in Alliance Auth."
 msgstr ""
 "Discord-Direktnachrichten sind auf diesem Server nicht verfügbar. Du "
 "erhältst alle Ticket-Benachrichtigungen in Alliance Auth."
@@ -1690,8 +1687,8 @@ msgid ""
 "No priority is available, so tickets cannot be submitted right now. Please "
 "tell an administrator."
 msgstr ""
-"Es ist keine Priorität verfügbar, daher können gerade keine Tickets erstellt"
-" werden. Bitte informiere einen Administrator."
+"Es ist keine Priorität verfügbar, daher können gerade keine Tickets erstellt "
+"werden. Bitte informiere einen Administrator."
 
 #: templates/aa_ticket/submit.html:49
 msgctxt "aa_ticket"
@@ -1939,8 +1936,8 @@ msgstr ""
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"Escalation requested. Staff of %(department)s have been notified in Alliance"
-" Auth."
+"Escalation requested. Staff of %(department)s have been notified in Alliance "
+"Auth."
 msgstr ""
 "Eskalation angefordert. Das Team von %(department)s wurde in Alliance Auth "
 "benachrichtigt."

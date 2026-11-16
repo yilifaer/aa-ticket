@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 09:30+0000\n"
+"POT-Creation-Date: 2026-11-16 09:54+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: ru\n"
@@ -12,7 +12,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: access.py:162
 #, python-format
@@ -23,8 +25,8 @@ msgstr "Эту заявку ведёт %(name)s. Вы можете написа�
 #: access.py:168
 msgctxt "aa_ticket"
 msgid ""
-"Your department is helping with this ticket. You can write an internal note;"
-" the responsible department replies to the requester."
+"Your department is helping with this ticket. You can write an internal note; "
+"the responsible department replies to the requester."
 msgstr ""
 "Ваш отдел помогает с этой заявкой. Вы можете написать внутреннюю заметку; "
 "автору отвечает ответственный отдел."
@@ -46,8 +48,8 @@ msgid ""
 "This image is too large (%(width)d × %(height)d pixels). Please make it "
 "smaller and try again."
 msgstr ""
-"Изображение слишком большое (%(width)d × %(height)d пикселей). Уменьшите его"
-" и попробуйте снова."
+"Изображение слишком большое (%(width)d × %(height)d пикселей). Уменьшите его "
+"и попробуйте снова."
 
 #: attachments.py:47
 msgctxt "aa_ticket"
@@ -261,11 +263,11 @@ msgstr "Красный"
 #: discord/webhook.py:34
 msgctxt "aa_ticket"
 msgid ""
-"Paste the full webhook URL from Discord. It starts with "
-"https://discord.com/api/webhooks/"
+"Paste the full webhook URL from Discord. It starts with https://discord.com/"
+"api/webhooks/"
 msgstr ""
-"Вставьте полный URL вебхука из Discord. Он начинается с "
-"https://discord.com/api/webhooks/"
+"Вставьте полный URL вебхука из Discord. Он начинается с https://discord.com/"
+"api/webhooks/"
 
 #: discord/webhook.py:42
 msgctxt "aa_ticket"
@@ -437,8 +439,8 @@ msgstr ""
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"This department still has %(count)d open ticket. Transfer or close it before"
-" deactivating the department."
+"This department still has %(count)d open ticket. Transfer or close it before "
+"deactivating the department."
 msgid_plural ""
 "This department still has %(count)d open tickets. Transfer or close them "
 "before deactivating the department."
@@ -459,23 +461,23 @@ msgstr[3] ""
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"%(count)d open ticket still uses this priority. Change its priority or close"
-" it first."
+"%(count)d open ticket still uses this priority. Change its priority or close "
+"it first."
 msgid_plural ""
 "%(count)d open tickets still use this priority. Change their priority or "
 "close them first."
 msgstr[0] ""
-"Этот приоритет ещё использует %(count)d открытая заявка. Сначала измените её"
-" приоритет или закройте её."
+"Этот приоритет ещё использует %(count)d открытая заявка. Сначала измените её "
+"приоритет или закройте её."
 msgstr[1] ""
-"Этот приоритет ещё используют %(count)d открытые заявки. Сначала измените их"
-" приоритет или закройте их."
+"Этот приоритет ещё используют %(count)d открытые заявки. Сначала измените их "
+"приоритет или закройте их."
 msgstr[2] ""
-"Этот приоритет ещё используют %(count)d открытых заявок. Сначала измените их"
-" приоритет или закройте их."
+"Этот приоритет ещё используют %(count)d открытых заявок. Сначала измените их "
+"приоритет или закройте их."
 msgstr[3] ""
-"Этот приоритет ещё используют %(count)d открытых заявок. Сначала измените их"
-" приоритет или закройте их."
+"Этот приоритет ещё используют %(count)d открытых заявок. Сначала измените их "
+"приоритет или закройте их."
 
 #: forms.py:211
 #, python-format
@@ -612,8 +614,7 @@ msgid ""
 "When on, new tickets with this priority mention the department's Discord "
 "roles."
 msgstr ""
-"Если включено, новые заявки с этим приоритетом упоминают роли Discord "
-"отдела."
+"Если включено, новые заявки с этим приоритетом упоминают роли Discord отдела."
 
 #: models/config.py:153
 msgctxt "aa_ticket"
@@ -748,8 +749,8 @@ msgstr "автор может снова открыть в течение (дн�
 #: models/config.py:242
 msgctxt "aa_ticket"
 msgid ""
-"For this many days after closing, the requester can reopen the ticket. Staff"
-" can always reopen."
+"For this many days after closing, the requester can reopen the ticket. Staff "
+"can always reopen."
 msgstr ""
 "Столько дней после закрытия автор может снова открыть заявку. Сотрудники "
 "могут сделать это всегда."
@@ -784,8 +785,8 @@ msgid ""
 "Images of tickets closed longer than this are deleted. Leave empty to keep "
 "them forever."
 msgstr ""
-"Изображения заявок, закрытых дольше этого срока, удаляются. Оставьте пустым,"
-" чтобы хранить их вечно."
+"Изображения заявок, закрытых дольше этого срока, удаляются. Оставьте пустым, "
+"чтобы хранить их вечно."
 
 #: models/config.py:260 models/config.py:289 templates/aa_ticket/prefs.html:13
 msgctxt "aa_ticket"
@@ -939,43 +940,43 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "Нет эскалированных заявок."
 
-#: services.py:98
+#: services.py:101
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "Загрузка изображений отключена на этом сервере."
 
-#: services.py:132
+#: services.py:135
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "Пожалуйста, уложитесь в %(count)d символов."
 
-#: services.py:144 templates/aa_ticket/submit.html:40
+#: services.py:147 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "Введите заголовок."
 
-#: services.py:146
+#: services.py:149
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "Заголовок должен быть короче 200 символов."
 
-#: services.py:148 templates/aa_ticket/submit.html:45
+#: services.py:151 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Опишите ваш запрос."
 
-#: services.py:150 services.py:384 templates/aa_ticket/submit.html:34
+#: services.py:153 services.py:397 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Выберите доступный приоритет."
 
-#: services.py:152 templates/aa_ticket/submit.html:24
+#: services.py:155 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Выберите категорию выбранного отдела."
 
-#: services.py:158
+#: services.py:161
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -985,64 +986,64 @@ msgstr ""
 "У вас уже %(count)d открытых заявок. Закройте решённые заявки, прежде чем "
 "открывать новую."
 
-#: services.py:192 services.py:221
+#: services.py:195 services.py:224
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Напишите сообщение перед отправкой."
 
-#: services.py:247
+#: services.py:250
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Уже взято в работу: %(name)s."
 
-#: services.py:249
+#: services.py:252
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Эту заявку больше нельзя взять в работу."
 
-#: services.py:259
+#: services.py:262
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Выберите сотрудника ответственного отдела."
 
-#: services.py:285 services.py:309
+#: services.py:288 services.py:312
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Этот отдел не активен."
 
-#: services.py:287
+#: services.py:290
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Этот отдел уже отвечает за заявку."
 
-#: services.py:289
+#: services.py:292
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Этот отдел уже работает над заявкой."
 
-#: services.py:299
+#: services.py:302
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Этот отдел не работает над заявкой."
 
-#: services.py:311
+#: services.py:314
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Заявка уже в этом отделе."
 
-#: services.py:359 views/ticket.py:219
+#: services.py:365 services.py:372 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "Отдел «%(department)s» уже попросили подключиться."
 
-#: services.py:398
+#: services.py:411
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Выберите категорию ответственного отдела."
 
-#: services.py:419
+#: services.py:432
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr "Только автор заявки и исполнитель могут добавить последний ответ."
@@ -1330,8 +1331,8 @@ msgid ""
 "%(name)s will be notified and asked to step in. You can do this once per "
 "level."
 msgstr ""
-"%(name)s получит уведомление с просьбой подключиться. Это можно сделать один"
-" раз на каждом уровне."
+"%(name)s получит уведомление с просьбой подключиться. Это можно сделать один "
+"раз на каждом уровне."
 
 #: templates/aa_ticket/detail.html:182
 msgctxt "aa_ticket"
@@ -1431,8 +1432,8 @@ msgstr "Удалить эту категорию? У заявок с ней ка
 #: templates/aa_ticket/manage/categories.html:24
 msgctxt "aa_ticket"
 msgid ""
-"No categories yet. Categories are optional; without them players only pick a"
-" department."
+"No categories yet. Categories are optional; without them players only pick a "
+"department."
 msgstr ""
 "Категорий пока нет. Они необязательны: без них игроки выбирают только отдел."
 
@@ -1492,8 +1493,7 @@ msgstr[3] "Отключены (%(n)s)"
 #: templates/aa_ticket/manage/departments.html:27
 msgctxt "aa_ticket"
 msgid "No departments yet. Add the first one so players can submit tickets."
-msgstr ""
-"Отделов пока нет. Добавьте первый, чтобы игроки могли подавать заявки."
+msgstr "Отделов пока нет. Добавьте первый, чтобы игроки могли подавать заявки."
 
 #: templates/aa_ticket/manage/priorities.html:6 views/manage.py:23
 msgctxt "aa_ticket"
@@ -1623,8 +1623,8 @@ msgstr ""
 #: templates/aa_ticket/prefs.html:19
 msgctxt "aa_ticket"
 msgid ""
-"Discord direct messages are not available on this server. You get all ticket"
-" notifications in Alliance Auth."
+"Discord direct messages are not available on this server. You get all ticket "
+"notifications in Alliance Auth."
 msgstr ""
 "Личные сообщения Discord недоступны на этом сервере. Все уведомления о "
 "заявках приходят в Alliance Auth."
@@ -1929,8 +1929,8 @@ msgstr "Эскалация запрошена. %(department)s уведомлён
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"Escalation requested. Staff of %(department)s have been notified in Alliance"
-" Auth."
+"Escalation requested. Staff of %(department)s have been notified in Alliance "
+"Auth."
 msgstr ""
 "Эскалация запрошена. Сотрудники отдела %(department)s уведомлены в Alliance "
 "Auth."

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 09:30+0000\n"
+"POT-Creation-Date: 2026-11-16 09:54+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -23,8 +23,8 @@ msgstr "这张工单由 %(name)s 处理，你可以写内部备注。"
 #: access.py:168
 msgctxt "aa_ticket"
 msgid ""
-"Your department is helping with this ticket. You can write an internal note;"
-" the responsible department replies to the requester."
+"Your department is helping with this ticket. You can write an internal note; "
+"the responsible department replies to the requester."
 msgstr "你的部门在协助这张工单，可以写内部备注；回复提交人由负责部门来做。"
 
 #: access.py:171
@@ -255,9 +255,11 @@ msgstr "红色"
 #: discord/webhook.py:34
 msgctxt "aa_ticket"
 msgid ""
-"Paste the full webhook URL from Discord. It starts with "
-"https://discord.com/api/webhooks/"
-msgstr "请粘贴 Discord 中完整的 webhook 地址，以 https://discord.com/api/webhooks/ 开头"
+"Paste the full webhook URL from Discord. It starts with https://discord.com/"
+"api/webhooks/"
+msgstr ""
+"请粘贴 Discord 中完整的 webhook 地址，以 https://discord.com/api/webhooks/ 开"
+"头"
 
 #: discord/webhook.py:42
 msgctxt "aa_ticket"
@@ -405,7 +407,9 @@ msgctxt "aa_ticket"
 msgid ""
 "In Discord, enable Developer Mode, right-click the role and choose 'Copy "
 "Role ID'. Separate several IDs with commas."
-msgstr "在 Discord 中打开「开发者模式」，右键身份组选择「复制身份组 ID」。多个 ID 用逗号分隔。"
+msgstr ""
+"在 Discord 中打开「开发者模式」，右键身份组选择「复制身份组 ID」。多个 ID 用"
+"逗号分隔。"
 
 #: forms.py:87
 msgctxt "aa_ticket"
@@ -423,23 +427,26 @@ msgstr "这个部门还有启用中的下级部门，请先停用或移走它们
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"This department still has %(count)d open ticket. Transfer or close it before"
-" deactivating the department."
+"This department still has %(count)d open ticket. Transfer or close it before "
+"deactivating the department."
 msgid_plural ""
 "This department still has %(count)d open tickets. Transfer or close them "
 "before deactivating the department."
-msgstr[0] "这个部门还有 %(count)d 张未关闭的工单，请先移交或关闭这些工单，再停用部门。"
+msgstr[0] ""
+"这个部门还有 %(count)d 张未关闭的工单，请先移交或关闭这些工单，再停用部门。"
 
 #: forms.py:159
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"%(count)d open ticket still uses this priority. Change its priority or close"
-" it first."
+"%(count)d open ticket still uses this priority. Change its priority or close "
+"it first."
 msgid_plural ""
 "%(count)d open tickets still use this priority. Change their priority or "
 "close them first."
-msgstr[0] "还有 %(count)d 张未关闭的工单在用这个紧急程度，请先改掉它们的紧急程度或关闭它们。"
+msgstr[0] ""
+"还有 %(count)d 张未关闭的工单在用这个紧急程度，请先改掉它们的紧急程度或关闭它"
+"们。"
 
 #: forms.py:211
 #, python-format
@@ -593,7 +600,9 @@ msgctxt "aa_ticket"
 msgid ""
 "Mention the parent department if nobody claims the ticket in time. Leave "
 "empty to turn off."
-msgstr "超过这个时间仍没人接手，就自动申请上级介入（@ 上级部门）。留空表示不自动申请。"
+msgstr ""
+"超过这个时间仍没人接手，就自动申请上级介入（@ 上级部门）。留空表示不自动申"
+"请。"
 
 #: models/config.py:167
 msgctxt "aa_ticket"
@@ -694,8 +703,8 @@ msgstr "提交人可重新打开（天）"
 #: models/config.py:242
 msgctxt "aa_ticket"
 msgid ""
-"For this many days after closing, the requester can reopen the ticket. Staff"
-" can always reopen."
+"For this many days after closing, the requester can reopen the ticket. Staff "
+"can always reopen."
 msgstr "工单关闭后的这么多天内，提交人可以重新打开。工作人员随时都能重新打开。"
 
 #: models/config.py:245
@@ -873,108 +882,109 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "没有申请上级介入或邀请协作的工单。"
 
-#: services.py:98
+#: services.py:101
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "本服务器未开启图片上传。"
 
-#: services.py:132
+#: services.py:135
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "内容请少于 %(count)d 个字符。"
 
-#: services.py:144 templates/aa_ticket/submit.html:40
+#: services.py:147 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "请输入标题。"
 
-#: services.py:146
+#: services.py:149
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "标题请少于 200 个字符。"
 
-#: services.py:148 templates/aa_ticket/submit.html:45
+#: services.py:151 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "请描述你的问题。"
 
-#: services.py:150 services.py:384 templates/aa_ticket/submit.html:34
+#: services.py:153 services.py:397 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "请选择一个可用的紧急程度。"
 
-#: services.py:152 templates/aa_ticket/submit.html:24
+#: services.py:155 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "请选择所选部门下的分类。"
 
-#: services.py:158
+#: services.py:161
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
 "You already have %(count)d open tickets. Please close resolved tickets "
 "before opening a new one."
-msgstr "你已有 %(count)d 张未关闭的工单。请先关闭已处理完的工单，再提交新工单。"
+msgstr ""
+"你已有 %(count)d 张未关闭的工单。请先关闭已处理完的工单，再提交新工单。"
 
-#: services.py:192 services.py:221
+#: services.py:195 services.py:224
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "请先写好内容再发送。"
 
-#: services.py:247
+#: services.py:250
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "已被 %(name)s 接手。"
 
-#: services.py:249
+#: services.py:252
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "这张工单已无法接手。"
 
-#: services.py:259
+#: services.py:262
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "请从负责部门中选择处理人。"
 
-#: services.py:285 services.py:309
+#: services.py:288 services.py:312
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "这个部门未启用。"
 
-#: services.py:287
+#: services.py:290
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "这个部门已经是负责部门。"
 
-#: services.py:289
+#: services.py:292
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "这个部门已经在协作处理这张工单。"
 
-#: services.py:299
+#: services.py:302
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "这个部门没有参与这张工单。"
 
-#: services.py:311
+#: services.py:314
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "工单已经在这个部门。"
 
-#: services.py:359 views/ticket.py:219
+#: services.py:365 services.py:372 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "已经申请过 %(department)s 介入了。"
 
-#: services.py:398
+#: services.py:411
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "请选择负责部门下的分类。"
 
-#: services.py:419
+#: services.py:432
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr "只有提交人和处理人可以附最终回复。"
@@ -1207,7 +1217,8 @@ msgctxt "aa_ticket"
 msgid ""
 "The invited department can read the ticket and write internal notes, and is "
 "notified in its Discord channel."
-msgstr "被邀请的部门可以查看工单、写内部备注，并会在它的 Discord 频道收到提醒。"
+msgstr ""
+"被邀请的部门可以查看工单、写内部备注，并会在它的 Discord 频道收到提醒。"
 
 #: templates/aa_ticket/detail.html:126
 msgctxt "aa_ticket"
@@ -1355,8 +1366,8 @@ msgstr "删除这个分类？使用它的工单会变成无分类。"
 #: templates/aa_ticket/manage/categories.html:24
 msgctxt "aa_ticket"
 msgid ""
-"No categories yet. Categories are optional; without them players only pick a"
-" department."
+"No categories yet. Categories are optional; without them players only pick a "
+"department."
 msgstr "还没有分类。分类是可选的，没有分类时玩家只需选择部门。"
 
 #: templates/aa_ticket/manage/department_form.html:9
@@ -1382,7 +1393,8 @@ msgctxt "aa_ticket"
 msgid ""
 "%(group)s: anyone can join or request this group — they could read all "
 "tickets of this department."
-msgstr "%(group)s：任何人都能加入或申请这个组，加入后就能看到这个部门的所有工单。"
+msgstr ""
+"%(group)s：任何人都能加入或申请这个组，加入后就能看到这个部门的所有工单。"
 
 #: templates/aa_ticket/manage/departments.html:6 views/manage.py:22
 msgctxt "aa_ticket"
@@ -1537,8 +1549,8 @@ msgstr "打开后，你还会通过 Discord 私信收到工单通知。AA 内的
 #: templates/aa_ticket/prefs.html:19
 msgctxt "aa_ticket"
 msgid ""
-"Discord direct messages are not available on this server. You get all ticket"
-" notifications in Alliance Auth."
+"Discord direct messages are not available on this server. You get all ticket "
+"notifications in Alliance Auth."
 msgstr "本服务器未开启 Discord 私信，所有工单通知都会在 AA 内收到。"
 
 #: templates/aa_ticket/stats.html:9
@@ -1834,8 +1846,8 @@ msgstr "已申请上级介入，已在 Discord 提醒 %(department)s。"
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"Escalation requested. Staff of %(department)s have been notified in Alliance"
-" Auth."
+"Escalation requested. Staff of %(department)s have been notified in Alliance "
+"Auth."
 msgstr "已申请上级介入，已在 AA 内通知 %(department)s 的人员。"
 
 #: views/ticket.py:232
@@ -1844,7 +1856,9 @@ msgctxt "aa_ticket"
 msgid ""
 "Escalation requested, but %(department)s has no Discord channel or staff to "
 "notify. Please contact them directly."
-msgstr "已申请上级介入，但 %(department)s 没有配置 Discord 频道，也没有人员可以通知，请直接联系他们。"
+msgstr ""
+"已申请上级介入，但 %(department)s 没有配置 Discord 频道，也没有人员可以通知，"
+"请直接联系他们。"
 
 #: views/ticket.py:248
 msgctxt "aa_ticket"

@@ -56,8 +56,9 @@ def send_webhook(self, department_id, ticket_id, event, mention):
     if countdown is not None and self.request.retries < self.max_retries:
         raise self.retry(countdown=countdown)
     _record_webhook_result(department_id, error)
-    if event == Event.REPLIED:
-        # the "requester added a reply" notice did not arrive: let the next reply try again
+    if event == Event.REPLIED and error != "ReadTimeout":
+        # The "requester added a reply" notice did not arrive: let the next reply try again.
+        # After a read timeout Discord may well have posted it, so the limit stays in place.
         cache.delete(unclaimed_reply_key(ticket_id))
     logger.warning(
         "Discord message for department %s (ticket %s) failed: %s", department.name, ticket.display_number, error
