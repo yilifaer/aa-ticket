@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.2
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.3
 ```
 
 ### 2. Change `local.py`
@@ -84,6 +84,9 @@ the web server user can write to:
 ```python
 MEDIA_ROOT = "/home/allianceserver/myauth/media/"
 ```
+
+The daily `cleanup_attachments` task also removes image files that no ticket refers to any more
+(for example after a failed upload); it leaves files younger than one day alone.
 
 Without `MEDIA_ROOT` the app still works, but image uploads are turned off and
 `python manage.py check` shows the warning `aa_ticket.W001`.

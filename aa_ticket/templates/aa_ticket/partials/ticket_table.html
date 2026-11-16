@@ -15,7 +15,7 @@
             {% for ticket in tickets %}
                 <tr>
                     <td><a href="{% url 'aa_ticket:detail' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.display_number }} {{ ticket.title }}</a>
-                        {% if ticket.status == "in_progress" and ticket.last_reply_by_staff and not show_requester %}<span class="badge text-bg-info ms-1">{% translate "Waiting for you" context 'aa_ticket' %}</span>{% endif %}
+                        {% if ticket.status == "in_progress" and ticket.last_reply_by_staff and not show_requester %}<span class="badge aa-badge-info ms-1">{% translate "Waiting for you" context 'aa_ticket' %}</span>{% endif %}
                     </td>
                     <td>{{ ticket.department.name }}</td>
                     <td>{% include "aa_ticket/partials/priority_badge.html" %}</td>

@@ -6,6 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.3]
+
+Fixes from the 0.4.2 test round. No database changes.
+
+### Fixed
+
+- Dashboard card: refreshed for the previous assignee after a reassignment or transfer; one cache
+  entry per language, so switching languages cannot keep old numbers alive.
+- Requesting escalation a second time always says which department was already asked, also when
+  there is no further level; a changed department number in the request no longer reveals the
+  name of other departments.
+- Reopening a ticket whose assignee has left the department puts it back to *Unclaimed*.
+- Image files written by an action that fails afterwards are removed again; the daily clean-up
+  task also deletes files no ticket refers to (older than one day).
+- The hourly limit for "requester added a reply" channel notices is only used when a message is
+  really sent, and released when sending fails.
+- Singular/plural wording for "open ticket(s)" messages (all languages, Russian plural forms).
+- Contrast of at least 4.5:1 in the Flatly and Darkly themes for the yellow "internal note" and
+  "unclaimed" marks, grey labels, the urgent mark, "waiting for you", the Claim button and the
+  outline buttons on the ticket page.
+- Spanish: "Responsable" for assignee everywhere. Chinese: one term, 申请上级介入, for
+  escalation (the automatic one is 自动申请上级介入).
+
+### Changed
+
+- Channel messages are only queued for departments that have a webhook.
+
 ## [0.4.2]
 
 ### Added

@@ -23,9 +23,9 @@
                     <div class="me-auto text-break">
                         <a class="fw-semibold text-decoration-none" href="{% url 'aa_ticket:detail' ticket.pk %}">{{ ticket.display_number }} {{ ticket.title }}</a>
                         {% if section.key == "own" and ticket.status == "in_progress" and ticket.last_reply_by_staff %}
-                            <span class="badge text-bg-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
+                            <span class="badge aa-badge-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
                         {% elif section.key == "mine" and not ticket.last_reply_by_staff %}
-                            <span class="badge text-bg-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
+                            <span class="badge aa-badge-info">{% translate "Waiting for you" context 'aa_ticket' %}</span>
                         {% endif %}
                         <div class="small text-body-secondary">
                             {{ ticket.department.name }} ·
