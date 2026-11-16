@@ -1,0 +1,8 @@
+include LICENSE
+include README.md
+include README.zh-hans.md
+include CHANGELOG.md
+recursive-include aa_ticket/templates *
+recursive-include aa_ticket/static *
+recursive-include aa_ticket/locale *
+prune aa_ticket/tests

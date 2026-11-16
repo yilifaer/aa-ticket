@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 03:16+0000\n"
+"POT-Creation-Date: 2026-11-16 06:47+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: es\n"
@@ -76,7 +76,7 @@ msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
 msgstr "Cada imagen debe pesar menos de %(size)d MB."
 
-#: auth_hooks.py:34 templates/aa_ticket/base.html:4
+#: auth_hooks.py:38 templates/aa_ticket/base.html:4
 #: templates/aa_ticket/base.html:6 templates/aa_ticket/dashboard_card.html:5
 msgctxt "aa_ticket"
 msgid "Tickets"
@@ -93,8 +93,7 @@ msgid "In progress"
 msgstr "En curso"
 
 #: constants.py:8 templates/aa_ticket/detail.html:103
-#: templates/aa_ticket/my_tickets.html:13 templates/aa_ticket/stats.html:19
-#: views/staff.py:25
+#: templates/aa_ticket/my_tickets.html:13 views/staff.py:25
 msgctxt "aa_ticket"
 msgid "Closed"
 msgstr "Cerrado"
@@ -305,17 +304,22 @@ msgstr "Un ticket de %(department)s sigue sin asumir"
 
 #: discord/webhook.py:54
 msgctxt "aa_ticket"
+msgid "The requester added information to an unclaimed ticket"
+msgstr "El solicitante añadió información a un ticket sin asumir"
+
+#: discord/webhook.py:56
+msgctxt "aa_ticket"
 msgid "The assignee left the department — the ticket needs a new handler"
 msgstr ""
 "El responsable dejó el departamento — el ticket necesita un nuevo "
 "responsable"
 
-#: discord/webhook.py:56
+#: discord/webhook.py:58
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply"
 msgstr "El solicitante sigue esperando una respuesta"
 
-#: discord/webhook.py:67 templates/aa_ticket/detail.html:125
+#: discord/webhook.py:69 templates/aa_ticket/detail.html:125
 #: templates/aa_ticket/detail.html:134 templates/aa_ticket/detail.html:145
 #: templates/aa_ticket/manage/categories.html:11
 #: templates/aa_ticket/partials/ticket_table.html:7
@@ -324,52 +328,53 @@ msgctxt "aa_ticket"
 msgid "Department"
 msgstr "Departamento"
 
-#: discord/webhook.py:68 forms.py:11 templates/aa_ticket/detail.html:161
+#: discord/webhook.py:70 forms.py:11 templates/aa_ticket/detail.html:161
 #: templates/aa_ticket/partials/ticket_table.html:8
 #: templates/aa_ticket/workbench.html:19
 msgctxt "aa_ticket"
 msgid "Priority"
 msgstr "Prioridad"
 
-#: discord/webhook.py:71 forms.py:9 templates/aa_ticket/detail.html:170
+#: discord/webhook.py:73 forms.py:9 templates/aa_ticket/detail.html:170
+#: templates/aa_ticket/workbench.html:24
 msgctxt "aa_ticket"
 msgid "Category"
 msgstr "Categoría"
 
-#: discord/webhook.py:73 templates/aa_ticket/detail.html:14
+#: discord/webhook.py:75 templates/aa_ticket/detail.html:14
 #: templates/aa_ticket/partials/ticket_table.html:10
 msgctxt "aa_ticket"
 msgid "Requester"
 msgstr "Solicitante"
 
-#: discord/webhook.py:105
+#: discord/webhook.py:107
 msgctxt "aa_ticket"
 msgid "No webhook configured."
 msgstr "No hay ningún webhook configurado."
 
-#: discord/webhook.py:117
+#: discord/webhook.py:119
 msgctxt "aa_ticket"
 msgid "Test message"
 msgstr "Mensaje de prueba"
 
-#: discord/webhook.py:118
+#: discord/webhook.py:120
 #, python-format
 msgctxt "aa_ticket"
 msgid "Tickets for %(department)s will be announced in this channel."
 msgstr "Los tickets de %(department)s se anunciarán en este canal."
 
-#: discord/webhook.py:126
+#: discord/webhook.py:128
 #, python-format
 msgctxt "aa_ticket"
 msgid "Sending failed (%(reason)s)."
 msgstr "Error al enviar (%(reason)s)."
 
-#: discord/webhook.py:128
+#: discord/webhook.py:130
 msgctxt "aa_ticket"
 msgid "Test message sent. Check the Discord channel."
 msgstr "Mensaje de prueba enviado. Revisa el canal de Discord."
 
-#: discord/webhook.py:129
+#: discord/webhook.py:131
 #, python-format
 msgctxt "aa_ticket"
 msgid "Discord refused the message (HTTP %(status)s). Check the webhook URL."
@@ -420,6 +425,11 @@ msgstr ""
 
 #: forms.py:87
 msgctxt "aa_ticket"
+msgid "Another department already has this name. Please pick a different one."
+msgstr "Ya existe otro departamento con este nombre. Elige uno distinto."
+
+#: forms.py:98
+msgctxt "aa_ticket"
 msgid ""
 "This department still has active sub-departments. Deactivate or move them "
 "first."
@@ -427,7 +437,7 @@ msgstr ""
 "Este departamento todavía tiene subdepartamentos activos. Desactívalos o "
 "muévelos primero."
 
-#: forms.py:93
+#: forms.py:104
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -437,7 +447,17 @@ msgstr ""
 "Este departamento todavía tiene %(count)d tickets abiertos. Transfiérelos o "
 "ciérralos antes de desactivarlo."
 
-#: forms.py:180
+#: forms.py:157
+#, python-format
+msgctxt "aa_ticket"
+msgid ""
+"%(count)d open tickets still use this priority. Change their priority or "
+"close them first."
+msgstr ""
+"%(count)d tickets abiertos todavía usan esta prioridad. Cambia su prioridad "
+"o ciérralos primero."
+
+#: forms.py:207
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -803,56 +823,56 @@ msgctxt "aa_ticket"
 msgid "Ticket settings"
 msgstr "Configuración de tickets"
 
-#: notifications.py:101 notifications.py:105
+#: notifications.py:110 notifications.py:114
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(name)s is now handling your ticket."
 msgstr "%(name)s se encarga ahora de tu ticket."
 
-#: notifications.py:104
+#: notifications.py:113
 msgctxt "aa_ticket"
 msgid "You were assigned this ticket."
 msgstr "Se te asignó este ticket."
 
-#: notifications.py:108
+#: notifications.py:117
 msgctxt "aa_ticket"
 msgid "There is a new reply on your ticket."
 msgstr "Hay una nueva respuesta en tu ticket."
 
-#: notifications.py:109
+#: notifications.py:118
 msgctxt "aa_ticket"
 msgid "The requester replied."
 msgstr "El solicitante respondió."
 
-#: notifications.py:111
+#: notifications.py:120
 msgctxt "aa_ticket"
 msgid "The ticket was closed."
 msgstr "El ticket se cerró."
 
-#: notifications.py:113
+#: notifications.py:122
 msgctxt "aa_ticket"
 msgid "The ticket was reopened."
 msgstr "El ticket se reabrió."
 
-#: notifications.py:115
+#: notifications.py:124
 #, python-format
 msgctxt "aa_ticket"
 msgid "The ticket was transferred to %(department)s."
 msgstr "El ticket se transfirió a %(department)s."
 
-#: notifications.py:117
+#: notifications.py:126
 #, python-format
 msgctxt "aa_ticket"
 msgid "The priority was changed to %(priority)s."
 msgstr "La prioridad se cambió a %(priority)s."
 
-#: notifications.py:119
+#: notifications.py:128
 #, python-format
 msgctxt "aa_ticket"
 msgid "The requester asked %(department)s to step in."
 msgstr "El solicitante pidió la intervención de %(department)s."
 
-#: notifications.py:122
+#: notifications.py:131
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -861,7 +881,7 @@ msgid ""
 msgstr ""
 "Este ticket se cerrará automáticamente en %(hours)d horas si nadie responde."
 
-#: notifications.py:126
+#: notifications.py:135
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "El solicitante sigue esperando una respuesta."
@@ -932,7 +952,7 @@ msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Describe tu solicitud."
 
-#: services.py:102 services.py:323 templates/aa_ticket/submit.html:34
+#: services.py:102 services.py:324 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Elige una prioridad disponible."
@@ -998,18 +1018,18 @@ msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "El ticket ya está en este departamento."
 
-#: services.py:298
+#: services.py:299
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "Ya se ha pedido a %(department)s que intervenga."
 
-#: services.py:337
+#: services.py:338
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Elige una categoría del departamento responsable."
 
-#: services.py:358
+#: services.py:359
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr ""
@@ -1149,7 +1169,7 @@ msgstr ""
 "Ya no se puede reabrir. Si todavía necesitas ayuda, envía un ticket nuevo."
 
 #: templates/aa_ticket/detail.html:72 templates/aa_ticket/my_tickets.html:9
-#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/overview.html:9
+#: templates/aa_ticket/my_tickets.html:21 templates/aa_ticket/overview.html:9
 #: templates/aa_ticket/submit.html:4 templates/aa_ticket/submit.html:8
 #: templates/aa_ticket/submit_choose_department.html:4
 #: templates/aa_ticket/submit_choose_department.html:7
@@ -1376,10 +1396,25 @@ msgctxt "aa_ticket"
 msgid "inactive"
 msgstr "inactivo"
 
+#: templates/aa_ticket/manage/categories.html:17
+#: templates/aa_ticket/manage/priorities.html:22
+#: templates/aa_ticket/manage/priorities.html:23
+msgctxt "aa_ticket"
+msgid "Yes"
+msgstr "Sí"
+
+#: templates/aa_ticket/manage/categories.html:17
+#: templates/aa_ticket/manage/priorities.html:22
+#: templates/aa_ticket/manage/priorities.html:23
+msgctxt "aa_ticket"
+msgid "No"
+msgstr "No"
+
 #: templates/aa_ticket/manage/categories.html:18
 msgctxt "aa_ticket"
-msgid "Delete this category?"
-msgstr "¿Eliminar esta categoría?"
+msgid "Delete this category? Tickets that use it lose their category."
+msgstr ""
+"¿Eliminar esta categoría? Los tickets que la usan se quedarán sin categoría."
 
 #: templates/aa_ticket/manage/categories.html:24
 msgctxt "aa_ticket"
@@ -1478,18 +1513,6 @@ msgctxt "aa_ticket"
 msgid "Escalate after"
 msgstr "Escalar tras"
 
-#: templates/aa_ticket/manage/priorities.html:22
-#: templates/aa_ticket/manage/priorities.html:23
-msgctxt "aa_ticket"
-msgid "Yes"
-msgstr "Sí"
-
-#: templates/aa_ticket/manage/priorities.html:22
-#: templates/aa_ticket/manage/priorities.html:23
-msgctxt "aa_ticket"
-msgid "No"
-msgstr "No"
-
 #: templates/aa_ticket/manage/priorities.html:24
 #: templates/aa_ticket/manage/priorities.html:25
 #, python-format
@@ -1507,12 +1530,12 @@ msgctxt "aa_ticket"
 msgid "Open"
 msgstr "Abiertos"
 
-#: templates/aa_ticket/my_tickets.html:19
+#: templates/aa_ticket/my_tickets.html:20
 msgctxt "aa_ticket"
 msgid "No closed tickets."
 msgstr "No hay tickets cerrados."
 
-#: templates/aa_ticket/my_tickets.html:19
+#: templates/aa_ticket/my_tickets.html:20
 msgctxt "aa_ticket"
 msgid "No tickets yet."
 msgstr "Aún no hay tickets."
@@ -1545,6 +1568,21 @@ msgid ""
 msgstr ""
 "¿Eliminar este departamento? Sus categorías y respuestas predefinidas "
 "también se eliminarán."
+
+#: templates/aa_ticket/partials/pagination.html:2
+msgctxt "aa_ticket"
+msgid "Pages"
+msgstr "Páginas"
+
+#: templates/aa_ticket/partials/pagination.html:3
+msgctxt "aa_ticket"
+msgid "Previous"
+msgstr "Anterior"
+
+#: templates/aa_ticket/partials/pagination.html:5
+msgctxt "aa_ticket"
+msgid "Next"
+msgstr "Siguiente"
 
 #: templates/aa_ticket/partials/ticket_table.html:6
 msgctxt "aa_ticket"
@@ -1598,6 +1636,11 @@ msgstr[1] "%(n)s días"
 msgctxt "aa_ticket"
 msgid "New"
 msgstr "Nuevos"
+
+#: templates/aa_ticket/stats.html:19
+msgctxt "aa_ticket"
+msgid "Tickets closed"
+msgstr "Tickets cerrados"
 
 #: templates/aa_ticket/stats.html:20
 msgctxt "aa_ticket"
@@ -1673,32 +1716,17 @@ msgid "Number, title or requester"
 msgstr "Número, título o solicitante"
 
 #: templates/aa_ticket/workbench.html:18 templates/aa_ticket/workbench.html:20
-#: templates/aa_ticket/workbench.html:22
+#: templates/aa_ticket/workbench.html:22 templates/aa_ticket/workbench.html:25
 msgctxt "aa_ticket"
 msgid "All"
 msgstr "Todos"
 
-#: templates/aa_ticket/workbench.html:23
+#: templates/aa_ticket/workbench.html:27
 msgctxt "aa_ticket"
 msgid "Filter"
 msgstr "Filtrar"
 
-#: templates/aa_ticket/workbench.html:28
-msgctxt "aa_ticket"
-msgid "Pages"
-msgstr "Páginas"
-
-#: templates/aa_ticket/workbench.html:29
-msgctxt "aa_ticket"
-msgid "Previous"
-msgstr "Anterior"
-
-#: templates/aa_ticket/workbench.html:31
-msgctxt "aa_ticket"
-msgid "Next"
-msgstr "Siguiente"
-
-#: templates/aa_ticket/workbench.html:35
+#: templates/aa_ticket/workbench.html:33
 msgctxt "aa_ticket"
 msgid "Nothing here right now."
 msgstr "No hay nada por ahora."
@@ -1828,7 +1856,7 @@ msgctxt "aa_ticket"
 msgid "Preferences saved."
 msgstr "Preferencias guardadas."
 
-#: views/requester.py:80
+#: views/requester.py:88
 #, python-format
 msgctxt "aa_ticket"
 msgid "Ticket %(number)s submitted."
@@ -1844,7 +1872,7 @@ msgctxt "aa_ticket"
 msgid "Sub-departments"
 msgstr "Subdepartamentos"
 
-#: views/ticket.py:105
+#: views/ticket.py:106
 msgctxt "aa_ticket"
 msgid ""
 "That is no longer possible because the ticket has changed. Please check its "
@@ -1853,43 +1881,43 @@ msgstr ""
 "Eso ya no es posible porque el ticket ha cambiado. Comprueba su estado "
 "actual."
 
-#: views/ticket.py:181
+#: views/ticket.py:182
 msgctxt "aa_ticket"
 msgid "You are now handling this ticket."
 msgstr "Ahora te encargas de este ticket."
 
-#: views/ticket.py:184
+#: views/ticket.py:185
 msgctxt "aa_ticket"
 msgid "Ticket assigned."
 msgstr "Ticket asignado."
 
-#: views/ticket.py:188
+#: views/ticket.py:189
 msgctxt "aa_ticket"
 msgid "Please pick a department."
 msgstr "Elige un departamento."
 
-#: views/ticket.py:191
+#: views/ticket.py:192
 msgctxt "aa_ticket"
 msgid "Department invited."
 msgstr "Departamento invitado."
 
-#: views/ticket.py:193
+#: views/ticket.py:194
 msgctxt "aa_ticket"
 msgid "Department removed."
 msgstr "Departamento quitado."
 
-#: views/ticket.py:204
+#: views/ticket.py:205
 msgctxt "aa_ticket"
 msgid "Ticket transferred."
 msgstr "Ticket transferido."
 
-#: views/ticket.py:209
+#: views/ticket.py:210
 #, python-format
 msgctxt "aa_ticket"
 msgid "Escalation requested. %(department)s has been notified in Discord."
 msgstr "Escalado solicitado. Se ha avisado a %(department)s en Discord."
 
-#: views/ticket.py:211
+#: views/ticket.py:212
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1899,7 +1927,7 @@ msgstr ""
 "Escalado solicitado. Se ha avisado al personal de %(department)s en Alliance"
 " Auth."
 
-#: views/ticket.py:215
+#: views/ticket.py:216
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1909,22 +1937,22 @@ msgstr ""
 "Escalado solicitado, pero %(department)s no tiene canal de Discord ni "
 "personal a quien avisar. Contacta con ellos directamente."
 
-#: views/ticket.py:231
+#: views/ticket.py:232
 msgctxt "aa_ticket"
 msgid "Please pick a priority."
 msgstr "Elige una prioridad."
 
-#: views/ticket.py:240
+#: views/ticket.py:241
 msgctxt "aa_ticket"
 msgid "Please pick a category."
 msgstr "Elige una categoría."
 
-#: views/ticket.py:253
+#: views/ticket.py:254
 msgctxt "aa_ticket"
 msgid "Ticket closed."
 msgstr "Ticket cerrado."
 
-#: views/ticket.py:256
+#: views/ticket.py:257
 msgctxt "aa_ticket"
 msgid "Ticket reopened."
 msgstr "Ticket reabierto."

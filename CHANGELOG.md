@@ -6,6 +6,32 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.2]
+
+### Added
+
+- When the requester adds a reply to a ticket nobody has claimed yet, the department channel gets
+  a short message (no role mention, at most once an hour per ticket).
+- Workbench filter by category; "My tickets" is paginated (50 per page).
+- The Alliance Auth dashboard card is cached for 30 seconds and refreshed when a ticket changes.
+
+### Changed
+
+- A priority that open tickets still use cannot be deactivated; department names must be unique;
+  deleting a category says that its tickets lose the category.
+- The query behind all ticket lists no longer needs DISTINCT over a join (faster with many tickets).
+- After a transfer the old department's menu badge is refreshed at once.
+- Accessibility: dialogs are labelled, the current tab is marked, symbol-only cells have text.
+- The navigation highlights the current area on the submit and ticket pages.
+- Chinese: "Invite department" is 邀请协作 as in the glossary; the statistics column for closed
+  tickets has its own text in every language.
+
+### Internal
+
+- Tests against the real aa-discordbot package, a concurrent claim test on MariaDB, a test for
+  migration 0004, and CI checks for the built package and for migration drift.
+- The source distribution includes CHANGELOG and both READMEs.
+
 ## [0.4.1]
 
 Fixes from a whole-app review. No behaviour of the 0.4.0 reply rule changes.

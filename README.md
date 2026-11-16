@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.1
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.2
 ```
 
 ### 2. Change `local.py`
@@ -204,6 +204,7 @@ Roles**, right-click the role, **Copy Role ID**. Several IDs are separated by co
 | New ticket | Responsible department | If the priority says so |
 | Transferred in | New department | If the priority says so |
 | Invited to help | Invited department | If the priority says so |
+| Requester adds a reply to an unclaimed ticket | Responsible department | Never (at most once an hour per ticket) |
 | Requester asks for escalation | Department above | Always |
 | Still unclaimed | Responsible department | Always |
 | Still unclaimed, escalation time reached | Department above | Always |
@@ -219,6 +220,14 @@ If Discord refuses a message, the app retries a few times and then shows
 "Last delivery failed" on the department page.
 
 Channel messages use the *Language of Discord channel messages* setting (English by default).
+
+### Personal notifications
+
+The requester gets an Alliance Auth notification when staff reply, when the ticket is claimed,
+assigned, transferred, closed or reopened, when its priority is changed, and before it closes
+automatically. The assignee is notified when the requester or a colleague replies, when the
+requester closes, reopens or asks for escalation, and when they are assigned a ticket. Nobody is
+notified about their own action.
 
 ### Direct messages (optional)
 
