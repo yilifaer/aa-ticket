@@ -66,7 +66,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.3.0
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.0
 ```
 
 ### 2. Change `local.py`
@@ -259,6 +259,8 @@ Submitted ──► Unclaimed ──claim──► In progress ──close──
 ```
 
 - **Claim:** staff of the responsible department or any department above it.
+- **Reply:** only the requester and the current assignee can reply publicly. Everyone else
+  on the staff side writes internal notes, or claims / assigns the ticket to themselves first.
 - **Invite department:** the invited department can read, reply and write internal notes.
 - **Transfer:** the new department becomes responsible and the ticket goes back to
   *Unclaimed*. By default the old department keeps helping.

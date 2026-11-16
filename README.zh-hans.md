@@ -13,7 +13,7 @@
 - **部门和上下级**：每个部门绑定权限组、可以设置上级部门，并有自己的 Discord webhook 和要 @ 的身份组。上级部门能看到下级部门的所有工单，但不会被 @。
 - **自定义紧急程度**：每一档可以单独设置——新工单要不要 @ 身份组、多久没人接手就再提醒一次、多久没人接手就提醒上级部门。
 - **问题分类**：每个部门可以有自己的分类，每个分类可以带一份填写模板。
-- **在 AA 里来回交流**：提交人和工作人员都可以回复、上传图片。工作人员还可以写**内部备注**，提交人永远看不到。
+- **在 AA 里来回交流**：提交人和**处理人**可以公开回复、上传图片；其他工作人员要先接手（或改派给自己）才能回复提交人。工作人员还可以写**内部备注**，提交人永远看不到。
 - **协作**：可以邀请其他部门加入、移交给别的部门、改派处理人。提交人可以申请上级介入，逐级往上。
 - **关闭**：提交人或工作人员都可以手动关闭。等待提交人回复的工单，超过设定天数会自动关闭，关闭前会先提醒。等待工作人员回复的工单不会被自动关闭，只会提醒工作人员。
 - **通知**：AA 铃铛通知一直都有。装了 [aa-discordbot](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot) 的话，还会发 Discord 私信，每个人可以自己关掉。
@@ -25,7 +25,7 @@
 
 完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.3.0`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.0`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 

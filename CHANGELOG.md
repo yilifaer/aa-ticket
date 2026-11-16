@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0]
+
+### Changed
+
+- **Only the requester and the current assignee can reply publicly.** Other staff (colleagues,
+  helping and parent departments, `view_all`) can write internal notes; they claim the ticket or
+  assign it to themselves to reply. The ticket page explains this and offers the Claim button.
+  Only the requester and the assignee can add a final reply when closing.
+- The version is shown next to "Tickets" in the page header.
+- Urgent tickets carry one red "urgent" badge, whatever colour the priority has.
+- The workbench "Helping" tab and the overview use the same rule for shared/escalated tickets.
+
+### Fixed
+
+- Overview: "waiting for you" ordering matches the badge; `view_all` users without departments
+  see their assigned tickets; no extra queries per listed ticket.
+- Department management: tree indentation when parents are inactive, "No active departments"
+  message, readable "no player tickets" badge.
+- Internal note header readable in dark themes; larger tap targets on phones.
+- German and Russian wording for "unclaimed", Chinese text for empty escalations.
+
 ## [0.3.0]
 
 ### Added
