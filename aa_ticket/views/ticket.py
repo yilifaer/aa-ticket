@@ -177,6 +177,7 @@ def action(request, pk, action):
             user,
             ticket,
             reason=post.get("reason", ""),
+            expected_target=Department.objects.filter(pk=_int(post.get("target_department_id"))).first(),
             success=success % {"department": target.name if target else ""},
         )
     if action == "priority":

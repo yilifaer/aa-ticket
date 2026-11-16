@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.utils.translation import pgettext
 
 from allianceauth.notifications import notify
+from allianceauth.services.hooks import get_extension_logger
 
 from . import access
 from .constants import Event
@@ -17,6 +18,11 @@ from .models import Department, Ticket, TicketSettings
 from .tasks import send_dm, send_webhook
 from .translation import user_language
 from .utils import display_name
+
+logger = get_extension_logger(__name__)
+
+# The only event data a direct message needs; free text such as reasons stays out of the broker.
+DM_DATA_KEYS = ("by_staff", "assignee", "assignee_id", "department")
 
 REQUESTER_EVENTS = {
     Event.CLAIMED,
@@ -149,29 +155,41 @@ def dispatch(event, ticket_id, actor_id, data):
             pk__in=[pk for pk, _m in _channel_targets(ticket, event, data)], is_active=True
         ).values_list("pk", flat=True)
     )
-    for department_id, mention in _channel_targets(ticket, event, data):
-        if department_id in existing:
-            send_webhook.delay(department_id, ticket.pk, event, mention)
-
-    _clear_badges(ticket)
+    # Alliance Auth notifications first: they only need the database, not the task broker.
     dm_available = dm.is_available()
     url = ticket_url(ticket)
+    dm_data = {k: data[k] for k in DM_DATA_KEYS if k in data}
     for user_id in _personal_recipient_ids(ticket, event, data):
         if user_id == actor_id:
             continue
-        user = User.objects.filter(pk=user_id, is_active=True).first()
-        if user is None or not user.has_perm("aa_ticket.basic_access") or not access.can_view(user, ticket):
-            continue
-        with user_language(user):
-            text = personal_text(ticket, event, data, recipient_id=user.pk)
-            notify(
-                user=user,
-                title=personal_title(ticket),
-                message=f"{text}\n{url}",
-                level=EVENT_LEVEL.get(event, "info"),
-            )
-        if dm_available:
-            send_dm.delay(user.pk, ticket.pk, event, data)
+        try:
+            user = User.objects.filter(pk=user_id, is_active=True).first()
+            if user is None or not user.has_perm("aa_ticket.basic_access") or not access.can_view(user, ticket):
+                continue
+            with user_language(user):
+                text = personal_text(ticket, event, data, recipient_id=user.pk)
+                notify(
+                    user=user,
+                    title=personal_title(ticket),
+                    message=f"{text}\n{url}",
+                    level=EVENT_LEVEL.get(event, "info"),
+                )
+            if dm_available:
+                send_dm.delay(user.pk, ticket.pk, event, dm_data)
+        except Exception as exc:  # noqa: BLE001 - one recipient must not block the others
+            logger.warning("Notification for ticket %s to user %s failed: %s", ticket.display_number, user_id, type(exc).__name__)
+
+    for department_id, mention in _channel_targets(ticket, event, data):
+        if department_id in existing:
+            try:
+                send_webhook.delay(department_id, ticket.pk, event, mention)
+            except Exception as exc:  # noqa: BLE001 - broker down: keep going
+                logger.warning("Could not queue Discord message for ticket %s: %s", ticket.display_number, type(exc).__name__)
+
+    try:
+        _clear_badges(ticket)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Could not refresh menu badges: %s", type(exc).__name__)
 
 
 __all__ = ["dispatch", "personal_text", "display_name"]

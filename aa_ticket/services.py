@@ -261,6 +261,7 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
     if department.pk == ticket.department_id:
         raise TicketActionError(pgettext("aa_ticket", "The ticket is already with this department."))
     old = ticket.department
+    old_cycle = ticket.escalation_cycle
     ticket.department = department
     ticket.status = Status.OPEN
     ticket.assignee = None
@@ -277,6 +278,12 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
     ticket.collaborating_departments.remove(department)
     if keep_as_collaborator:
         ticket.collaborating_departments.add(old)
+    else:
+        # departments that only joined through an escalation of the old department leave too
+        escalated = EscalationRequest.objects.filter(ticket=ticket, cycle=old_cycle).values_list(
+            "to_department_id", flat=True
+        )
+        ticket.collaborating_departments.remove(*escalated)
     _emit(
         ticket,
         Event.TRANSFERRED,
@@ -291,10 +298,15 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
 
 
 @transaction.atomic
-def request_escalation(user, ticket, reason=""):
+def request_escalation(user, ticket, reason="", expected_target=None):
     ticket = _lock(ticket)
     _require(user, ticket, "escalate")
     target = access.next_escalation_target(ticket)
+    if expected_target is not None and target.pk != expected_target.pk:
+        raise TicketActionError(
+            pgettext("aa_ticket", "%(department)s has already been asked to step in.")
+            % {"department": expected_target.name}
+        )
     request = EscalationRequest.objects.create(
         ticket=ticket,
         to_department=target,
@@ -346,7 +358,7 @@ def change_category(actor, ticket, category):
 
 
 @transaction.atomic
-def close(actor, ticket, reason, final_reply=""):
+def close(actor, ticket, reason, final_reply="", expected_last_reply_at=None):
     ticket = _lock(ticket)
     if actor is not None:
         _require(actor, ticket, "close")
@@ -356,6 +368,8 @@ def close(actor, ticket, reason, final_reply=""):
             )
     elif ticket.status != Status.IN_PROGRESS or not ticket.last_reply_by_staff:
         return  # automatic close only while waiting for the requester (re-checked under lock)
+    elif expected_last_reply_at is not None and ticket.last_reply_at != expected_last_reply_at:
+        return  # someone replied after the task looked at this ticket
     if _clean_text(final_reply):
         add_reply(actor, ticket, final_reply, notify=False)
         ticket = _lock(ticket)

@@ -174,7 +174,8 @@
 
 {% if can.escalate %}
 <div class="modal fade" id="modal-escalate" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
-<form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'escalate' %}">{% csrf_token %}
+<form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'escalate' %}" data-submit-once>{% csrf_token %}
+    <input type="hidden" name="target_department_id" value="{{ escalation_target.pk }}">
     <div class="modal-header"><h2 class="modal-title h5">{% translate "Request escalation" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
     <div class="modal-body">
         <p>{% blocktranslate context 'aa_ticket' with name=escalation_target.name %}{{ name }} will be notified and asked to step in. You can do this once per level.{% endblocktranslate %}</p>

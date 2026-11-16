@@ -117,11 +117,9 @@ def can_act(user, ticket, action):
     is_requester = user.pk == ticket.requester_id
     closed = ticket.status == Status.CLOSED
     if action == "reopen":
-        if not closed:
+        if not closed or not ticket.department.is_active:
             return False
-        return is_controller(user, ticket) or (
-            is_requester and ticket.department.is_active and _requester_can_reopen(ticket)
-        )
+        return is_controller(user, ticket) or (is_requester and _requester_can_reopen(ticket))
     if closed:
         return False
     if action == "reply":

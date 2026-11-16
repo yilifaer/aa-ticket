@@ -36,6 +36,9 @@ def send_webhook(self, department_id, ticket_id, event, mention):
     countdown = None
     try:
         response = webhook.post_webhook(department.webhook_url, payload)
+    except requests.ReadTimeout as exc:
+        # Discord may already have posted the message; retrying could post it twice.
+        error = type(exc).__name__
     except requests.RequestException as exc:
         error = type(exc).__name__
         countdown = 2**self.request.retries * 30
@@ -110,7 +113,11 @@ def _mark_and_emit(ticket, field, now, event, extra_filter=None):
 
 
 def _release_departed_assignees():
-    """Tickets whose assignee is no longer staff of the responsible department go back to unclaimed."""
+    """Tickets whose assignee can no longer handle them go back to unclaimed.
+
+    That is: the assignee left the staff groups, lost access to tickets, was deactivated
+    or deleted. All in-progress tickets are checked, in batches by primary key.
+    """
     from django.contrib.auth.models import User
     from django.db import transaction
 
@@ -118,22 +125,44 @@ def _release_departed_assignees():
     from .constants import Event, Status
     from .services import _emit
 
-    tickets = list(
-        Ticket.objects.filter(status=Status.IN_PROGRESS, assignee__isnull=False)
-        .select_related("department")
-        .order_by("pk")[:BATCH_SIZE]
-    )
-    users = {u.pk: u for u in User.objects.filter(pk__in={t.assignee_id for t in tickets})}
-    for ticket in tickets:
-        assignee = users.get(ticket.assignee_id)
-        if assignee is not None and assignee.is_active and access.is_controller(assignee, ticket):
-            continue
-        with transaction.atomic():
-            updated = Ticket.objects.filter(
-                pk=ticket.pk, status=Status.IN_PROGRESS, assignee_id=ticket.assignee_id
-            ).update(status=Status.OPEN, assignee=None, open_since=timezone.now(), reminded_at=None, escalated_at=None)
-            if updated:
-                _emit(Ticket.objects.get(pk=ticket.pk), Event.ASSIGNEE_LEFT)
+    last_pk = 0
+    while True:
+        tickets = list(
+            Ticket.objects.filter(status=Status.IN_PROGRESS, pk__gt=last_pk)
+            .select_related("department")
+            .order_by("pk")[:BATCH_SIZE]
+        )
+        if not tickets:
+            return
+        last_pk = tickets[-1].pk
+        users = {u.pk: u for u in User.objects.filter(pk__in={t.assignee_id for t in tickets if t.assignee_id})}
+        for ticket in tickets:
+            assignee = users.get(ticket.assignee_id)
+            if (
+                assignee is not None
+                and assignee.is_active
+                and assignee.has_perm("aa_ticket.basic_access")
+                and access.is_controller(assignee, ticket)
+            ):
+                continue
+            now = timezone.now()
+            with transaction.atomic():
+                updated = Ticket.objects.filter(
+                    pk=ticket.pk, status=Status.IN_PROGRESS, assignee_id=ticket.assignee_id
+                ).update(
+                    status=Status.OPEN,
+                    assignee=None,
+                    open_since=now,
+                    reminded_at=None,
+                    escalated_at=None,
+                    # restart the auto-close clock: nobody is talking to the requester right now
+                    last_reply_at=now,
+                    last_reply_by_staff=False,
+                    autoclose_warned_at=None,
+                    staff_reminded_at=None,
+                )
+                if updated:
+                    _emit(Ticket.objects.get(pk=ticket.pk), Event.ASSIGNEE_LEFT)
 
 
 def _unclaimed_candidates():
@@ -164,22 +193,26 @@ def check_unclaimed(now=None):
 
     now = _now(now)
     _release_departed_assignees()
-    for ticket in _unclaimed_candidates()[:BATCH_SIZE]:
+    sent = 0
+    for ticket in _unclaimed_candidates().iterator(chunk_size=BATCH_SIZE):
+        if sent >= BATCH_SIZE:
+            break
         prio = ticket.priority
         waited = now - ticket.open_since
+        guard = {"status": Status.OPEN, "open_since": ticket.open_since}
         if (
             prio.remind_after_minutes
             and ticket.reminded_at is None
             and waited >= timedelta(minutes=prio.remind_after_minutes)
         ):
-            _mark_and_emit(ticket, "reminded_at", now, Event.UNCLAIMED_REMINDER, {"status": Status.OPEN})
+            sent += bool(_mark_and_emit(ticket, "reminded_at", now, Event.UNCLAIMED_REMINDER, guard))
         if (
             prio.escalate_after_minutes
             and ticket.escalated_at is None
             and ticket.department.parent_id
             and waited >= timedelta(minutes=prio.escalate_after_minutes)
         ):
-            _mark_and_emit(ticket, "escalated_at", now, Event.ESCALATION_REMINDER, {"status": Status.OPEN})
+            sent += bool(_mark_and_emit(ticket, "escalated_at", now, Event.ESCALATION_REMINDER, guard))
 
 
 @shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
@@ -212,7 +245,7 @@ def check_auto_close(now=None):
                 ticket.autoclose_warned_at is not None and now >= ticket.autoclose_warned_at + warning
             )
             if idle >= close_after and warned_long_enough:
-                close(None, ticket, ClosedReason.AUTO)
+                close(None, ticket, ClosedReason.AUTO, expected_last_reply_at=ticket.last_reply_at)
             elif s.autoclose_warning_hours and ticket.autoclose_warned_at is None and idle >= warn_at:
                 _mark_and_emit(
                     ticket,
