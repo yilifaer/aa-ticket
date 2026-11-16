@@ -33,3 +33,36 @@
     padding-left: 0.75rem;
     padding-right: 0.75rem;
 }
+
+/* Readable in every Alliance Auth theme, light or dark (contrast of at least 4.5:1). */
+.aa-ticket .badge.bg-warning,
+.aa-ticket .badge.text-bg-warning {
+    color: #212529 !important;
+}
+
+.aa-ticket .aa-badge-muted,
+.aa-badge-muted {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+}
+
+/* Outline buttons: the theme colours are too faint for text, so use the normal text colour
+   and keep the theme colour for hover and for the pressed state. */
+.aa-ticket .btn-outline-primary,
+.aa-ticket .btn-outline-secondary,
+.aa-ticket .btn-outline-warning {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-color: var(--bs-body-color);
+    --bs-btn-disabled-color: var(--bs-secondary-color);
+    --bs-btn-disabled-border-color: var(--bs-secondary-color);
+}
+
+.aa-ticket .btn-outline-warning {
+    --bs-btn-hover-color: #212529;
+    --bs-btn-active-color: #212529;
+}
+
+.aa-ticket .btn-check:checked + .btn-outline-warning {
+    color: #212529;
+}

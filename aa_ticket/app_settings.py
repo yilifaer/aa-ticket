@@ -8,6 +8,12 @@ BADGE_CACHE_SECONDS = 60
 CARD_CACHE_SECONDS = 30
 UNCLAIMED_REPLY_NOTICE_SECONDS = 3600
 LIST_PAGE_SIZE = 50
+ORPHAN_FILE_MIN_AGE_SECONDS = 86400
+
+
+def unclaimed_reply_key(ticket_id):
+    """Cache key that limits "requester added a reply" channel notices to one per hour and ticket."""
+    return f"aa_ticket:unclaimed_reply:{ticket_id}"
 WEBHOOK_TIMEOUT = 10
 WEBHOOK_TEST_TIMEOUT = 5
 WEBHOOK_MAX_RETRIES = 5

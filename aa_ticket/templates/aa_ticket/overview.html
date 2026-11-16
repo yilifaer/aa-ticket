@@ -13,7 +13,7 @@
     <section class="mb-4" aria-labelledby="sec-{{ section.key }}">
         <div class="d-flex align-items-baseline gap-2 mb-2">
             <h2 class="h5 mb-0" id="sec-{{ section.key }}">{{ section.title }}</h2>
-            <span class="badge text-bg-secondary">{{ section.count }}</span>
+            <span class="badge aa-badge-muted">{{ section.count }}</span>
             {% if section.count %}<a class="ms-auto aa-tap" href="{{ section.url }}">{% translate "View all" context 'aa_ticket' %}</a>{% endif %}
         </div>
         {% if section.items %}

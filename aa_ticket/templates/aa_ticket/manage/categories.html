@@ -13,7 +13,7 @@
     {% for c in items %}
         <tr>
             <td>{{ c.department.name }}</td>
-            <td><a href="{% url 'aa_ticket:manage_category_edit' c.pk %}">{{ c.name }}</a>{% if not c.is_active %} <span class="badge text-bg-secondary">{% translate "inactive" context 'aa_ticket' %}</span>{% endif %}</td>
+            <td><a href="{% url 'aa_ticket:manage_category_edit' c.pk %}">{{ c.name }}</a>{% if not c.is_active %} <span class="badge aa-badge-muted">{% translate "inactive" context 'aa_ticket' %}</span>{% endif %}</td>
             <td>{% if c.template %}<span aria-hidden="true">✅</span><span class="visually-hidden">{% translate "Yes" context 'aa_ticket' %}</span>{% else %}<span aria-hidden="true">—</span><span class="visually-hidden">{% translate "No" context 'aa_ticket' %}</span>{% endif %}</td>
             <td class="text-end"><form method="post" action="{% url 'aa_ticket:manage_category_delete' c.pk %}" onsubmit="return confirm('{% translate "Delete this category? Tickets that use it lose their category." context 'aa_ticket' as q %}{{ q|escapejs }}');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">{% translate "Delete" context 'aa_ticket' %}</button></form></td>
         </tr>

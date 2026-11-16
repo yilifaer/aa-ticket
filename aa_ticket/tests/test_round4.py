@@ -136,7 +136,7 @@ class TestTranslationsConsistent(TestCase):
             self.assertIn(base.split()[0][:6], po[msgid].msgstr.lower(), msgid)
 
     def test_chinese_no_escalated(self):
-        self.assertEqual(self._po("zh_Hans")["No escalated tickets."].msgstr, "没有上报或邀请我的部门的工单。")
+        self.assertEqual(self._po("zh_Hans")["No escalated tickets."].msgstr, "没有申请上级介入或邀请协作的工单。")
 
 
 class TestOptionalUi(Fixture):

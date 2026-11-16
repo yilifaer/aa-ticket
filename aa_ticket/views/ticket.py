@@ -206,9 +206,25 @@ def action(request, pk, action):
         )
     if action == "escalate":
         target = access.next_escalation_target(ticket)
-        if target is not None and target.webhook_url:
+        asked = {
+            r.to_department_id: r.to_department.name
+            for r in ticket.escalations.filter(cycle=ticket.escalation_cycle).select_related("to_department")
+        }
+        requested = _int(post.get("target_department_id"))
+        is_requester = user.pk == ticket.requester_id and ticket.status != Status.CLOSED
+        if is_requester and asked and (requested in asked or (requested is None and target is None)):
+            # a second click, or a page that was open for a while
+            name = asked.get(requested) or list(asked.values())[-1]
+            messages.error(
+                request, pgettext("aa_ticket", "%(department)s has already been asked to step in.") % {"department": name}
+            )
+            return redirect("aa_ticket:detail", pk=ticket.pk)
+        if target is None or (requested is not None and requested != target.pk):
+            # not the department this ticket would escalate to: say nothing about other departments
+            return _stale(request, ticket, action)
+        if target.webhook_url:
             success = pgettext("aa_ticket", "Escalation requested. %(department)s has been notified in Discord.")
-        elif target is not None and access.department_staff(target).exists():
+        elif access.department_staff(target).exists():
             success = pgettext("aa_ticket", "Escalation requested. Staff of %(department)s have been notified in Alliance Auth.")
         else:
             success = pgettext(
@@ -223,8 +239,8 @@ def action(request, pk, action):
             user,
             ticket,
             reason=post.get("reason", ""),
-            expected_target=Department.objects.filter(pk=_int(post.get("target_department_id"))).first(),
-            success=success % {"department": target.name if target else ""},
+            expected_target=target,
+            success=success % {"department": target.name},
         )
     if action == "priority":
         prio = Priority.objects.filter(pk=_int(post.get("priority_id"))).first()

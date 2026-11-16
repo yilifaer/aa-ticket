@@ -11,7 +11,7 @@ from allianceauth.notifications import notify
 from allianceauth.services.hooks import get_extension_logger
 
 from . import access
-from .app_settings import UNCLAIMED_REPLY_NOTICE_SECONDS
+from .app_settings import UNCLAIMED_REPLY_NOTICE_SECONDS, unclaimed_reply_key
 from .constants import Event, Status
 from .discord import dm
 from .links import ticket_url
@@ -49,10 +49,9 @@ def _channel_targets(ticket, event, data):
         return [(ticket.department_id, mention_new)]
     if event == Event.REPLIED:
         # The requester added something to a ticket nobody has claimed yet: tell the channel,
-        # without a mention and at most once an hour per ticket.
+        # without a mention and at most once an hour per ticket (the limit is applied in dispatch,
+        # only when a message is really going out).
         if data.get("by_staff") or ticket.status != Status.OPEN:
-            return []
-        if not cache.add(f"aa_ticket:unclaimed_reply:{ticket.pk}", 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
             return []
         return [(ticket.department_id, False)]
     if event == Event.TRANSFERRED:
@@ -138,7 +137,9 @@ def personal_text(ticket, event, data, recipient_id=None):
 
 def _clear_caches(ticket, actor_id, data):
     """Refresh the menu badge and the dashboard card of everyone this ticket concerns."""
-    from .auth_hooks import badge_cache_key, card_cache_key
+    import time
+
+    from .auth_hooks import badge_cache_key, card_version_key
 
     department_ids = {ticket.department_id, data.get("from_department_id"), data.get("department_id")}
     department_ids |= set(ticket.collaborating_departments.values_list("pk", flat=True))
@@ -146,9 +147,11 @@ def _clear_caches(ticket, actor_id, data):
     user_ids = set(
         User.objects.filter(groups__aa_ticket_departments__in=department_ids).values_list("pk", flat=True)
     )
-    user_ids |= {pk for pk in (ticket.requester_id, ticket.assignee_id, actor_id) if pk}
-    keys = [badge_cache_key(User(pk=pk)) for pk in user_ids] + [card_cache_key(pk) for pk in user_ids]
-    cache.delete_many(keys)
+    people = (ticket.requester_id, ticket.assignee_id, actor_id, data.get("previous_assignee_id"), data.get("assignee_id"))
+    user_ids |= {pk for pk in people if pk}
+    cache.delete_many([badge_cache_key(User(pk=pk)) for pk in user_ids])
+    version = time.time_ns()
+    cache.set_many({card_version_key(pk): version for pk in user_ids}, 3600)
 
 
 def personal_title(ticket):
@@ -167,9 +170,14 @@ def dispatch(event, ticket_id, actor_id, data):
     data = data or {}
 
     targets = _channel_targets(ticket, event, data)
+    # only departments that are active and really have a channel to post to
     existing = set(
-        Department.objects.filter(pk__in=[pk for pk, _m in targets], is_active=True).values_list("pk", flat=True)
+        Department.objects.filter(pk__in=[pk for pk, _m in targets], is_active=True)
+        .exclude(webhook_url="")
+        .values_list("pk", flat=True)
     )
+    limited = event == Event.REPLIED
+    limit_key = unclaimed_reply_key(ticket.pk)
     # Alliance Auth notifications first: they only need the database, not the task broker.
     dm_available = dm.is_available()
     url = ticket_url(ticket)
@@ -196,9 +204,13 @@ def dispatch(event, ticket_id, actor_id, data):
 
     for department_id, mention in targets:
         if department_id in existing:
+            if limited and not cache.add(limit_key, 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
+                continue  # this ticket already had its notice within the last hour
             try:
                 send_webhook.delay(department_id, ticket.pk, event, mention)
             except Exception as exc:  # noqa: BLE001 - broker down: keep going
+                if limited:
+                    cache.delete(limit_key)  # nothing was sent, so the next reply may try again
                 logger.warning("Could not queue Discord message for ticket %s: %s", ticket.display_number, type(exc).__name__)
 
     try:

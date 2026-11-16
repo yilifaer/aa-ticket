@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import pgettext_lazy
+from django.utils.translation import npgettext, pgettext_lazy
 
 from .models import Category, Priority
 
@@ -100,9 +100,11 @@ class DepartmentForm(forms.ModelForm):
             open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
             if open_count:
                 raise forms.ValidationError(
-                    pgettext_lazy("aa_ticket", 
-                        "This department still has %(count)d open tickets. "
-                        "Transfer or close them before deactivating it."
+                    npgettext(
+                        "aa_ticket",
+                        "This department still has %(count)d open ticket. Transfer or close it before deactivating the department.",
+                        "This department still has %(count)d open tickets. Transfer or close them before deactivating the department.",
+                        open_count,
                     )
                     % {"count": open_count}
                 )
@@ -152,9 +154,11 @@ class PriorityForm(forms.ModelForm):
             open_count = self.instance.tickets.exclude(status=Status.CLOSED).count()
             if open_count:
                 raise forms.ValidationError(
-                    pgettext_lazy(
+                    npgettext(
                         "aa_ticket",
+                        "%(count)d open ticket still uses this priority. Change its priority or close it first.",
                         "%(count)d open tickets still use this priority. Change their priority or close them first.",
+                        open_count,
                     )
                     % {"count": open_count}
                 )

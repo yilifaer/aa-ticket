@@ -5,10 +5,16 @@ writes a system event to the ticket's timeline and hands the event to
 `notifications.dispatch` once the transaction has been committed.
 """
 
+import contextvars
+import functools
+
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import pgettext
+
+from allianceauth.services.hooks import get_extension_logger
 
 from . import access
 from .constants import ClosedReason, Event, MessageKind, Status
@@ -17,6 +23,8 @@ from .models import EscalationRequest, Ticket, TicketMessage, TicketSettings
 from .attachments import prepare_images, save_prepared, uploads_enabled
 from .notifications import dispatch
 from .utils import display_name
+
+logger = get_extension_logger(__name__)
 
 TITLE_MAX = 200
 
@@ -40,6 +48,46 @@ def _emit(ticket, event, actor=None, data=None):
     actor_id = actor.pk if actor else None
     transaction.on_commit(lambda: dispatch(event, ticket_id, actor_id, data), robust=True)
     return message
+
+
+_written_files = contextvars.ContextVar("aa_ticket_written_files", default=None)
+
+
+def _removes_files_on_failure(func):
+    """Run in a transaction; if it fails, delete the image files written during it.
+
+    The database rolls back on its own, files on disk do not.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        outer = _written_files.get()
+        written = []
+        token = _written_files.set(written)
+        try:
+            with transaction.atomic():
+                result = func(*args, **kwargs)
+        except BaseException:
+            for name in written:
+                try:
+                    default_storage.delete(name)
+                except Exception:  # noqa: BLE001 - the daily clean-up catches what is left
+                    logger.warning("Could not remove an unused image file after a failed action.")
+            raise
+        finally:
+            _written_files.reset(token)
+        if outer is not None:
+            outer.extend(written)  # an enclosing action may still fail
+        return result
+
+    return wrapper
+
+
+def _store(message, prepared):
+    for attachment in save_prepared(message, prepared):
+        written = _written_files.get()
+        if written is not None:
+            written.append(attachment.file.name)
 
 
 def _prepare(images):
@@ -86,7 +134,7 @@ def _clean_text(text, max_length=None):
     return text
 
 
-@transaction.atomic
+@_removes_files_on_failure
 def create_ticket(user, department, priority, title, body, category=None, images=()):
     if department not in access.submittable_departments(user):
         raise PermissionDenied("department")
@@ -127,7 +175,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
         last_reply_by_staff=False,
     )
     message = TicketMessage.objects.create(ticket=ticket, author=user, kind=MessageKind.REPLY, body=body)
-    save_prepared(message, prepared)
+    _store(message, prepared)
     _emit(ticket, Event.SUBMITTED, user, {"department": department.name, "department_id": department.pk})
     return ticket
 
@@ -136,7 +184,7 @@ def _lock(ticket):
     return Ticket.objects.select_for_update().get(pk=ticket.pk)
 
 
-@transaction.atomic
+@_removes_files_on_failure
 def add_reply(user, ticket, body, images=(), notify=True):
     _require(user, ticket, "reply")  # cheap pre-check; repeated below under the lock
     body = _clean_text(body, BODY_MAX)
@@ -153,7 +201,7 @@ def add_reply(user, ticket, body, images=(), notify=True):
         body=body,
         author_department=_author_department(user, ticket) if by_staff else None,
     )
-    save_prepared(message, prepared)
+    _store(message, prepared)
     ticket.last_reply_at = message.created_at
     ticket.last_reply_by_staff = by_staff
     ticket.autoclose_warned_at = None
@@ -165,7 +213,7 @@ def add_reply(user, ticket, body, images=(), notify=True):
     return message
 
 
-@transaction.atomic
+@_removes_files_on_failure
 def add_note(user, ticket, body, images=()):
     _require(user, ticket, "note")  # cheap pre-check; repeated below under the lock
     body = _clean_text(body, BODY_MAX)
@@ -181,7 +229,7 @@ def add_note(user, ticket, body, images=()):
         body=body,
         author_department=_author_department(user, ticket),
     )
-    save_prepared(message, prepared)
+    _store(message, prepared)
     return message
 
 
@@ -209,6 +257,7 @@ def assign(actor, ticket, assignee):
     _require(actor, ticket, "assign")
     if assignee is None or not access.assignable_users(ticket).filter(pk=assignee.pk).exists():
         raise TicketActionError(pgettext("aa_ticket", "Pick someone from the responsible department."))
+    previous_assignee_id = ticket.assignee_id
     ticket.assignee = assignee
     fields = ["assignee"]
     if ticket.status == Status.OPEN:
@@ -216,7 +265,16 @@ def assign(actor, ticket, assignee):
         ticket.claimed_at = timezone.now()
         fields += ["status", "claimed_at"]
     ticket.save(update_fields=fields)
-    _emit(ticket, Event.ASSIGNED, actor, {"assignee": display_name(assignee), "assignee_id": assignee.pk})
+    _emit(
+        ticket,
+        Event.ASSIGNED,
+        actor,
+        {
+            "assignee": display_name(assignee),
+            "assignee_id": assignee.pk,
+            "previous_assignee_id": previous_assignee_id,
+        },
+    )
 
 
 @transaction.atomic
@@ -253,6 +311,7 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
         raise TicketActionError(pgettext("aa_ticket", "The ticket is already with this department."))
     old = ticket.department
     old_cycle = ticket.escalation_cycle
+    previous_assignee_id = ticket.assignee_id
     ticket.department = department
     ticket.status = Status.OPEN
     ticket.assignee = None
@@ -282,6 +341,7 @@ def transfer(actor, ticket, department, keep_as_collaborator=True, reason=""):
         {
             "from": old.name,
             "from_department_id": old.pk,
+            "previous_assignee_id": previous_assignee_id,
             "to": department.name,
             "department_id": department.pk,
             "reason": _clean_text(reason, REASON_MAX),
@@ -349,7 +409,7 @@ def change_category(actor, ticket, category):
     )
 
 
-@transaction.atomic
+@_removes_files_on_failure
 def close(actor, ticket, reason, final_reply="", expected_last_reply_at=None):
     ticket = _lock(ticket)
     if actor is not None:
@@ -378,9 +438,11 @@ def reopen(actor, ticket):
     ticket = _lock(ticket)
     _require(actor, ticket, "reopen")
     now = timezone.now()
-    if ticket.assignee_id:
+    if ticket.assignee_id and access.can_handle(ticket.assignee, ticket):
         ticket.status = Status.IN_PROGRESS
     else:
+        # nobody, or someone who has left the department meanwhile: back to the unclaimed queue
+        ticket.assignee = None
         ticket.status = Status.OPEN
         ticket.open_since = now
         ticket.reminded_at = None

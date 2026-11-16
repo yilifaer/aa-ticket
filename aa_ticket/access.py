@@ -84,6 +84,16 @@ def is_controller(user, ticket):
     return bool(staff_department_ids(user) & controller_department_ids(ticket))
 
 
+def can_handle(user, ticket):
+    """Can this user be the assignee right now? Used when a ticket is reopened and by the release task."""
+    return (
+        user is not None
+        and user.is_active
+        and user.has_perm("aa_ticket.basic_access")
+        and is_controller(user, ticket)
+    )
+
+
 def is_collaborator(user, ticket):
     if not user.is_authenticated or user.pk == ticket.requester_id:
         return False

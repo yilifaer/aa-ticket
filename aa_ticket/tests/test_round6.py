@@ -26,7 +26,7 @@ class Fixture(TestCase):
     def setUpTestData(cls):
         cls.g_dip = make_group("Dip")
         cls.g_fc = make_group("FC")
-        cls.dip = make_department("Dip", groups=[cls.g_dip])
+        cls.dip = make_department("Dip", groups=[cls.g_dip], webhook_url="https://discord.com/api/webhooks/1/abc")
         cls.fc = make_department("FC", groups=[cls.g_fc])
         cls.requester = make_user("Pilot A")
         cls.officer = make_user("Diplomat B", groups=[cls.g_dip])
@@ -78,7 +78,7 @@ class TestItems3to5Manage(Fixture):
             "name": "Normal", "color": "primary", "order": "20", "mention_on_new": "on", "remind_after_minutes": "1440", "escalate_after_minutes": "",
         })
         self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "open tickets")
+        self.assertContains(r, "open ticket")
         self.assertTrue(Priority.objects.get(pk=p.pk).is_active)
 
     def test_category_delete_confirm_explains(self):

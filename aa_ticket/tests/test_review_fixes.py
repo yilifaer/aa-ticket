@@ -104,7 +104,7 @@ class TestDeactivateWithOpenTickets(Fixture):
              "accepts_submissions": "on", "order": "0", "new_webhook_url": "", "mention_role_ids": ""},
         )
         self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "open tickets")
+        self.assertContains(r, "open ticket")
         self.assertTrue(Department.objects.get(pk=self.log.pk).is_active)
 
 

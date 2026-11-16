@@ -12,8 +12,12 @@ def badge_cache_key(user):
     return f"aa_ticket:badge:{user.pk}"
 
 
-def card_cache_key(user_pk):
-    return f"aa_ticket:card:{user_pk}"
+def card_version_key(user_pk):
+    return f"aa_ticket:card_version:{user_pk}"
+
+
+def card_cache_key(user_pk, version, language):
+    return f"aa_ticket:card:{user_pk}:{version}:{language}"
 
 
 def unclaimed_count(user):
@@ -64,15 +68,15 @@ def dashboard_card(request):
         return ""
     from django.utils import translation
 
-    key = card_cache_key(user.pk)
-    language = translation.get_language() or ""
-    cached = cache.get(key) or {}
-    if language in cached:
-        return cached[language]
-    summary = dashboard_summary(user)
-    html = "" if summary is None else render_to_string("aa_ticket/dashboard_card.html", {"summary": summary})
-    cached[language] = html
-    cache.set(key, cached, CARD_CACHE_SECONDS)
+    # One entry per user, language and "version". Bumping the version (see notifications)
+    # makes every language's entry unreachable at once; each entry keeps its own expiry.
+    version = cache.get(card_version_key(user.pk)) or 0
+    key = card_cache_key(user.pk, version, translation.get_language() or "")
+    html = cache.get(key)
+    if html is None:
+        summary = dashboard_summary(user)
+        html = "" if summary is None else render_to_string("aa_ticket/dashboard_card.html", {"summary": summary})
+        cache.set(key, html, CARD_CACHE_SECONDS)
     return html
 
 

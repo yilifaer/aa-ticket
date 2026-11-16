@@ -1,13 +1,15 @@
 import requests
 from celery import shared_task
 
+from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
 
 from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
-from .app_settings import WEBHOOK_MAX_RETRIES
+from .app_settings import ORPHAN_FILE_MIN_AGE_SECONDS, WEBHOOK_MAX_RETRIES, unclaimed_reply_key
+from .constants import Event
 from .discord import webhook
 from .models import Department, Ticket
 
@@ -54,6 +56,9 @@ def send_webhook(self, department_id, ticket_id, event, mention):
     if countdown is not None and self.request.retries < self.max_retries:
         raise self.retry(countdown=countdown)
     _record_webhook_result(department_id, error)
+    if event == Event.REPLIED:
+        # the "requester added a reply" notice did not arrive: let the next reply try again
+        cache.delete(unclaimed_reply_key(ticket_id))
     logger.warning(
         "Discord message for department %s (ticket %s) failed: %s", department.name, ticket.display_number, error
     )
@@ -138,12 +143,7 @@ def _release_departed_assignees():
         users = {u.pk: u for u in User.objects.filter(pk__in={t.assignee_id for t in tickets if t.assignee_id})}
         for ticket in tickets:
             assignee = users.get(ticket.assignee_id)
-            if (
-                assignee is not None
-                and assignee.is_active
-                and assignee.has_perm("aa_ticket.basic_access")
-                and access.is_controller(assignee, ticket)
-            ):
+            if access.can_handle(assignee, ticket):
                 continue
             now = timezone.now()
             with transaction.atomic():
@@ -266,13 +266,14 @@ def check_auto_close(now=None):
 
 @shared_task(base=QueueOnce, once={"graceful": True}, ignore_result=True)
 def cleanup_attachments():
-    """Delete image files of tickets closed longer than the retention period."""
+    """Delete image files nothing refers to, and images of tickets closed longer than the retention period."""
     from datetime import timedelta
 
     from .attachments import delete_attachment
     from .constants import Status
     from .models import Attachment, TicketSettings
 
+    _delete_unreferenced_files()
     days = TicketSettings.get_solo().attachment_retention_days
     if not days:
         return
@@ -286,3 +287,38 @@ def cleanup_attachments():
         count += 1
     if count:
         logger.info("Deleted %d old ticket images.", count)
+
+
+def _delete_unreferenced_files():
+    """Remove files under MEDIA_ROOT/aa_ticket/ that no attachment refers to.
+
+    Such files can be left behind when an action fails after an image was written. Files younger
+    than a day are kept, so an upload that is being saved right now is never touched.
+    """
+    import os
+    import time
+
+    from django.conf import settings
+
+    from .models import Attachment
+
+    root = getattr(settings, "MEDIA_ROOT", "")
+    folder = os.path.join(root, "aa_ticket") if root else ""
+    if not folder or not os.path.isdir(folder):
+        return
+    referenced = set(Attachment.objects.values_list("file", flat=True))
+    cutoff = time.time() - ORPHAN_FILE_MIN_AGE_SECONDS
+    removed = 0
+    for dirpath, _dirs, files in os.walk(folder):
+        for name in files:
+            path = os.path.join(dirpath, name)
+            relative = os.path.relpath(path, root).replace(os.sep, "/")
+            try:
+                if relative in referenced or os.path.getmtime(path) > cutoff:
+                    continue
+                os.remove(path)
+                removed += 1
+            except OSError:
+                continue
+    if removed:
+        logger.info("Deleted %d image files that no ticket refers to.", removed)
