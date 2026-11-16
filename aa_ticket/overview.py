@@ -27,7 +27,13 @@ def own_tickets(user):
 
 def assigned_tickets(user):
     """Tickets assigned to the user; waiting for the user (requester replied last) first."""
-    return _open().filter(assignee=user).exclude(requester=user).order_by("last_reply_by_staff", "-last_reply_at")
+    visible = access.visible_tickets(user).filter(assignee=user).values("pk")
+    return (
+        _open()
+        .filter(pk__in=visible)
+        .exclude(requester=user)
+        .order_by("last_reply_by_staff", "-last_reply_at")
+    )
 
 
 def unclaimed_tickets(user, department_ids):
@@ -121,7 +127,7 @@ def dashboard_summary(user):
         summary["assigned_waiting"] = assigned.filter(last_reply_by_staff=False).count()
         summary["unclaimed"] = unclaimed.count()
         summary["urgent"] = unclaimed.filter(priority__is_urgent=True).count()
-        recent_q |= Q(assignee=user) | Q(status=Status.OPEN, department_id__in=department_ids)
+        recent_q |= Q(pk__in=assigned.values("pk")) | Q(status=Status.OPEN, department_id__in=department_ids)
     if not any(summary[k] for k in ("open", "assigned", "unclaimed")):
         return None
     summary["recent"] = list(_open().filter(recent_q).distinct().order_by("-last_reply_at")[:PREVIEW])

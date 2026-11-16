@@ -182,7 +182,7 @@ class TestDashboardCard(Fixture):
         user.has_perm("aa_ticket.basic_access")
         request = RequestFactory().get("/dashboard/")
         request.user = user
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(9):
             TicketDashboardHook().render(request)
 
 
@@ -218,3 +218,17 @@ class TestDarkModeContrast(TestCase):
             for name in files:
                 text = open(os.path.join(dirpath, name), encoding="utf-8").read()
                 self.assertIsNone(re.search(r"text-(warning|danger)-emphasis", text), name)
+
+
+class TestAssignedRespectsAccess(Fixture):
+    def test_assigned_ticket_hidden_after_leaving_department(self):
+        t = self.new(title="Secret assigned")
+        services.claim(fresh(self.officer), t)
+        self.officer.groups.remove(self.g_dip)
+        self.officer.groups.add(self.g_fc)  # still an officer elsewhere
+        r = self.overview(self.officer)
+        titles = [x.title for s in r.context["sections"] for x in s["items"]]
+        self.assertNotIn("Secret assigned", titles)
+        request = RequestFactory().get("/dashboard/")
+        request.user = fresh(self.officer)
+        self.assertNotIn("Secret assigned", TicketDashboardHook().render(request))
