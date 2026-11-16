@@ -46,6 +46,9 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 - **Notifications.** Alliance Auth notifications always. With
   [aa-discordbot](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot)
   installed, also Discord direct messages, which each person can turn off.
+- **Overview page and dashboard card.** Players see their open tickets, officers also see
+  tickets assigned to them, unclaimed tickets of their departments (urgent first) and tickets
+  escalated to them. A card on the Alliance Auth dashboard shows the counts.
 - **Canned replies**, a **workbench** for staff and **statistics** per department.
 - **Languages:** English, Simplified Chinese, German, Russian and Spanish.
 
@@ -63,7 +66,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.2.0
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.3.0
 ```
 
 ### 2. Change `local.py`

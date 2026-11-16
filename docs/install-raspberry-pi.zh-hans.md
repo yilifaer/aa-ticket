@@ -3,7 +3,7 @@
 这份说明写给第一次装 AA 插件的人。每一步都写了**做什么、在哪里做、做完怎么确认**。
 先在树莓派上装好、测试没问题，再按同样的步骤装到正式服。
 
-**已经装过 0.1.0？** 直接看最后的「[从 0.1.0 升级到 0.2.0](#从-010-升级到-020)」。
+**已经装过旧版本？** 直接看最后的「[从 0.2.0 升级到 0.3.0](#从-020-升级到-030)」（还是 0.1.0 的话，先看它下面的「从 0.1.0 升级到 0.2.0」）。
 
 > 下面假设你的 AA 是按官方文档装的：
 > - 用户：`allianceserver`
@@ -77,7 +77,7 @@ pip install "git+https://github.com/yilifaer/aa-ticket.git@claude/friendly-einst
 ```
 
 > 一定要先 `cd ~`。如果当前所在的文件夹 `allianceserver` 没有权限读，pip 会报 `PermissionError: __editable__...`。
-> 正式发布后，`@` 后面会换成版本号，比如 `@v0.2.0`。
+> 正式发布后，`@` 后面会换成版本号，比如 `@v0.3.0`。
 
 **做完怎么确认：**
 
@@ -86,7 +86,7 @@ pip show aa-ticket | head -2
 pip show allianceauth | head -2
 ```
 
-- `aa-ticket` 显示版本 `0.2.0`；
+- `aa-ticket` 显示版本 `0.3.0`；
 - `allianceauth` **仍然是 5.4.0**（插件不会顺带升级 AA）。
 
 ---
@@ -156,7 +156,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`。
+**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`。
 
 ---
 
@@ -322,6 +322,49 @@ sudo supervisorctl status
 
 ---
 
+## 从 0.2.0 升级到 0.3.0
+
+0.3.0 加了**工单总览页**和 **AA 首页的工单卡片**，紧急程度多了「算作紧急」开关，停用的部门会折叠起来，深色主题下的警告文字也能看清了。升级前先做第 1 步的数据库备份。
+
+```bash
+sudo su allianceserver
+cd ~
+source /home/allianceserver/venv/auth/bin/activate
+pip install -U "git+https://github.com/yilifaer/aa-ticket.git@claude/friendly-einstein-21gzh0"
+cd /home/allianceserver/myauth
+python manage.py migrate
+python manage.py collectstatic --noinput
+exit
+sudo supervisorctl restart myauth:
+```
+
+**做完怎么确认：**
+- `pip show aa-ticket` 显示 `0.3.0`；
+- `migrate` 输出里有 `Applying aa_ticket.0004_priority_is_urgent... OK`；
+- 左侧点「工单」，第一页是「总览」；
+- AA 首页（Dashboard）上有「工单」卡片（没有任何待处理工单时卡片不显示，这是正常的）；
+- 「管理 → 紧急程度」里 Urgent 那一档显示「紧急：是」。如果你们把紧急的那一档改过名字，升级时会自动把排序最高的那一档设为紧急，需要的话自己改。
+
+### 升级出问题，退回 0.2.0（保留所有工单）
+
+```bash
+sudo su allianceserver
+cd ~
+source /home/allianceserver/venv/auth/bin/activate
+cd /home/allianceserver/myauth
+python manage.py migrate aa_ticket 0003
+cd ~
+pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@ade5fa0"
+cd /home/allianceserver/myauth
+python manage.py collectstatic --noinput
+exit
+sudo supervisorctl restart myauth:
+```
+
+**做完怎么确认：** `pip show aa-ticket` 显示 `0.2.0`，工单都还在。
+
+---
+
 ## 从 0.1.0 升级到 0.2.0
 
 0.2.0 修了测试报告里的问题，并加了「频道语言」设置。升级前先做第 1 步的数据库备份。
@@ -386,4 +429,4 @@ sudo supervisorctl restart myauth:
 
 升级前同样先做第 1 步的备份。
 
-> **正式服**请用版本号（tag）安装，比如 `@v0.2.0`，不要用开发分支名。开发分支上随时可能有新的提交，用分支名安装的话，每次重装拿到的代码可能都不一样。
+> **正式服**请用版本号（tag）安装，比如 `@v0.3.0`，不要用开发分支名。开发分支上随时可能有新的提交，用分支名安装的话，每次重装拿到的代码可能都不一样。

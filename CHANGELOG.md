@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### Added
+
+- Overview page as the plugin's start page: players see their open tickets (waiting for them
+  first); officers also see tickets assigned to them, unclaimed tickets of their departments
+  (urgent first, with a Claim button) and tickets escalated or shared with their departments.
+- Card on the Alliance Auth dashboard with ticket counts, urgent unclaimed tickets and the most
+  recent tickets.
+- "Counts as urgent" switch on priorities (migration flags the existing "Urgent" priority).
+
+### Changed
+
+- Inactive departments are folded on the management page.
+- Warnings on the management pages use normal text with a coloured icon, readable in dark themes.
+
 ## [0.2.0]
 
 ### Added
