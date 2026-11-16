@@ -57,8 +57,9 @@ class TestAccessMatrix(AccessFixture):
         self.assertTrue(access.can_view(u, t))
         self.assertTrue(access.can_view_internal(u, t))
         self.assertTrue(access.is_controller(u, t))
-        for action in STAFF_ACTIONS + ("reply", "note", "close"):
+        for action in STAFF_ACTIONS + ("note", "close"):
             self.assertTrue(access.can_act(u, t, action), action)
+        self.assertFalse(access.can_act(u, t, "reply"))  # must claim first (0.4.0)
         self.assertFalse(access.can_act(u, t, "escalate"))
 
     def test_parent_department_staff(self):
@@ -72,7 +73,7 @@ class TestAccessMatrix(AccessFixture):
         u, t = fresh(self.log_staff), self.ticket
         self.assertTrue(access.can_view(u, t))
         self.assertTrue(access.can_view_internal(u, t))
-        self.assertTrue(access.can_act(u, t, "reply"))
+        self.assertFalse(access.can_act(u, t, "reply"))  # only the assignee replies (0.4.0)
         self.assertTrue(access.can_act(u, t, "note"))
         for action in STAFF_ACTIONS + ("close",):
             self.assertFalse(access.can_act(u, t, action), action)
@@ -88,8 +89,9 @@ class TestAccessMatrix(AccessFixture):
         u, t = fresh(self.viewer), self.ticket
         self.assertTrue(access.can_view(u, t))
         self.assertTrue(access.can_view_internal(u, t))
-        for action in STAFF_ACTIONS + ("reply", "note", "close"):
+        for action in STAFF_ACTIONS + ("note", "close"):
             self.assertTrue(access.can_act(u, t, action), action)
+        self.assertFalse(access.can_act(u, t, "reply"))  # must claim first (0.4.0)
 
     def test_superuser_like_view_all_but_no_departments(self):
         u, t = fresh(self.superuser), self.ticket

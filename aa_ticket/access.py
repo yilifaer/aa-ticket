@@ -125,7 +125,10 @@ def can_act(user, ticket, action):
     if closed:
         return False
     if action == "reply":
-        return is_requester or is_staff_for(user, ticket)
+        # Public replies: the requester, or the current assignee while they still handle the ticket.
+        return is_requester or (
+            ticket.status == Status.IN_PROGRESS and ticket.assignee_id == user.pk and is_staff_for(user, ticket)
+        )
     if action == "note":
         return is_staff_for(user, ticket)
     if action == "claim":
@@ -137,6 +140,21 @@ def can_act(user, ticket, action):
     if action == "close":
         return is_requester or is_controller(user, ticket)
     raise ValueError(f"unknown action: {action}")
+
+
+def reply_hint(user, ticket):
+    """Why a staff member cannot reply publicly, or "" if they can."""
+    from django.utils.translation import pgettext
+
+    from .utils import display_name
+
+    if can_act(user, ticket, "reply") or ticket.status == Status.CLOSED or not is_staff_for(user, ticket):
+        return ""
+    if ticket.status == Status.IN_PROGRESS and ticket.assignee_id and ticket.assignee_id != user.pk:
+        return pgettext("aa_ticket", "This ticket is handled by %(name)s. You can write an internal note.") % {
+            "name": display_name(ticket.assignee)
+        }
+    return pgettext("aa_ticket", "Claim the ticket to reply to the requester.")
 
 
 def visible_tickets(user):

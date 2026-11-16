@@ -26,17 +26,26 @@
     <div class="col-12 col-lg-8 order-2 order-lg-1">
         {% include "aa_ticket/partials/timeline.html" %}
 
-        {% if can.reply %}
+        {% if can.reply or can.note %}
         <form method="post" action="{% url 'aa_ticket:reply' ticket.pk %}" enctype="multipart/form-data" class="card">
             {% csrf_token %}
             <div class="card-body">
-                {% if can.note %}
+                {% if reply_hint %}
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span class="text-body"><i class="fas fa-circle-info text-info" aria-hidden="true"></i> {{ reply_hint }}</span>
+                        {% if can.claim %}<button class="btn btn-success aa-tap" type="submit" form="claim-form">{% translate "Claim" context 'aa_ticket' %}</button>{% endif %}
+                    </div>
+                {% endif %}
+                {% if can.note and can.reply %}
                     <div class="btn-group mb-2" role="group" aria-label="{% translate 'Message type' context 'aa_ticket' %}">
                         <input type="radio" class="btn-check" name="kind" id="kind-reply" value="reply" checked>
                         <label class="btn btn-outline-primary" for="kind-reply">{% translate "Reply" context 'aa_ticket' %}</label>
                         <input type="radio" class="btn-check" name="kind" id="kind-internal" value="internal">
                         <label class="btn btn-outline-warning" for="kind-internal"><i class="fas fa-lock" aria-hidden="true"></i> {% translate "Internal note" context 'aa_ticket' %}</label>
                     </div>
+                {% elif can.note %}
+                    <input type="hidden" name="kind" value="internal">
+                    <div class="mb-2"><span class="badge text-bg-warning"><i class="fas fa-lock" aria-hidden="true"></i> {% translate "Internal note — only staff can see this" context 'aa_ticket' %}</span></div>
                 {% else %}
                     <input type="hidden" name="kind" value="reply">
                 {% endif %}
@@ -66,7 +75,7 @@
 
     <aside class="col-12 col-lg-4 order-1 order-lg-2">
         {% if can.claim %}
-            <form method="post" action="{% url 'aa_ticket:action' ticket.pk 'claim' %}" class="d-grid mb-2">{% csrf_token %}
+            <form method="post" action="{% url 'aa_ticket:action' ticket.pk 'claim' %}" class="d-grid mb-2" id="claim-form">{% csrf_token %}
                 <button class="btn btn-success"><i class="fas fa-hand" aria-hidden="true"></i> {% translate "Claim" context 'aa_ticket' %}</button>
             </form>
         {% endif %}
@@ -181,8 +190,12 @@
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'close' %}">{% csrf_token %}
     <div class="modal-header"><h2 class="modal-title h5">{% translate "Close ticket" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
     <div class="modal-body">
-        <label class="form-label" for="close-reply">{% translate "Final reply (optional)" context 'aa_ticket' %}</label>
-        <textarea class="form-control" name="final_reply" id="close-reply" rows="3"></textarea>
+        {% if can.reply %}
+            <label class="form-label" for="close-reply">{% translate "Final reply (optional)" context 'aa_ticket' %}</label>
+            <textarea class="form-control" name="final_reply" id="close-reply" rows="3"></textarea>
+        {% else %}
+            <p class="mb-0">{% translate "Close this ticket?" context 'aa_ticket' %}</p>
+        {% endif %}
     </div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-danger">{% translate "Close ticket" context 'aa_ticket' %}</button></div>
 </form></div></div>

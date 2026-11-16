@@ -350,6 +350,10 @@ def close(actor, ticket, reason, final_reply=""):
     ticket = _lock(ticket)
     if actor is not None:
         _require(actor, ticket, "close")
+        if _clean_text(final_reply) and not access.can_act(actor, ticket, "reply"):
+            raise TicketActionError(
+                pgettext("aa_ticket", "Only the requester and the assignee can add a final reply.")
+            )
     elif ticket.status != Status.IN_PROGRESS or not ticket.last_reply_by_staff:
         return  # automatic close only while waiting for the requester (re-checked under lock)
     if _clean_text(final_reply):

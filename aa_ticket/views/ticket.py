@@ -51,6 +51,7 @@ def detail_context(user, ticket):
         "can": can,
         "collaborators": ticket.collaborating_departments.all(),
         "escalation_target": access.next_escalation_target(ticket) if can["escalate"] else None,
+        "reply_hint": access.reply_hint(user, ticket),
         "autoclose_eta": _autoclose_eta(ticket),
         "uploads_enabled": uploads_enabled(),
         "statuses": Status,
@@ -99,6 +100,10 @@ def reply(request, pk):
     images = request.FILES.getlist("images")
     if kind == "internal":
         return _run(request, ticket, services.add_note, request.user, ticket, body, images=images)
+    hint = access.reply_hint(request.user, ticket)
+    if hint:
+        messages.error(request, hint)
+        return redirect("aa_ticket:detail", pk=ticket.pk)
     return _run(request, ticket, services.add_reply, request.user, ticket, body, images=images)
 
 
