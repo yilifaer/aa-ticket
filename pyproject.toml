@@ -35,7 +35,7 @@ test = ["freezegun", "polib", "coverage"]
 [project.urls]
 Homepage = "https://github.com/yilifaer/aa-ticket"
 Source = "https://github.com/yilifaer/aa-ticket"
-Changelog = "https://github.com/yilifaer/aa-ticket/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/yilifaer/aa-ticket/blob/claude/friendly-einstein-21gzh0/CHANGELOG.md"
 
 [tool.setuptools.dynamic]
 version = { attr = "aa_ticket.__version__" }

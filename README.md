@@ -54,7 +54,8 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 
 ## Requirements
 
-- Alliance Auth 5.0 or newer (tested with 5.4.0)
+- Alliance Auth 5.0 or newer (tested with 5.4.0). On Alliance Auth 5.0 and 5.1 also install
+  `django-sri<1`; newer django-sri versions break Alliance Auth's own templates there.
 - Python 3.10 or newer
 - Celery and Celery Beat running, as for every Alliance Auth install
 - Optional: aa-discordbot, for Discord direct messages
@@ -66,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.0
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.1
 ```
 
 ### 2. Change `local.py`
@@ -127,7 +128,7 @@ python manage.py collectstatic --noinput
 Then restart Alliance Auth and its Celery workers (for example
 `supervisorctl restart myauth:`).
 
-The first migration creates three priorities, *Low*, *Normal* and *Urgent*, in the app's own
+The migrations create three priorities, *Low*, *Normal* and *Urgent*, in the app's own
 table. You can rename, change or deactivate them.
 
 ## Permissions
@@ -185,7 +186,8 @@ The CEOs then see every ticket but are only pinged when a ticket is escalated to
 ### Webhook
 
 In Discord: **Channel settings → Integrations → Webhooks → New Webhook → Copy Webhook URL**.
-Paste the URL into the department's *Discord webhook* field and press **Send test message**.
+Paste the URL into the department's *Discord webhook* field and save. Then open the department
+again and press **Send test message**.
 
 The webhook URL is never shown again in full. Leave the field empty to keep it, or tick
 *Remove the webhook* to delete it.
@@ -206,6 +208,7 @@ Roles**, right-click the role, **Copy Role ID**. Several IDs are separated by co
 | Still unclaimed | Responsible department | Always |
 | Still unclaimed, escalation time reached | Department above | Always |
 | Requester waits for staff too long | Responsible department | Never |
+| Assignee left the department, ticket is unclaimed again | Responsible department | Never |
 
 Replies are never posted to the channel. Messages contain the ticket number, title,
 department, category, priority, requester and a link, **never the ticket text**, because
@@ -261,7 +264,8 @@ Submitted ──► Unclaimed ──claim──► In progress ──close──
 - **Claim:** staff of the responsible department or any department above it.
 - **Reply:** only the requester and the current assignee can reply publicly. Everyone else
   on the staff side writes internal notes, or claims / assigns the ticket to themselves first.
-- **Invite department:** the invited department can read, reply and write internal notes.
+- **Invite department:** the invited department can read the ticket and write internal notes.
+  Replying to the requester stays with the assignee.
 - **Transfer:** the new department becomes responsible and the ticket goes back to
   *Unclaimed*. By default the old department keeps helping.
 - **Request escalation:** the requester asks the department above to step in. The next request
@@ -283,6 +287,9 @@ above, which contain the ticket title and the requester's main character name.
 Images are served only through a permission-checked page, never from a public URL. Use
 *Delete images after (days)* to remove old images automatically. Superusers can delete single
 messages or images in the Django admin.
+
+Tickets are kept as a record: a user who has submitted tickets cannot be deleted in Alliance
+Auth while those tickets exist. Deactivate the user instead.
 
 ## Updating
 

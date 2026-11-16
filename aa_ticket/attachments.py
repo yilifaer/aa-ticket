@@ -78,6 +78,8 @@ def _detect_format(upload):
         raise _format_error() from exc
     finally:
         upload.seek(0)
+    if fmt == "MPO":  # multi-picture JPEG from phone cameras: keep the main picture
+        fmt = "JPEG"
     if fmt not in ALLOWED_FORMATS:
         raise _format_error()
     return fmt
@@ -114,37 +116,67 @@ def _reencode_unchecked(upload, fmt):
             frames = getattr(img, "n_frames", 1)
             if frames > 1 and fmt in ("GIF", "WEBP"):
                 # Without a duration option Pillow keeps each frame's own delay.
-                img.save(out, format=fmt, save_all=True, loop=img.info.get("loop", 0))
+                extra = {"comment": b""} if fmt == "GIF" else {}
+                img.save(out, format=fmt, save_all=True, loop=img.info.get("loop", 0), **extra)
             else:
                 icc = img.info.get("icc_profile")
                 image = ImageOps.exif_transpose(img)
+                image.info.pop("comment", None)
                 options = {"icc_profile": icc} if icc and fmt in ("JPEG", "PNG", "WEBP") else {}
                 if fmt == "JPEG":
                     if image.mode not in ("RGB", "L"):
                         image = image.convert("RGB")
                         options = {}
-                    image.save(out, format="JPEG", quality=90, **options)
+                    image.save(out, format="JPEG", quality=90, comment=b"", **options)
                 else:
+                    if fmt == "GIF":
+                        options["comment"] = b""
                     image.save(out, format=fmt, **options)
     return out.getvalue()
 
 
-def save_image(message, upload):
-    fmt = _detect_format(upload)
-    content_type, ext = ALLOWED_FORMATS[fmt]
-    data = _reencode(upload, fmt)
-    attachment = Attachment(
-        message=message,
-        original_name=os.path.basename(upload.name or "image")[:255],
-        size=len(data),
-        content_type=content_type,
-    )
-    attachment.file.save(uuid.uuid4().hex + ext, ContentFile(data), save=True)
-    return attachment
+def prepare_images(files):
+    """Check and re-encode uploads in memory. Nothing is written to storage here.
+
+    Returns a list of (original_name, content_type, extension, data). Raises ValidationError.
+    This is the slow part (decoding), so callers run it before they lock a ticket.
+    """
+    files = list(files)
+    if len(files) > MAX_IMAGES_PER_MESSAGE:
+        raise ValidationError(
+            pgettext("aa_ticket", "You can attach at most %(count)d images per message.") % {"count": MAX_IMAGES_PER_MESSAGE}
+        )
+    max_mb = TicketSettings.get_solo().max_image_mb
+    prepared = []
+    for upload in files:
+        if upload.size > max_mb * 1024 * 1024:
+            raise ValidationError(pgettext("aa_ticket", "Each image must be smaller than %(size)d MB.") % {"size": max_mb})
+        fmt = _detect_format(upload)
+        content_type, ext = ALLOWED_FORMATS[fmt]
+        data = _reencode(upload, fmt)
+        prepared.append((os.path.basename(upload.name or "image")[:255], content_type, ext, data))
+    return prepared
+
+
+def save_prepared(message, prepared):
+    """Store prepared images. If one write fails, files already written are removed again."""
+    saved = []
+    try:
+        for original_name, content_type, ext, data in prepared:
+            attachment = Attachment(
+                message=message, original_name=original_name, size=len(data), content_type=content_type
+            )
+            attachment.file.save(uuid.uuid4().hex + ext, ContentFile(data), save=True)
+            saved.append(attachment)
+    except Exception:
+        for attachment in saved:
+            attachment.file.delete(save=False)
+        raise
+    return saved
 
 
 def save_images(message, uploads):
-    return [save_image(message, upload) for upload in uploads]
+    return save_prepared(message, prepare_images(uploads))
 
 
 def delete_attachment(attachment):

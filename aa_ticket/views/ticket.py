@@ -76,18 +76,52 @@ def detail_context(user, ticket):
 @basic
 def detail(request, pk):
     ticket = get_visible_ticket(request.user, pk)
-    return render(request, "aa_ticket/detail.html", detail_context(request.user, ticket))
+    context = detail_context(request.user, ticket)
+    context["draft"] = request.session.pop(_draft_key(pk), None)
+    return render(request, "aa_ticket/detail.html", context)
 
 
-def _run(request, ticket, func, *args, success=None, **kwargs):
+REQUESTER_ACTIONS = {"reply", "escalate", "close", "reopen"}
+
+
+def _after(request, ticket):
+    """Where to go after an action: the ticket, or a list if the user can no longer open it."""
+    current = Ticket.objects.select_related("department").filter(pk=ticket.pk).first()
+    if current is not None and access.can_view(request.user, current):
+        return redirect("aa_ticket:detail", pk=ticket.pk)
+    if access.is_department_staff(request.user):
+        return redirect("aa_ticket:workbench")
+    return redirect("aa_ticket:my_tickets")
+
+
+def _stale(request, ticket, action):
+    """A permission error on something the page offered means the ticket changed meanwhile."""
+    user = request.user
+    offered = access.is_staff_for(user, ticket) or (user.pk == ticket.requester_id and action in REQUESTER_ACTIONS)
+    if not offered:
+        raise PermissionDenied
+    messages.error(
+        request,
+        pgettext("aa_ticket", "That is no longer possible because the ticket has changed. Please check its current state."),
+    )
+    return _after(request, ticket)
+
+
+def _run(request, ticket, func, *args, success=None, action="", **kwargs):
     try:
         func(*args, **kwargs)
     except TicketActionError as exc:
         messages.error(request, exc.message)
-    else:
-        if success:
-            messages.success(request, success)
-    return redirect("aa_ticket:detail", pk=ticket.pk)
+        return False, redirect("aa_ticket:detail", pk=ticket.pk)
+    except PermissionDenied:
+        return False, _stale(request, ticket, action)
+    if success:
+        messages.success(request, success)
+    return True, _after(request, ticket)
+
+
+def _draft_key(pk):
+    return f"aa_ticket_draft_{pk}"
 
 
 @login_required
@@ -95,32 +129,40 @@ def _run(request, ticket, func, *args, success=None, **kwargs):
 @require_POST
 def reply(request, pk):
     ticket = get_visible_ticket(request.user, pk)
-    kind = request.POST.get("kind", "reply")
+    kind = "internal" if request.POST.get("kind") == "internal" else "reply"
     body = request.POST.get("body", "")
     images = request.FILES.getlist("images")
     if kind == "internal":
-        return _run(request, ticket, services.add_note, request.user, ticket, body, images=images)
-    hint = access.reply_hint(request.user, ticket)
-    if hint:
-        messages.error(request, hint)
-        return redirect("aa_ticket:detail", pk=ticket.pk)
-    try:
-        return _run(request, ticket, services.add_reply, request.user, ticket, body, images=images)
-    except PermissionDenied:
-        # The ticket changed after the page was loaded (for example it was reassigned).
-        fresh_ticket = get_visible_ticket(request.user, pk)
-        hint = access.reply_hint(request.user, fresh_ticket)
-        if not hint:
-            raise
-        messages.error(request, hint)
-        return redirect("aa_ticket:detail", pk=pk)
+        ok, response = _run(request, ticket, services.add_note, request.user, ticket, body, images=images, action="note")
+    else:
+        hint = access.reply_hint(request.user, ticket)
+        if hint:
+            messages.error(request, hint)
+            ok, response = False, redirect("aa_ticket:detail", pk=ticket.pk)
+        else:
+            try:
+                ok, response = _run(
+                    request, ticket, services.add_reply, request.user, ticket, body, images=images, action="reply"
+                )
+            except PermissionDenied:
+                raise
+            if not ok:
+                # The ticket may have changed after the page was loaded (for example reassigned).
+                fresh_ticket = Ticket.objects.select_related("assignee", "department").filter(pk=pk).first()
+                fresh_hint = access.reply_hint(request.user, fresh_ticket) if fresh_ticket else ""
+                if fresh_hint:
+                    messages.error(request, fresh_hint)
+    if not ok and body.strip():
+        # keep what the person typed so a rejected image or a changed ticket does not lose it
+        request.session[_draft_key(pk)] = {"body": body[: services.BODY_MAX], "kind": kind}
+    return response
 
 
 def _int(value):
-    try:
-        return int(value)
-    except (TypeError, ValueError):
+    value = str(value or "").strip()
+    if not (value.isascii() and value.isdigit()) or len(value) > 18:
         return None
+    return int(value)
 
 
 @login_required
@@ -132,22 +174,25 @@ def action(request, pk, action):
     ticket = get_visible_ticket(request.user, pk)
     user = request.user
     post = request.POST
+    def _act(*args, **kwargs):
+        return _run(*args, action=action, **kwargs)[1]
+
     if action == "claim":
-        return _run(request, ticket, services.claim, user, ticket, success=pgettext("aa_ticket", "You are now handling this ticket."))
+        return _act(request, ticket, services.claim, user, ticket, success=pgettext("aa_ticket", "You are now handling this ticket."))
     if action == "assign":
         assignee = User.objects.filter(pk=_int(post.get("user_id"))).first()
-        return _run(request, ticket, services.assign, user, ticket, assignee, success=pgettext("aa_ticket", "Ticket assigned."))
+        return _act(request, ticket, services.assign, user, ticket, assignee, success=pgettext("aa_ticket", "Ticket assigned."))
     if action in ("invite", "uninvite", "transfer"):
         department = Department.objects.filter(pk=_int(post.get("department_id"))).first()
         if department is None:
             messages.error(request, pgettext("aa_ticket", "Please pick a department."))
             return redirect("aa_ticket:detail", pk=ticket.pk)
         if action == "invite":
-            return _run(request, ticket, services.invite, user, ticket, department, success=pgettext("aa_ticket", "Department invited."))
+            return _act(request, ticket, services.invite, user, ticket, department, success=pgettext("aa_ticket", "Department invited."))
         if action == "uninvite":
-            return _run(request, ticket, services.uninvite, user, ticket, department, success=pgettext("aa_ticket", "Department removed."))
+            return _act(request, ticket, services.uninvite, user, ticket, department, success=pgettext("aa_ticket", "Department removed."))
         keep = bool(post.get("keep")) if post.get("keep_present") else True
-        return _run(
+        return _act(
             request,
             ticket,
             services.transfer,
@@ -170,7 +215,7 @@ def action(request, pk, action):
                 "Escalation requested, but %(department)s has no Discord channel or staff to notify. "
                 "Please contact them directly.",
             )
-        return _run(
+        return _act(
             request,
             ticket,
             services.request_escalation,
@@ -185,7 +230,7 @@ def action(request, pk, action):
         if prio is None:
             messages.error(request, pgettext("aa_ticket", "Please pick a priority."))
             return redirect("aa_ticket:detail", pk=ticket.pk)
-        return _run(request, ticket, services.change_priority, user, ticket, prio)
+        return _act(request, ticket, services.change_priority, user, ticket, prio)
     if action == "category":
         raw = (post.get("category_id") or "").strip()
         category = None
@@ -194,10 +239,10 @@ def action(request, pk, action):
             if category is None:
                 messages.error(request, pgettext("aa_ticket", "Please pick a category."))
                 return redirect("aa_ticket:detail", pk=ticket.pk)
-        return _run(request, ticket, services.change_category, user, ticket, category)
+        return _act(request, ticket, services.change_category, user, ticket, category)
     if action == "close":
         reason = ClosedReason.REQUESTER if user.pk == ticket.requester_id else ClosedReason.STAFF
-        return _run(
+        return _act(
             request,
             ticket,
             services.close,
@@ -208,7 +253,7 @@ def action(request, pk, action):
             success=pgettext("aa_ticket", "Ticket closed."),
         )
     if action == "reopen":
-        return _run(request, ticket, services.reopen, user, ticket, success=pgettext("aa_ticket", "Ticket reopened."))
+        return _act(request, ticket, services.reopen, user, ticket, success=pgettext("aa_ticket", "Ticket reopened."))
     raise PermissionDenied
 
 

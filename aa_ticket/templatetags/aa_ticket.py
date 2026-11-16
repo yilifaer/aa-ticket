@@ -92,7 +92,7 @@ def aa_ticket_nav(context):
         "workbench": _url("aa_ticket:workbench") if is_staff else "",
         "stats": _url("aa_ticket:stats") if is_staff else "",
         "manage": _url("aa_ticket:manage_departments") if user.has_perm("aa_ticket.manage") else (
-            _url("aa_ticket:manage_canned") if is_staff else ""
+            _url("aa_ticket:manage_canned") if access.staff_department_ids(user) else ""
         ),
         "prefs": _url("aa_ticket:prefs") if dm.is_available() else "",
     }

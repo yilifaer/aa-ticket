@@ -33,16 +33,16 @@ def my_tickets(request):
     tab = "closed" if request.GET.get("tab") == "closed" else "active"
     qs = Ticket.objects.filter(requester=request.user).select_related("department", "priority", "assignee")
     if tab == "closed":
-        qs = qs.filter(status=Status.CLOSED).order_by("-closed_at")
+        qs = qs.filter(status=Status.CLOSED).order_by("-closed_at", "-pk")
     else:
-        qs = qs.exclude(status=Status.CLOSED).order_by("-last_reply_at")
+        qs = qs.exclude(status=Status.CLOSED).order_by("-last_reply_at", "-pk")
     counts = {
         "active": Ticket.objects.filter(requester=request.user).exclude(status=Status.CLOSED).count(),
     }
     return render(
         request,
         "aa_ticket/my_tickets.html",
-        {"tickets": qs[:200], "tab": tab, "counts": counts},
+        {"tickets": qs[:200], "tab": tab, "counts": counts, "nav_active": "mine"},
     )
 
 

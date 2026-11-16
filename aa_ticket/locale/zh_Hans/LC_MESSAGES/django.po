@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 02:36+0000\n"
+"POT-Creation-Date: 2026-11-16 03:16+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -14,13 +14,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: access.py:154
+#: access.py:152
 #, python-format
 msgctxt "aa_ticket"
 msgid "This ticket is handled by %(name)s. You can write an internal note."
 msgstr "这张工单由 %(name)s 处理，你可以写内部备注。"
 
-#: access.py:157
+#: access.py:158
+msgctxt "aa_ticket"
+msgid ""
+"Your department is helping with this ticket. You can write an internal note;"
+" the responsible department replies to the requester."
+msgstr "你的部门在协助这张工单，可以写内部备注；回复提交人由负责部门来做。"
+
+#: access.py:161
 msgctxt "aa_ticket"
 msgid "Claim the ticket to reply to the requester."
 msgstr "接手后才能回复提交人。"
@@ -51,13 +58,13 @@ msgid ""
 "allowed."
 msgstr "这个动图的帧数太多（%(count)d 帧），最多允许 %(max)d 帧。"
 
-#: attachments.py:89
+#: attachments.py:91 attachments.py:147
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "每条消息最多附加 %(count)d 张图片。"
 
-#: attachments.py:94
+#: attachments.py:96 attachments.py:153
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
@@ -740,56 +747,56 @@ msgctxt "aa_ticket"
 msgid "Ticket settings"
 msgstr "工单设置"
 
-#: notifications.py:95 notifications.py:99
+#: notifications.py:101 notifications.py:105
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(name)s is now handling your ticket."
 msgstr "%(name)s 正在处理你的工单。"
 
-#: notifications.py:98
+#: notifications.py:104
 msgctxt "aa_ticket"
 msgid "You were assigned this ticket."
 msgstr "你被指派处理这张工单。"
 
-#: notifications.py:102
+#: notifications.py:108
 msgctxt "aa_ticket"
 msgid "There is a new reply on your ticket."
 msgstr "你的工单有新回复。"
 
-#: notifications.py:103
+#: notifications.py:109
 msgctxt "aa_ticket"
 msgid "The requester replied."
 msgstr "提交人回复了。"
 
-#: notifications.py:105
+#: notifications.py:111
 msgctxt "aa_ticket"
 msgid "The ticket was closed."
 msgstr "工单已关闭。"
 
-#: notifications.py:107
+#: notifications.py:113
 msgctxt "aa_ticket"
 msgid "The ticket was reopened."
 msgstr "工单已重新打开。"
 
-#: notifications.py:109
+#: notifications.py:115
 #, python-format
 msgctxt "aa_ticket"
 msgid "The ticket was transferred to %(department)s."
 msgstr "工单已移交给 %(department)s。"
 
-#: notifications.py:111
+#: notifications.py:117
 #, python-format
 msgctxt "aa_ticket"
 msgid "The priority was changed to %(priority)s."
 msgstr "紧急程度已改为 %(priority)s。"
 
-#: notifications.py:113
+#: notifications.py:119
 #, python-format
 msgctxt "aa_ticket"
 msgid "The requester asked %(department)s to step in."
 msgstr "提交人请求 %(department)s 介入。"
 
-#: notifications.py:116
+#: notifications.py:122
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -797,7 +804,7 @@ msgid ""
 "replies."
 msgstr "如果没人回复，这张工单将在 %(hours)d 小时后自动关闭。"
 
-#: notifications.py:120
+#: notifications.py:126
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "提交人仍在等待回复。"
@@ -842,43 +849,43 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "没有上报或邀请我的部门的工单。"
 
-#: services.py:82
+#: services.py:50
+msgctxt "aa_ticket"
+msgid "Image uploads are turned off on this server."
+msgstr "本服务器未开启图片上传。"
+
+#: services.py:84
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "内容请少于 %(count)d 个字符。"
 
-#: services.py:93
-msgctxt "aa_ticket"
-msgid "Image uploads are turned off on this server."
-msgstr "本服务器未开启图片上传。"
-
-#: services.py:107 templates/aa_ticket/submit.html:37
+#: services.py:96 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "请输入标题。"
 
-#: services.py:109
+#: services.py:98
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "标题请少于 200 个字符。"
 
-#: services.py:111 templates/aa_ticket/submit.html:42
+#: services.py:100 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "请描述你的问题。"
 
-#: services.py:113 services.py:320
+#: services.py:102 services.py:323 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "请选择一个可用的紧急程度。"
 
-#: services.py:115
+#: services.py:104 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "请选择所选部门下的分类。"
 
-#: services.py:121
+#: services.py:110
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -886,58 +893,64 @@ msgid ""
 "before opening a new one."
 msgstr "你已有 %(count)d 张未关闭的工单。请先关闭已处理完的工单，再提交新工单。"
 
-#: services.py:156 services.py:184
+#: services.py:144 services.py:173
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "请先写好内容再发送。"
 
-#: services.py:208
+#: services.py:199
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "已被 %(name)s 接手。"
 
-#: services.py:210
+#: services.py:201
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "这张工单已无法接手。"
 
-#: services.py:220
+#: services.py:211
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "请从负责部门中选择处理人。"
 
-#: services.py:236 services.py:260
+#: services.py:227 services.py:251
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "这个部门未启用。"
 
-#: services.py:238
+#: services.py:229
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "这个部门已经是负责部门。"
 
-#: services.py:240
+#: services.py:231
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "这个部门已经在协作处理这张工单。"
 
-#: services.py:250
+#: services.py:241
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "这个部门没有参与这张工单。"
 
-#: services.py:262
+#: services.py:253
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "工单已经在这个部门。"
 
-#: services.py:334
+#: services.py:298
+#, python-format
+msgctxt "aa_ticket"
+msgid "%(department)s has already been asked to step in."
+msgstr "已经申请过 %(department)s 介入了。"
+
+#: services.py:337
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "请选择负责部门下的分类。"
 
-#: services.py:355
+#: services.py:358
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr "只有提交人和处理人可以附最终回复。"
@@ -1068,6 +1081,21 @@ msgctxt "aa_ticket"
 msgid "Reopen it to continue the conversation."
 msgstr "重新打开后可以继续交流。"
 
+#: templates/aa_ticket/detail.html:72
+msgctxt "aa_ticket"
+msgid ""
+"It can no longer be reopened. If you still need help, submit a new ticket."
+msgstr "这张工单已不能重新打开。还需要帮助的话，请提交一张新工单。"
+
+#: templates/aa_ticket/detail.html:72 templates/aa_ticket/my_tickets.html:9
+#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/overview.html:9
+#: templates/aa_ticket/submit.html:4 templates/aa_ticket/submit.html:8
+#: templates/aa_ticket/submit_choose_department.html:4
+#: templates/aa_ticket/submit_choose_department.html:7
+msgctxt "aa_ticket"
+msgid "Submit ticket"
+msgstr "提交工单"
+
 #: templates/aa_ticket/detail.html:83
 msgctxt "aa_ticket"
 msgid "Actions"
@@ -1105,14 +1133,14 @@ msgctxt "aa_ticket"
 msgid "Change category"
 msgstr "修改分类"
 
-#: templates/aa_ticket/detail.html:93 templates/aa_ticket/detail.html:178
-#: templates/aa_ticket/detail.html:184
+#: templates/aa_ticket/detail.html:93 templates/aa_ticket/detail.html:179
+#: templates/aa_ticket/detail.html:185
 msgctxt "aa_ticket"
 msgid "Request escalation"
 msgstr "申请上级介入"
 
-#: templates/aa_ticket/detail.html:94 templates/aa_ticket/detail.html:191
-#: templates/aa_ticket/detail.html:200
+#: templates/aa_ticket/detail.html:94 templates/aa_ticket/detail.html:192
+#: templates/aa_ticket/detail.html:201
 msgctxt "aa_ticket"
 msgid "Close ticket"
 msgstr "关闭工单"
@@ -1127,31 +1155,35 @@ msgctxt "aa_ticket"
 msgid "Submitted"
 msgstr "提交时间"
 
-#: templates/aa_ticket/detail.html:113 templates/aa_ticket/detail.html:116
-#: templates/aa_ticket/detail.html:123 templates/aa_ticket/detail.html:126
-#: templates/aa_ticket/detail.html:133 templates/aa_ticket/detail.html:135
-#: templates/aa_ticket/detail.html:142 templates/aa_ticket/detail.html:153
-#: templates/aa_ticket/detail.html:160 templates/aa_ticket/detail.html:162
-#: templates/aa_ticket/detail.html:169 templates/aa_ticket/detail.html:171
-#: templates/aa_ticket/detail.html:178 templates/aa_ticket/detail.html:184
-#: templates/aa_ticket/detail.html:191 templates/aa_ticket/detail.html:200
-#: templates/aa_ticket/manage/department_form.html:26
-#: templates/aa_ticket/manage/form.html:11
+#: templates/aa_ticket/detail.html:113 templates/aa_ticket/detail.html:123
+#: templates/aa_ticket/detail.html:133 templates/aa_ticket/detail.html:142
+#: templates/aa_ticket/detail.html:160 templates/aa_ticket/detail.html:169
+#: templates/aa_ticket/detail.html:179 templates/aa_ticket/detail.html:192
 msgctxt "aa_ticket"
-msgid "Cancel"
-msgstr "取消"
+msgid "Close dialog"
+msgstr "关闭对话框"
 
 #: templates/aa_ticket/detail.html:114
 msgctxt "aa_ticket"
 msgid "Who should handle this ticket?"
 msgstr "由谁处理这张工单？"
 
+#: templates/aa_ticket/detail.html:116 templates/aa_ticket/detail.html:126
+#: templates/aa_ticket/detail.html:135 templates/aa_ticket/detail.html:153
+#: templates/aa_ticket/detail.html:162 templates/aa_ticket/detail.html:171
+#: templates/aa_ticket/detail.html:185 templates/aa_ticket/detail.html:201
+#: templates/aa_ticket/manage/department_form.html:26
+#: templates/aa_ticket/manage/form.html:11
+msgctxt "aa_ticket"
+msgid "Cancel"
+msgstr "取消"
+
 #: templates/aa_ticket/detail.html:124
 msgctxt "aa_ticket"
 msgid ""
-"The invited department can read and reply, and is notified in its Discord "
-"channel."
-msgstr "被邀请的部门可以查看和回复，并会在它的 Discord 频道收到提醒。"
+"The invited department can read the ticket and write internal notes, and is "
+"notified in its Discord channel."
+msgstr "被邀请的部门可以查看工单、写内部备注，并会在它的 Discord 频道收到提醒。"
 
 #: templates/aa_ticket/detail.html:126
 msgctxt "aa_ticket"
@@ -1193,7 +1225,7 @@ msgctxt "aa_ticket"
 msgid "No category"
 msgstr "无分类"
 
-#: templates/aa_ticket/detail.html:180
+#: templates/aa_ticket/detail.html:181
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1201,17 +1233,17 @@ msgid ""
 "level."
 msgstr "%(name)s 会收到提醒并被请求介入。每一层只能申请一次。"
 
-#: templates/aa_ticket/detail.html:181
+#: templates/aa_ticket/detail.html:182
 msgctxt "aa_ticket"
 msgid "Why are you asking for help? (optional)"
 msgstr "为什么需要上级介入？（选填）"
 
-#: templates/aa_ticket/detail.html:194
+#: templates/aa_ticket/detail.html:195
 msgctxt "aa_ticket"
 msgid "Final reply (optional)"
 msgstr "最终回复（选填）"
 
-#: templates/aa_ticket/detail.html:197
+#: templates/aa_ticket/detail.html:198
 msgctxt "aa_ticket"
 msgid "Close this ticket?"
 msgstr "关闭这张工单？"
@@ -1353,7 +1385,6 @@ msgid "Add priority"
 msgstr "添加紧急程度"
 
 #: templates/aa_ticket/manage/priorities.html:12
-#: templates/aa_ticket/partials/priority_badge.html:1
 msgctxt "aa_ticket"
 msgid "Urgent"
 msgstr "紧急"
@@ -1396,15 +1427,6 @@ msgstr "%(n)s 分钟"
 msgctxt "aa_ticket"
 msgid "Delete this priority?"
 msgstr "删除这个紧急程度？"
-
-#: templates/aa_ticket/my_tickets.html:9
-#: templates/aa_ticket/my_tickets.html:20 templates/aa_ticket/overview.html:9
-#: templates/aa_ticket/submit.html:4 templates/aa_ticket/submit.html:8
-#: templates/aa_ticket/submit_choose_department.html:4
-#: templates/aa_ticket/submit_choose_department.html:7
-msgctxt "aa_ticket"
-msgid "Submit ticket"
-msgstr "提交工单"
 
 #: templates/aa_ticket/my_tickets.html:12
 msgctxt "aa_ticket"
@@ -1520,17 +1542,24 @@ msgctxt "aa_ticket"
 msgid "Breadcrumb"
 msgstr "导航路径"
 
-#: templates/aa_ticket/submit.html:46
+#: templates/aa_ticket/submit.html:35
+msgctxt "aa_ticket"
+msgid ""
+"No priority is available, so tickets cannot be submitted right now. Please "
+"tell an administrator."
+msgstr "目前没有可用的紧急程度，暂时无法提交工单，请联系管理员。"
+
+#: templates/aa_ticket/submit.html:49
 msgctxt "aa_ticket"
 msgid "Images (optional)"
 msgstr "图片（选填）"
 
-#: templates/aa_ticket/submit.html:48
+#: templates/aa_ticket/submit.html:51
 msgctxt "aa_ticket"
 msgid "Up to 5 PNG, JPG, GIF or WEBP images."
 msgstr "最多 5 张 PNG、JPG、GIF 或 WEBP 图片。"
 
-#: templates/aa_ticket/submit.html:51
+#: templates/aa_ticket/submit.html:54
 msgctxt "aa_ticket"
 msgid "Submit"
 msgstr "提交"
@@ -1727,43 +1756,50 @@ msgctxt "aa_ticket"
 msgid "Sub-departments"
 msgstr "下级部门"
 
-#: views/ticket.py:127
+#: views/ticket.py:105
+msgctxt "aa_ticket"
+msgid ""
+"That is no longer possible because the ticket has changed. Please check its "
+"current state."
+msgstr "工单状态已经变化，这个操作现在做不了了。请查看工单当前的状态。"
+
+#: views/ticket.py:181
 msgctxt "aa_ticket"
 msgid "You are now handling this ticket."
 msgstr "你现在是这张工单的处理人。"
 
-#: views/ticket.py:130
+#: views/ticket.py:184
 msgctxt "aa_ticket"
 msgid "Ticket assigned."
 msgstr "工单已分配。"
 
-#: views/ticket.py:134
+#: views/ticket.py:188
 msgctxt "aa_ticket"
 msgid "Please pick a department."
 msgstr "请选择一个部门。"
 
-#: views/ticket.py:137
+#: views/ticket.py:191
 msgctxt "aa_ticket"
 msgid "Department invited."
 msgstr "已邀请部门。"
 
-#: views/ticket.py:139
+#: views/ticket.py:193
 msgctxt "aa_ticket"
 msgid "Department removed."
 msgstr "已移除部门。"
 
-#: views/ticket.py:150
+#: views/ticket.py:204
 msgctxt "aa_ticket"
 msgid "Ticket transferred."
 msgstr "工单已移交。"
 
-#: views/ticket.py:155
+#: views/ticket.py:209
 #, python-format
 msgctxt "aa_ticket"
 msgid "Escalation requested. %(department)s has been notified in Discord."
 msgstr "已申请上级介入，已在 Discord 提醒 %(department)s。"
 
-#: views/ticket.py:157
+#: views/ticket.py:211
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1771,7 +1807,7 @@ msgid ""
 " Auth."
 msgstr "已申请上级介入，已在 AA 内通知 %(department)s 的人员。"
 
-#: views/ticket.py:161
+#: views/ticket.py:215
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1779,22 +1815,22 @@ msgid ""
 "notify. Please contact them directly."
 msgstr "已申请上级介入，但 %(department)s 没有配置 Discord 频道，也没有人员可以通知，请直接联系他们。"
 
-#: views/ticket.py:176
+#: views/ticket.py:231
 msgctxt "aa_ticket"
 msgid "Please pick a priority."
 msgstr "请选择紧急程度。"
 
-#: views/ticket.py:185
+#: views/ticket.py:240
 msgctxt "aa_ticket"
 msgid "Please pick a category."
 msgstr "请选择一个分类。"
 
-#: views/ticket.py:198
+#: views/ticket.py:253
 msgctxt "aa_ticket"
 msgid "Ticket closed."
 msgstr "工单已关闭。"
 
-#: views/ticket.py:201
+#: views/ticket.py:256
 msgctxt "aa_ticket"
 msgid "Ticket reopened."
 msgstr "工单已重新打开。"

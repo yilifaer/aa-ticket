@@ -38,9 +38,9 @@
                 {% endif %}
                 {% if can.note and can.reply %}
                     <div class="btn-group mb-2" role="group" aria-label="{% translate 'Message type' context 'aa_ticket' %}">
-                        <input type="radio" class="btn-check" name="kind" id="kind-reply" value="reply" checked>
+                        <input type="radio" class="btn-check" name="kind" id="kind-reply" value="reply"{% if draft.kind != "internal" %} checked{% endif %}>
                         <label class="btn btn-outline-primary" for="kind-reply">{% translate "Reply" context 'aa_ticket' %}</label>
-                        <input type="radio" class="btn-check" name="kind" id="kind-internal" value="internal">
+                        <input type="radio" class="btn-check" name="kind" id="kind-internal" value="internal"{% if draft.kind == "internal" %} checked{% endif %}>
                         <label class="btn btn-outline-warning" for="kind-internal"><i class="fas fa-lock" aria-hidden="true"></i> {% translate "Internal note" context 'aa_ticket' %}</label>
                     </div>
                 {% elif can.note %}
@@ -50,7 +50,7 @@
                     <input type="hidden" name="kind" value="reply">
                 {% endif %}
                 <label class="visually-hidden" for="reply-body">{% translate "Message" context 'aa_ticket' %}</label>
-                <textarea class="form-control mb-2" id="reply-body" name="body" rows="5" data-ticket-reply></textarea>
+                <textarea class="form-control mb-2" id="reply-body" name="body" rows="5" data-ticket-reply>{{ draft.body|default:"" }}</textarea>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     {% if canned_replies %}
                         <select class="form-select w-auto" data-ticket-canned aria-label="{% translate 'Insert canned reply' context 'aa_ticket' %}">
@@ -60,7 +60,7 @@
                     {% endif %}
                     {% if uploads_enabled %}
                         <label class="btn btn-outline-secondary mb-0"><i class="fas fa-image" aria-hidden="true"></i> {% translate "Add images" context 'aa_ticket' %}
-                            <input type="file" name="images" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp" multiple data-ticket-files>
+                            <input type="file" name="images" class="visually-hidden" accept="image/png,image/jpeg,image/gif,image/webp" multiple data-ticket-files>
                         </label>
                         <span class="small text-body-secondary" data-ticket-files-label></span>
                     {% endif %}
@@ -69,7 +69,7 @@
             </div>
         </form>
         {% elif ticket.status == "closed" %}
-            <div class="alert alert-secondary">{% translate "This ticket is closed." context 'aa_ticket' %}{% if can.reopen %} {% translate "Reopen it to continue the conversation." context 'aa_ticket' %}{% endif %}</div>
+            <div class="alert alert-secondary">{% translate "This ticket is closed." context 'aa_ticket' %}{% if can.reopen %} {% translate "Reopen it to continue the conversation." context 'aa_ticket' %}{% endif %}{% if not can.reopen and not is_staff %} {% translate "It can no longer be reopened. If you still need help, submit a new ticket." context 'aa_ticket' %} <a href="{% url 'aa_ticket:submit' %}">{% translate "Submit ticket" context 'aa_ticket' %}</a>{% endif %}</div>
         {% endif %}
     </div>
 
@@ -85,9 +85,9 @@
         <div class="collapse d-lg-block" id="ticket-actions">
         <div class="d-grid gap-2">
             {% if can.assign and assignable_users %}<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-assign">{% translate "Assign" context 'aa_ticket' %}</button>{% endif %}
-            {% if can.invite %}<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-invite">{% translate "Invite department" context 'aa_ticket' %}</button>{% endif %}
+            {% if can.invite and other_departments %}<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-invite">{% translate "Invite department" context 'aa_ticket' %}</button>{% endif %}
             {% if can.uninvite and collaborators %}<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-uninvite">{% translate "Remove department" context 'aa_ticket' %}</button>{% endif %}
-            {% if can.transfer %}<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-transfer">{% translate "Transfer" context 'aa_ticket' %}</button>{% endif %}
+            {% if can.transfer and other_departments %}<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-transfer">{% translate "Transfer" context 'aa_ticket' %}</button>{% endif %}
             {% if can.priority %}<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-priority">{% translate "Change priority" context 'aa_ticket' %}</button>{% endif %}
             {% if can.category and categories %}<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-category">{% translate "Change category" context 'aa_ticket' %}</button>{% endif %}
             {% if can.escalate %}<button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modal-escalate">{% translate "Request escalation" context 'aa_ticket' %}</button>{% endif %}
@@ -110,18 +110,18 @@
 {% if can.assign and assignable_users %}
 <div class="modal fade" id="modal-assign" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'assign' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Assign" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Assign" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body"><label class="form-label" for="assign-user">{% translate "Who should handle this ticket?" context 'aa_ticket' %}</label>
         <select class="form-select" name="user_id" id="assign-user">{% for u in assignable_users %}<option value="{{ u.pk }}"{% if u.pk == ticket.assignee_id %} selected{% endif %}>{{ u|display_name }}</option>{% endfor %}</select></div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-primary">{% translate "Assign" context 'aa_ticket' %}</button></div>
 </form></div></div>
 {% endif %}
 
-{% if can.invite %}
+{% if can.invite and other_departments %}
 <div class="modal fade" id="modal-invite" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'invite' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Invite department" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
-    <div class="modal-body"><p class="small text-body-secondary">{% translate "The invited department can read and reply, and is notified in its Discord channel." context 'aa_ticket' %}</p>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Invite department" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
+    <div class="modal-body"><p class="small text-body-secondary">{% translate "The invited department can read the ticket and write internal notes, and is notified in its Discord channel." context 'aa_ticket' %}</p>
         <select class="form-select" name="department_id" aria-label="{% translate 'Department' context 'aa_ticket' %}">{% for d in other_departments %}<option value="{{ d.pk }}">{{ d.name }}</option>{% endfor %}</select></div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-primary">{% translate "Invite" context 'aa_ticket' %}</button></div>
 </form></div></div>
@@ -130,16 +130,16 @@
 {% if can.uninvite and collaborators %}
 <div class="modal fade" id="modal-uninvite" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'uninvite' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Remove department" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Remove department" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body"><select class="form-select" name="department_id" aria-label="{% translate 'Department' context 'aa_ticket' %}">{% for d in collaborators %}<option value="{{ d.pk }}">{{ d.name }}</option>{% endfor %}</select></div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-danger">{% translate "Remove" context 'aa_ticket' %}</button></div>
 </form></div></div>
 {% endif %}
 
-{% if can.transfer %}
+{% if can.transfer and other_departments %}
 <div class="modal fade" id="modal-transfer" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'transfer' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Transfer" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Transfer" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body">
         <p class="small text-body-secondary">{% translate "The new department becomes responsible. The ticket goes back to unclaimed and the department is notified." context 'aa_ticket' %}</p>
         <label class="form-label" for="transfer-dept">{% translate "Department" context 'aa_ticket' %}</label>
@@ -157,7 +157,7 @@
 {% if can.priority %}
 <div class="modal fade" id="modal-priority" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'priority' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Change priority" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Change priority" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body"><select class="form-select" name="priority_id" aria-label="{% translate 'Priority' context 'aa_ticket' %}">{% for p in priorities %}<option value="{{ p.pk }}"{% if p.pk == ticket.priority_id %} selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-primary">{% translate "Save" context 'aa_ticket' %}</button></div>
 </form></div></div>
@@ -166,7 +166,7 @@
 {% if can.category and categories %}
 <div class="modal fade" id="modal-category" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'category' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Change category" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Change category" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body"><select class="form-select" name="category_id" aria-label="{% translate 'Category' context 'aa_ticket' %}"><option value="">{% translate "No category" context 'aa_ticket' %}</option>{% for c in categories %}<option value="{{ c.pk }}"{% if c.pk == ticket.category_id %} selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context 'aa_ticket' %}</button><button class="btn btn-primary">{% translate "Save" context 'aa_ticket' %}</button></div>
 </form></div></div>
@@ -176,7 +176,7 @@
 <div class="modal fade" id="modal-escalate" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'escalate' %}" data-submit-once>{% csrf_token %}
     <input type="hidden" name="target_department_id" value="{{ escalation_target.pk }}">
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Request escalation" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Request escalation" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body">
         <p>{% blocktranslate context 'aa_ticket' with name=escalation_target.name %}{{ name }} will be notified and asked to step in. You can do this once per level.{% endblocktranslate %}</p>
         <label class="form-label" for="escalate-reason">{% translate "Why are you asking for help? (optional)" context 'aa_ticket' %}</label>
@@ -189,7 +189,7 @@
 {% if can.close %}
 <div class="modal fade" id="modal-close" tabindex="-1" aria-hidden="true"><div class="modal-dialog">
 <form class="modal-content" method="post" action="{% url 'aa_ticket:action' ticket.pk 'close' %}">{% csrf_token %}
-    <div class="modal-header"><h2 class="modal-title h5">{% translate "Close ticket" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'aa_ticket' %}"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5">{% translate "Close ticket" context 'aa_ticket' %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close dialog' context 'aa_ticket' %}"></button></div>
     <div class="modal-body">
         {% if can.reply %}
             <label class="form-label" for="close-reply">{% translate "Final reply (optional)" context 'aa_ticket' %}</label>

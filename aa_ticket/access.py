@@ -152,6 +152,12 @@ def reply_hint(user, ticket):
         return pgettext("aa_ticket", "This ticket is handled by %(name)s. You can write an internal note.") % {
             "name": display_name(ticket.assignee)
         }
+    if not is_controller(user, ticket):
+        return pgettext(
+            "aa_ticket",
+            "Your department is helping with this ticket. You can write an internal note; "
+            "the responsible department replies to the requester.",
+        )
     return pgettext("aa_ticket", "Claim the ticket to reply to the requester.")
 
 

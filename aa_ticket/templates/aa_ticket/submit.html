@@ -21,6 +21,7 @@
                         <option value="{{ category.pk }}" data-template="{{ category.template }}"{% if form.category.value|stringformat:'s' == category.pk|stringformat:'s' %} selected{% endif %}>{{ category.name }}</option>
                     {% endfor %}
                 </select>
+                {% for e in form.category.errors %}<div class="invalid-feedback d-block">{% translate "Please pick a category of the selected department." context 'aa_ticket' %}</div>{% endfor %}
             </div>
         {% endif %}
         <div class="mb-3">
@@ -30,6 +31,8 @@
                     <option value="{{ priority.pk }}"{% if form.priority.value|stringformat:'s' == priority.pk|stringformat:'s' %} selected{% endif %}>{{ priority.name }}</option>
                 {% endfor %}
             </select>
+            {% for e in form.priority.errors %}<div class="invalid-feedback d-block">{% translate "Please pick an available priority." context 'aa_ticket' %}</div>{% endfor %}
+            {% if not form.fields.priority.queryset %}<div class="alert alert-warning mt-2 mb-0">{% translate "No priority is available, so tickets cannot be submitted right now. Please tell an administrator." context 'aa_ticket' %}</div>{% endif %}
         </div>
         <div class="mb-3">
             <label class="form-label" for="id_title">{{ form.title.label }}</label>

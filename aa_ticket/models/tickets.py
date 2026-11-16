@@ -45,6 +45,9 @@ class Ticket(models.Model):
         indexes = [
             models.Index(fields=["status", "department"]),
             models.Index(fields=["requester", "status"]),
+            models.Index(fields=["status", "closed_at"]),
+            models.Index(fields=["status", "last_reply_at"]),
+            models.Index(fields=["status", "open_since"]),
         ]
 
     def __str__(self):

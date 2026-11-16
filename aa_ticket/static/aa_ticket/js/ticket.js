@@ -16,12 +16,27 @@
         var category = document.querySelector("[data-ticket-category]");
         var body = document.querySelector("[data-ticket-body]");
         if (category && body) {
+            var lastTemplate = "";
             category.addEventListener("change", function () {
                 var option = category.options[category.selectedIndex];
-                var template = option ? option.getAttribute("data-template") : "";
-                if (template && body.value.trim() === "") {
+                var template = option ? option.getAttribute("data-template") || "" : "";
+                // fill in the template while the text is still empty or an untouched earlier template
+                if (body.value.trim() === "" || body.value === lastTemplate) {
                     body.value = template;
+                    lastTemplate = template;
                 }
+            });
+        }
+
+        var once = document.querySelectorAll("form[data-submit-once]");
+        for (var k = 0; k < once.length; k++) {
+            once[k].addEventListener("submit", function (event) {
+                var form = event.currentTarget;
+                if (form.getAttribute("data-submitted")) {
+                    event.preventDefault();
+                    return;
+                }
+                form.setAttribute("data-submitted", "1");
             });
         }
 

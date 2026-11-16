@@ -6,6 +6,38 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.1]
+
+Fixes from a whole-app review. No behaviour of the 0.4.0 reply rule changes.
+
+### Fixed
+
+- Requesting escalation twice in a row (double click) no longer skips a level.
+- Transferring without "keeps helping" sends you to the workbench instead of a "not found" page,
+  and departments that only joined through an escalation leave the ticket too.
+- Helping departments get a correct hint (they write internal notes; they cannot claim).
+- A rejected reply keeps the text you typed. Actions on a ticket that changed meanwhile show a
+  message instead of an error page.
+- Tickets go back to *Unclaimed* also when the assignee was deleted, deactivated or lost access;
+  all in-progress tickets are checked, and the auto-close clock restarts.
+- Auto-close re-checks under lock that nobody replied meanwhile; unclaimed reminders are skipped
+  if the ticket was transferred meanwhile.
+- Notifications: one failing recipient or a short broker outage no longer drops the remaining
+  Alliance Auth notifications; reasons are not sent to the task broker; a Discord read timeout is
+  not retried (avoids duplicate posts).
+- Images: processed before the ticket is locked and decoded less often, limit 25 megapixels,
+  no leftover files when one image of a message fails, JPEG/GIF comments removed, phone
+  "MPO" photos accepted.
+- Nobody can reopen a ticket of an inactive department.
+- Pages: submit form shows priority/category errors, hint when a ticket can no longer be reopened,
+  Invite/Transfer hidden when there is no other department, category templates switch with the
+  category, keyboard-reachable image picker, readable version label, stable list ordering.
+- Workbench no longer fails on absurdly long numbers in filters.
+
+### Added
+
+- Database indexes for the closed tab and the periodic tasks (migration 0005).
+
 ## [0.4.0]
 
 ### Changed

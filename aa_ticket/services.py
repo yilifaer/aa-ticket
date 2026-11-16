@@ -14,6 +14,7 @@ from . import access
 from .constants import ClosedReason, Event, MessageKind, Status
 from .exceptions import TicketActionError
 from .models import EscalationRequest, Ticket, TicketMessage, TicketSettings
+from .attachments import prepare_images, save_prepared, uploads_enabled
 from .notifications import dispatch
 from .utils import display_name
 
@@ -41,13 +42,14 @@ def _emit(ticket, event, actor=None, data=None):
     return message
 
 
-def _save_images(message, images):
+def _prepare(images):
+    """Validate and re-encode uploads before any ticket row is locked."""
     if not images:
-        return
-    from .attachments import save_images
-
+        return []
+    if not uploads_enabled():
+        raise TicketActionError(pgettext("aa_ticket", "Image uploads are turned off on this server."))
     try:
-        save_images(message, images)
+        return prepare_images(images)
     except ValidationError as exc:
         raise TicketActionError(" ".join(exc.messages)) from exc
 
@@ -84,19 +86,6 @@ def _clean_text(text, max_length=None):
     return text
 
 
-def _validate_images(images):
-    if not images:
-        return
-    from .attachments import uploads_enabled, validate_images
-
-    if not uploads_enabled():
-        raise TicketActionError(pgettext("aa_ticket", "Image uploads are turned off on this server."))
-    try:
-        validate_images(list(images))
-    except ValidationError as exc:
-        raise TicketActionError(" ".join(exc.messages)) from exc
-
-
 @transaction.atomic
 def create_ticket(user, department, priority, title, body, category=None, images=()):
     if department not in access.submittable_departments(user):
@@ -123,7 +112,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
             )
             % {"count": open_count}
         )
-    _validate_images(images)
+    prepared = _prepare(images)
     now = timezone.now()
     ticket = Ticket.objects.create(
         title=title,
@@ -138,7 +127,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
         last_reply_by_staff=False,
     )
     message = TicketMessage.objects.create(ticket=ticket, author=user, kind=MessageKind.REPLY, body=body)
-    _save_images(message, images)
+    save_prepared(message, prepared)
     _emit(ticket, Event.SUBMITTED, user, {"department": department.name, "department_id": department.pk})
     return ticket
 
@@ -149,12 +138,13 @@ def _lock(ticket):
 
 @transaction.atomic
 def add_reply(user, ticket, body, images=(), notify=True):
-    ticket = _lock(ticket)
-    _require(user, ticket, "reply")
+    _require(user, ticket, "reply")  # cheap pre-check; repeated below under the lock
     body = _clean_text(body, BODY_MAX)
     if not body and not images:
         raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
-    _validate_images(images)
+    prepared = _prepare(images)
+    ticket = _lock(ticket)
+    _require(user, ticket, "reply")
     by_staff = access.is_staff_for(user, ticket)
     message = TicketMessage.objects.create(
         ticket=ticket,
@@ -163,7 +153,7 @@ def add_reply(user, ticket, body, images=(), notify=True):
         body=body,
         author_department=_author_department(user, ticket) if by_staff else None,
     )
-    _save_images(message, images)
+    save_prepared(message, prepared)
     ticket.last_reply_at = message.created_at
     ticket.last_reply_by_staff = by_staff
     ticket.autoclose_warned_at = None
@@ -177,12 +167,13 @@ def add_reply(user, ticket, body, images=(), notify=True):
 
 @transaction.atomic
 def add_note(user, ticket, body, images=()):
-    ticket = _lock(ticket)
-    _require(user, ticket, "note")
+    _require(user, ticket, "note")  # cheap pre-check; repeated below under the lock
     body = _clean_text(body, BODY_MAX)
     if not body and not images:
         raise TicketActionError(pgettext("aa_ticket", "Please write a message before sending."))
-    _validate_images(images)
+    prepared = _prepare(images)
+    ticket = _lock(ticket)
+    _require(user, ticket, "note")
     message = TicketMessage.objects.create(
         ticket=ticket,
         author=user,
@@ -190,7 +181,7 @@ def add_note(user, ticket, body, images=()):
         body=body,
         author_department=_author_department(user, ticket),
     )
-    _save_images(message, images)
+    save_prepared(message, prepared)
     return message
 
 

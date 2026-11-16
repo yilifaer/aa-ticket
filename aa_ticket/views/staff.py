@@ -57,14 +57,14 @@ def _tab_queryset(user, tab):
 def _apply_filters(qs, params):
     for field, key in (("department_id", "department"), ("priority_id", "priority"), ("category_id", "category")):
         value = params.get(key)
-        if value and value.isascii() and value.isdigit():
+        if value and value.isascii() and value.isdigit() and len(value) <= 18:
             qs = qs.filter(**{field: int(value)})
     status = params.get("status")
     if status in Status.values:
         qs = qs.filter(status=status)
     q = (params.get("q") or "").strip()
     if q:
-        number = re.fullmatch(r"#?(\d+)", q)
+        number = re.fullmatch(r"#?([0-9]{1,18})", q)
         cond = Q(title__icontains=q) | Q(requester_character__character_name__icontains=q)
         if number:
             cond |= Q(pk=int(number.group(1)))
@@ -82,11 +82,11 @@ def workbench(request):
     qs = _apply_filters(_tab_queryset(request.user, tab), request.GET)
     qs = qs.select_related("department", "priority", "requester", "requester_character", "assignee")
     if tab == "closed":
-        qs = qs.order_by("-closed_at")
+        qs = qs.order_by("-closed_at", "-pk")
     else:
-        qs = qs.order_by("-priority__order", "created_at")
+        qs = qs.order_by("-priority__is_urgent", "-priority__order", "created_at", "pk")
     page_number = request.GET.get("page") or "1"
-    if not (page_number.isascii() and page_number.isdigit()) or int(page_number) < 1:
+    if not (page_number.isascii() and page_number.isdigit()) or len(page_number) > 9 or int(page_number) < 1:
         page_number = "1"
     page = Paginator(qs, PAGE_SIZE).get_page(page_number)
     params = request.GET.copy()
