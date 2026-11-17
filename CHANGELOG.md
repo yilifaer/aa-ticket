@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.5]
+
+No database changes.
+
+### Added
+
+- Every Discord message (channel and direct message, including the test message) ends with a
+  small footer line, always in English:
+  `This was a Ticket Bot Notice from <sender> to <recipient> at 2026-11-15 11:03:28 EVE`.
+  The sender is the person who caused the message, or `Alliance Auth` for new tickets and
+  automatic messages; the recipient is the department (channel) or the person (direct message);
+  the time is when the event happened.
+
 ## [0.4.4]
 
 Changes from the 0.4.3 test round. No database changes.

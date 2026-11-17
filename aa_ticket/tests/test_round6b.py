@@ -61,8 +61,10 @@ class TestRealDiscordBot(TestCase):
             dm.send(
                 42, "#1 Help", "The ticket was closed.", "https://auth.example.com/ticket/1/",
                 [("Department", "Diplomacy"), ("Assignee", "Pilot")],
+                "This was a Ticket Bot Notice from Alliance Auth to Pilot at 2026-11-15 11:03:28 EVE",
             )
         kwargs = send_message.call_args.kwargs
+        self.assertEqual(kwargs["embed"].footer.text, "This was a Ticket Bot Notice from Alliance Auth to Pilot at 2026-11-15 11:03:28 EVE")
         self.assertEqual([(f.name, f.value) for f in kwargs["embed"].fields], [("Department", "Diplomacy"), ("Assignee", "Pilot")])
         self.assertEqual(kwargs["user_pk"], 42)
         self.assertIsInstance(kwargs["embed"], discord.Embed)

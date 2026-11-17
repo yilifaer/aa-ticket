@@ -165,7 +165,7 @@ def department_delete(request, pk):
 @require_POST
 def department_test(request, pk):
     department = get_object_or_404(Department, pk=pk)
-    ok, text = send_test_message(department)
+    ok, text = send_test_message(department, request.user)
     (messages.success if ok else messages.error)(request, text)
     return redirect("aa_ticket:manage_department_edit", pk=pk)
 

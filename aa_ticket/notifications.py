@@ -5,6 +5,7 @@ See the design document, section 9.
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.utils import timezone
 from django.utils.translation import pgettext
 
 from allianceauth.notifications import notify
@@ -170,8 +171,8 @@ def personal_title(ticket):
     return f"{ticket.display_number} {ticket.title}"[:250]
 
 
-def dispatch(event, ticket_id, actor_id, data):
-    """Called after a ticket event has been committed."""
+def dispatch(event, ticket_id, actor_id, data, at=None):
+    """Called after a ticket event has been committed. `at` is the event time (ISO string)."""
     ticket = (
         Ticket.objects.select_related("department", "priority", "requester", "assignee")
         .filter(pk=ticket_id)
@@ -180,6 +181,7 @@ def dispatch(event, ticket_id, actor_id, data):
     if ticket is None:
         return
     data = data or {}
+    at = at or timezone.now().isoformat()
 
     targets = _channel_targets(ticket, event, data)
     # only departments that are active and really have a channel to post to
@@ -210,7 +212,7 @@ def dispatch(event, ticket_id, actor_id, data):
                     level=EVENT_LEVEL.get(event, "info"),
                 )
             if dm_available:
-                send_dm.delay(user.pk, ticket.pk, event, dm_data)
+                send_dm.delay(user.pk, ticket.pk, event, dm_data, actor_id, at)
         except Exception as exc:  # noqa: BLE001 - one recipient must not block the others
             logger.warning("Notification for ticket %s to user %s failed: %s", ticket.display_number, user_id, type(exc).__name__)
 
@@ -219,7 +221,7 @@ def dispatch(event, ticket_id, actor_id, data):
             if limited and not cache.add(limit_key, 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
                 continue  # this ticket already had its notice within the last hour
             try:
-                send_webhook.delay(department_id, ticket.pk, event, mention)
+                send_webhook.delay(department_id, ticket.pk, event, mention, actor_id, at)
             except Exception as exc:  # noqa: BLE001 - broker down: keep going
                 if limited:
                     cache.delete(limit_key)  # nothing was sent, so the next reply may try again

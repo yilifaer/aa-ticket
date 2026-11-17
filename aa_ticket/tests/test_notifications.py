@@ -27,6 +27,9 @@ class FakeEmbed:
     def add_field(self, name, value, inline=False):
         self.fields.append((name, value))
 
+    def set_footer(self, text=None, icon_url=None):
+        self.footer = text
+
 
 class NotifyFixture(TestCase):
     @classmethod
@@ -63,7 +66,7 @@ class NotifyFixture(TestCase):
         return [c.args[0] for c in self.dm_task.delay.call_args_list]
 
     def webhook_calls(self):
-        return [tuple(c.args) for c in self.webhook.delay.call_args_list]
+        return [tuple(c.args[:4]) for c in self.webhook.delay.call_args_list]
 
 
 class TestChannelRouting(NotifyFixture):

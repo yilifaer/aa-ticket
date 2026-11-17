@@ -30,12 +30,15 @@ def _record_webhook_result(department_id, error):
 
 
 @shared_task(bind=True, max_retries=WEBHOOK_MAX_RETRIES, ignore_result=True)
-def send_webhook(self, department_id, ticket_id, event, mention):
+def send_webhook(self, department_id, ticket_id, event, mention, actor_id=None, at=None):
+    from django.contrib.auth.models import User
+
     department = Department.objects.filter(pk=department_id).first()
     ticket = Ticket.objects.filter(pk=ticket_id).first()
     if department is None or ticket is None or not department.webhook_url:
         return
-    payload = webhook.build_payload(ticket, event, mention, department)
+    actor = User.objects.filter(pk=actor_id).first() if actor_id else None
+    payload = webhook.build_payload(ticket, event, mention, department, actor=actor, at=at)
     error = None
     countdown = None
     try:
@@ -68,15 +71,17 @@ def send_webhook(self, department_id, ticket_id, event, mention):
 
 
 @shared_task(ignore_result=True)
-def send_dm(user_id, ticket_id, event, data=None):
+def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None):
     """Send one Discord DM. Never retries: an undeliverable DM is not an error."""
     from django.contrib.auth.models import User
 
     from .discord import dm
+    from .discord.footer import notice, sender_name
     from .links import ticket_url
     from .models import UserPreference
     from .notifications import dm_fields, personal_text, personal_title
     from .translation import dm_language_active
+    from .utils import display_name
 
     if not dm.is_available():
         return
@@ -89,8 +94,10 @@ def send_dm(user_id, ticket_id, event, data=None):
     with dm_language_active(user):
         text = personal_text(ticket, event, data or {}, recipient_id=user.pk)
         fields = dm_fields(ticket)
+    actor = User.objects.filter(pk=actor_id).first() if actor_id else None
+    footer = notice(sender_name(event, actor), display_name(user) or user.get_username(), at)
     try:
-        dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket), fields)
+        dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket), fields, footer)
     except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
         logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
 

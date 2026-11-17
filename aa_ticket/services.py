@@ -46,7 +46,8 @@ def _emit(ticket, event, actor=None, data=None):
     )
     ticket_id = ticket.pk
     actor_id = actor.pk if actor else None
-    transaction.on_commit(lambda: dispatch(event, ticket_id, actor_id, data), robust=True)
+    at = message.created_at.isoformat()
+    transaction.on_commit(lambda: dispatch(event, ticket_id, actor_id, data, at), robust=True)
     return message
 
 
@@ -212,7 +213,8 @@ def add_reply(user, ticket, body, images=(), notify=True):
     ticket.save(update_fields=["last_reply_at", "last_reply_by_staff", "autoclose_warned_at", "staff_reminded_at"])
     ticket_id, actor_id, data = ticket.pk, user.pk, {"by_staff": by_staff, "message_id": message.pk}
     if notify:
-        transaction.on_commit(lambda: dispatch(Event.REPLIED, ticket_id, actor_id, data), robust=True)
+        at = message.created_at.isoformat()
+        transaction.on_commit(lambda: dispatch(Event.REPLIED, ticket_id, actor_id, data, at), robust=True)
     return message
 
 

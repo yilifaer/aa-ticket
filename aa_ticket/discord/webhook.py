@@ -19,6 +19,7 @@ from ..constants import PRIORITY_HEX, Event
 from ..links import ticket_url
 from ..translation import channel_language_active
 from ..utils import display_name
+from .footer import SYSTEM_SENDER, notice, sender_name
 
 WEBHOOK_URL_RE = re.compile(
     r"^https://(?:(?:canary|ptb)\.)?discord(?:app)?\.com/api/webhooks/\d+/[\w-]+$"
@@ -59,7 +60,7 @@ def _event_text(ticket, event, department):
     return str(Event(event).label) if event in Event.values else event
 
 
-def build_payload(ticket, event, mention, department):
+def build_payload(ticket, event, mention, department, actor=None, at=None):
     role_ids = [str(x) for x in department.mention_role_id_list()] if mention else []
     with channel_language_active():
         title = f"{ticket.display_number} {ticket.title}"
@@ -80,6 +81,7 @@ def build_payload(ticket, event, mention, department):
             "description": _event_text(ticket, event, department),
             "color": PRIORITY_HEX.get(ticket.priority.color, PRIORITY_HEX["primary"]),
             "fields": fields,
+            "footer": {"text": notice(sender_name(event, actor), department.name, at)},
         }
     return {
         "username": USERNAME,
@@ -101,15 +103,15 @@ def retry_after_seconds(response):
     return max(1, math.ceil(value))
 
 
-def send_test_message(department):
+def send_test_message(department, sender=None):
     """Send a test message right away. Returns (ok, user-facing text)."""
     if not department.webhook_url:
         return False, pgettext("aa_ticket", "No webhook configured.")
     with channel_language_active():
-        return _send_test_message(department)
+        return _send_test_message(department, sender)
 
 
-def _send_test_message(department):
+def _send_test_message(department, sender=None):
     payload = {
         "username": USERNAME,
         "content": "",
@@ -119,6 +121,9 @@ def _send_test_message(department):
                 "title": pgettext("aa_ticket", "Test message"),
                 "description": pgettext("aa_ticket", "Tickets for %(department)s will be announced in this channel.")
                 % {"department": department.name},
+                "footer": {
+                    "text": notice((display_name(sender) or sender.get_username()) if sender else SYSTEM_SENDER, department.name, None)
+                },
             }
         ],
     }

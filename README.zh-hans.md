@@ -25,7 +25,7 @@
 
 完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.4`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.5`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -52,6 +52,7 @@
 - **回复不会发到频道。**
 - 频道消息里只有编号、标题、部门、分类、紧急程度、提交人和链接，**不包含工单正文**。
 - 玩家写的 `@everyone` 不会生效。
+- 每条频道消息和私信最下面都有一行小字：`This was a Ticket Bot Notice from 谁 to 谁 at 2026-11-15 11:03:28 EVE`。新工单和自动发出的提醒写 `Alliance Auth`，有人操作的写操作人的主角色名；发给频道的写部门名，私信写收信人的主角色名。这一行固定是英文。
 
 ## 数据保护
 

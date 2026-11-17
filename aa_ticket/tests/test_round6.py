@@ -46,7 +46,7 @@ class TestItem2UnclaimedReplyNotice(Fixture):
         with patch("aa_ticket.notifications.send_webhook") as wh, patch("aa_ticket.notifications.notify"), \
                 patch("aa_ticket.notifications.dm.is_available", return_value=False):
             dispatch(Event.REPLIED, self.t.pk, self.requester.pk, {"by_staff": by_staff})
-        return [tuple(c.args) for c in wh.delay.call_args_list]
+        return [tuple(c.args[:4]) for c in wh.delay.call_args_list]
 
     def test_requester_reply_on_unclaimed_ticket_pings_channel_without_mention(self):
         self.assertEqual(self.run_dispatch(), [(self.dip.pk, self.t.pk, Event.REPLIED, False)])

@@ -21,6 +21,9 @@ class FakeEmbed:
     def add_field(self, name, value, inline=False):
         self.fields.append((name, value))
 
+    def set_footer(self, text=None, icon_url=None):
+        self.footer = text
+
 
 class LanguageFixture(TestCase):
     @classmethod

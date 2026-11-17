@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.4
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.5
 ```
 
 ### 2. Change `local.py`
@@ -217,6 +217,10 @@ Roles**, right-click the role, **Copy Role ID**. Several IDs are separated by co
 | Still unclaimed, escalation time reached | Department above | Always |
 | Requester waits for staff too long | Responsible department | Never |
 | Assignee left the department, ticket is unclaimed again | Responsible department | Never |
+
+Every channel message and direct message ends with a small footer line (always English):
+`This was a Ticket Bot Notice from <sender> to <recipient> at 2026-11-15 11:03:28 EVE`. The
+sender is the person who caused it, or `Alliance Auth` for new tickets and automatic messages.
 
 Replies are never posted to the channel. Messages contain the ticket number, title,
 department, category, priority, requester and a link, **never the ticket text**, because
