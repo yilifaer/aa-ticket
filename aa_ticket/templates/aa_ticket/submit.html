@@ -1,0 +1,58 @@
+{% extends "aa_ticket/base.html" %}
+{% load i18n static %}
+
+{% block ticket_title %}{% translate "Submit ticket" context 'aa_ticket' %}{% endblock %}
+
+{% block ticket_content %}
+    <nav aria-label="{% translate 'Breadcrumb' context 'aa_ticket' %}"><ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'aa_ticket:submit' %}">{% translate "Submit ticket" context 'aa_ticket' %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ department.name }}</li>
+    </ol></nav>
+    <h1 class="h3 mb-3">{{ department.name }}</h1>
+    <form method="post" enctype="multipart/form-data" class="aa-ticket-form" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>{% endif %}
+        {% if form.category %}
+            <div class="mb-3">
+                <label class="form-label" for="id_category">{{ form.category.label }}</label>
+                <select class="form-select" name="category" id="id_category" data-ticket-category>
+                    <option value="">{% translate "Choose a category" context 'aa_ticket' %}</option>
+                    {% for category in form.fields.category.queryset %}
+                        <option value="{{ category.pk }}" data-template="{{ category.template }}"{% if form.category.value|stringformat:'s' == category.pk|stringformat:'s' %} selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                {% for e in form.category.errors %}<div class="invalid-feedback d-block">{% translate "Please pick a category of the selected department." context 'aa_ticket' %}</div>{% endfor %}
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            <label class="form-label" for="id_priority">{{ form.priority.label }}</label>
+            <select class="form-select" name="priority" id="id_priority">
+                {% for priority in form.fields.priority.queryset %}
+                    <option value="{{ priority.pk }}"{% if form.priority.value|stringformat:'s' == priority.pk|stringformat:'s' %} selected{% endif %}>{{ priority.name }}</option>
+                {% endfor %}
+            </select>
+            {% for e in form.priority.errors %}<div class="invalid-feedback d-block">{% translate "Please pick an available priority." context 'aa_ticket' %}</div>{% endfor %}
+            {% if not form.fields.priority.queryset %}<div class="alert alert-warning mt-2 mb-0">{% translate "No priority is available, so tickets cannot be submitted right now. Please tell an administrator." context 'aa_ticket' %}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="id_title">{{ form.title.label }}</label>
+            <input class="form-control{% if form.title.errors %} is-invalid{% endif %}" type="text" name="title" id="id_title" maxlength="200" value="{{ form.title.value|default:'' }}" required>
+            {% for e in form.title.errors %}<div class="invalid-feedback">{% translate "Please enter a title." context 'aa_ticket' %}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="id_body">{{ form.body.label }}</label>
+            <textarea class="form-control{% if form.body.errors %} is-invalid{% endif %}" name="body" id="id_body" rows="8" required data-ticket-body>{{ form.body.value|default:'' }}</textarea>
+            {% for e in form.body.errors %}<div class="invalid-feedback">{% translate "Please describe your request." context 'aa_ticket' %}</div>{% endfor %}
+        </div>
+        {% if uploads_enabled %}
+            <div class="mb-4">
+                <label class="form-label" for="id_images">{% translate "Images (optional)" context 'aa_ticket' %}</label>
+                <input class="form-control" type="file" name="images" id="id_images" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
+                <div class="form-text">{% translate "Up to 5 PNG, JPG, GIF or WEBP images." context 'aa_ticket' %}</div>
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">{% translate "Submit" context 'aa_ticket' %}</button>
+    </form>
+{% endblock %}
+
+{% block extra_javascript %}<script src="{% static 'aa_ticket/js/ticket.js' %}"></script>{% endblock %}

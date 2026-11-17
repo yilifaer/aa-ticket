@@ -1,0 +1,153 @@
+import datetime
+
+from django import template
+from django.template.defaultfilters import linebreaksbr, urlize
+from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
+from django.utils.safestring import mark_safe
+from django.utils.translation import pgettext
+
+from .. import access
+from ..constants import ClosedReason, Event
+from ..discord import dm
+from ..utils import display_name as _display_name
+
+register = template.Library()
+
+STAFF_ONLY_EVENTS = {
+    Event.UNCLAIMED_REMINDER,
+    Event.ESCALATION_REMINDER,
+    Event.AUTOCLOSE_WARNING,
+    Event.AWAITING_STAFF_REMINDER,
+    Event.ASSIGNEE_LEFT,
+}
+
+
+@register.filter
+def rich_text(value):
+    """Escape, make links clickable and keep line breaks. No HTML or Markdown."""
+    return mark_safe(linebreaksbr(urlize(value or "", autoescape=True), autoescape=False))
+
+
+@register.filter
+def eve_time(value):
+    """EVE time is UTC. Shown with an explicit label so nobody reads it as their local time."""
+    if not value:
+        return ""
+    return timezone.localtime(value, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M") + " EVE"
+
+
+@register.filter
+def display_name(user):
+    return _display_name(user) if user else pgettext("aa_ticket", "System")
+
+
+@register.simple_tag
+def event_text(message, is_staff=False):
+    data = message.event_data or {}
+    try:
+        label = str(Event(message.event_type).label)
+    except ValueError:
+        label = message.event_type
+    event = message.event_type
+    detail = ""
+    if event == Event.TRANSFERRED:
+        detail = pgettext("aa_ticket", "from %(from)s to %(to)s") % {"from": data.get("from", ""), "to": data.get("to", "")}
+    elif event in (Event.INVITED, Event.UNINVITED, Event.ESCALATION_REQUESTED, Event.SUBMITTED):
+        detail = data.get("department", "")
+    elif event in (Event.PRIORITY_CHANGED, Event.CATEGORY_CHANGED):
+        detail = pgettext("aa_ticket", "to %(value)s") % {"value": data.get("to") or "—"}
+    elif event in (Event.CLAIMED, Event.ASSIGNED):
+        detail = data.get("assignee", "")
+    elif event == Event.CLOSED and data.get("reason"):
+        try:
+            detail = str(ClosedReason(data["reason"]).label)
+        except ValueError:
+            detail = ""
+    staff_only_reason = event == Event.TRANSFERRED and not is_staff
+    if data.get("reason") and event != Event.CLOSED and not staff_only_reason:
+        detail = f"{detail} — {data['reason']}" if detail else data["reason"]
+    return f"{label}: {detail}" if detail else label
+
+
+@register.filter
+def visible_event(message, is_staff):
+    return is_staff or message.event_type not in STAFF_ONLY_EVENTS
+
+
+def _url(name):
+    try:
+        return reverse(name)
+    except NoReverseMatch:
+        return ""
+
+
+@register.simple_tag
+def aa_ticket_version():
+    from .. import __version__
+
+    return __version__
+
+
+@register.simple_tag(takes_context=True)
+def aa_ticket_nav(context):
+    request = context.get("request")
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return {}
+    is_staff = access.is_department_staff(user)
+    return {
+        "overview": _url("aa_ticket:index"),
+        "mine": _url("aa_ticket:my_tickets"),
+        "new": _url("aa_ticket:submit"),
+        "workbench": _url("aa_ticket:workbench") if is_staff else "",
+        "stats": _url("aa_ticket:stats") if is_staff else "",
+        "manage": _url("aa_ticket:manage_departments") if user.has_perm("aa_ticket.manage") else (
+            _url("aa_ticket:manage_canned") if access.staff_department_ids(user) else ""
+        ),
+        "prefs": _url("aa_ticket:prefs") if dm.is_available() else "",
+    }
+
+
+@register.filter
+def duration(seconds):
+    """Short human duration such as '2 h 5 min' or '3 d 4 h'."""
+    if seconds is None:
+        return "—"
+    seconds = int(seconds)
+    days, rest = divmod(seconds, 86400)
+    hours, rest = divmod(rest, 3600)
+    minutes = rest // 60
+    if days:
+        return pgettext("aa_ticket", "%(d)d d %(h)d h") % {"d": days, "h": hours}
+    if hours:
+        return pgettext("aa_ticket", "%(h)d h %(m)d min") % {"h": hours, "m": minutes}
+    return pgettext("aa_ticket", "%(m)d min") % {"m": minutes}
+
+
+@register.filter
+def percent(value):
+    if value is None:
+        return "—"
+    return f"{round(value * 100)}%"
+
+
+@register.filter
+def bs_field(field):
+    """Render a form field widget with the Bootstrap 5 class that fits it."""
+    widget = field.field.widget
+    input_type = getattr(widget, "input_type", "")
+    if input_type == "checkbox":
+        css = "form-check-input"
+    elif input_type == "select" or widget.__class__.__name__ in ("Select", "SelectMultiple"):
+        css = "form-select"
+    else:
+        css = "form-control"
+    if field.errors:
+        css += " is-invalid"
+    return field.as_widget(attrs={"class": css})
+
+
+@register.filter
+def is_checkbox(field):
+    return getattr(field.field.widget, "input_type", "") == "checkbox"

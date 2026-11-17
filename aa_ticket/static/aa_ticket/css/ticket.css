@@ -1,0 +1,292 @@
+/* aa-ticket: only small additions on top of Bootstrap 5. Colours use Bootstrap variables
+   so light and dark mode both work. */
+.aa-ticket .aa-ticket-body {
+    overflow-wrap: anywhere;
+}
+
+.aa-ticket .aa-ticket-internal .card-header {
+    /* Translucent yellow works on light and dark themes; text keeps the theme's body colour. */
+    background-color: rgba(255, 193, 7, 0.18);
+    color: var(--bs-body-color);
+}
+
+.aa-ticket .aa-ticket-thumb {
+    max-width: 160px;
+    max-height: 120px;
+    object-fit: cover;
+}
+
+.aa-ticket .aa-ticket-card:hover,
+.aa-ticket .aa-ticket-card:focus {
+    border-color: var(--bs-primary);
+}
+
+.aa-ticket .aa-ticket-timeline .aa-ticket-event {
+    padding-left: 0.25rem;
+}
+
+/* Comfortable tap targets on touch screens (44 px). */
+.aa-ticket .aa-tap {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------------------
+   Contrast. Alliance Auth ships several themes (Flatly, Darkly, Materia, Bootstrap,
+   Bootstrap Dark) whose button and badge colours differ a lot, and some pair white text
+   with light backgrounds. Marks and buttons that people must be able to read therefore use
+   fixed colour pairs with a contrast of at least 4.5:1, independent of the theme.
+   --------------------------------------------------------------------------------------- */
+
+/* Marks (badges) */
+.aa-ticket .aa-badge-muted,
+.aa-badge-muted,
+.aa-ticket .aa-prio-secondary {
+    background-color: #e9ecef;
+    color: #212529;
+    border: 1px solid #adb5bd;
+}
+
+.aa-ticket .aa-prio-primary {
+    background-color: #0a58ca;
+    color: #fff;
+}
+
+.aa-ticket .aa-prio-info,
+.aa-ticket .aa-badge-info {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.aa-ticket .aa-prio-success {
+    background-color: #146c43;
+    color: #fff;
+}
+
+.aa-ticket .aa-prio-warning,
+.aa-ticket .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.aa-ticket .aa-prio-danger,
+.aa-ticket .aa-badge-urgent {
+    background-color: #b02a37;
+    color: #fff;
+}
+
+/* Filled buttons we rely on */
+.aa-ticket .btn-success,
+.aa-ticket .btn-success:hover,
+.aa-ticket .btn-success:focus-visible,
+.aa-ticket .btn-success:active {
+    background-color: #146c43;
+    border-color: #146c43;
+    color: #fff;
+}
+
+.aa-ticket .btn-success:hover,
+.aa-ticket .btn-success:focus-visible,
+.aa-ticket .btn-success:active {
+    background-color: #0f5132;
+    border-color: #0f5132;
+}
+
+.aa-ticket .btn-warning,
+.aa-ticket .btn-warning:hover,
+.aa-ticket .btn-warning:focus-visible,
+.aa-ticket .btn-warning:active {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.aa-ticket .btn-warning:hover,
+.aa-ticket .btn-warning:focus-visible,
+.aa-ticket .btn-warning:active {
+    background-color: #ffcd39;
+    border-color: #ffcd39;
+}
+
+/* Outline buttons: normal text colour on the page background in every state. Hover, keyboard
+   focus and pressed are shown by a heavier outline instead of a fill, so the text can never end
+   up on a background it was not chosen for. */
+.aa-ticket .btn-outline-primary,
+.aa-ticket .btn-outline-secondary,
+.aa-ticket .btn-outline-warning,
+.aa-ticket .btn-outline-danger,
+.aa-ticket .btn-outline-primary:hover,
+.aa-ticket .btn-outline-secondary:hover,
+.aa-ticket .btn-outline-warning:hover,
+.aa-ticket .btn-outline-danger:hover,
+.aa-ticket .btn-outline-primary:focus-visible,
+.aa-ticket .btn-outline-secondary:focus-visible,
+.aa-ticket .btn-outline-warning:focus-visible,
+.aa-ticket .btn-outline-danger:focus-visible,
+.aa-ticket .btn-outline-primary:active,
+.aa-ticket .btn-outline-secondary:active,
+.aa-ticket .btn-outline-warning:active,
+.aa-ticket .btn-outline-danger:active {
+    background-color: transparent;
+    color: var(--bs-body-color);
+    border-color: var(--bs-body-color);
+}
+
+.aa-ticket .btn-outline-primary:hover,
+.aa-ticket .btn-outline-secondary:hover,
+.aa-ticket .btn-outline-warning:hover,
+.aa-ticket .btn-outline-danger:hover,
+.aa-ticket .btn-outline-primary:focus-visible,
+.aa-ticket .btn-outline-secondary:focus-visible,
+.aa-ticket .btn-outline-warning:focus-visible,
+.aa-ticket .btn-outline-danger:focus-visible,
+.aa-ticket .btn-outline-primary:active,
+.aa-ticket .btn-outline-secondary:active,
+.aa-ticket .btn-outline-warning:active,
+.aa-ticket .btn-outline-danger:active {
+    box-shadow: inset 0 0 0 2px var(--bs-body-color);
+}
+
+.aa-ticket .btn-outline-danger,
+.aa-ticket .btn-outline-danger:hover,
+.aa-ticket .btn-outline-danger:focus-visible,
+.aa-ticket .btn-outline-danger:active {
+    border-color: #dc3545;
+}
+
+/* The selected choice of a toggle (Reply / Internal note) */
+.aa-ticket .btn-check:checked + .btn-outline-primary,
+.aa-ticket .btn-check:checked + .btn-outline-primary:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+    color: #fff;
+    box-shadow: none;
+}
+
+.aa-ticket .btn-check:checked + .btn-outline-warning,
+.aa-ticket .btn-check:checked + .btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+    box-shadow: none;
+}
+
+.aa-ticket .btn-check:focus-visible + .btn {
+    outline: 2px solid var(--bs-body-color);
+    outline-offset: 2px;
+}
+
+/* Notices (alerts). The dashboard card sits outside .aa-ticket, so it has its own class. */
+.aa-ticket .alert-warning,
+.aa-ticket-dash .alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffe69c;
+    color: #664d03;
+}
+
+.aa-ticket .alert-danger,
+.aa-ticket-dash .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f1aeb5;
+    color: #842029;
+}
+
+.aa-ticket .alert-secondary,
+.aa-ticket-dash .alert-secondary {
+    background-color: #e2e3e5;
+    border-color: #c4c8cb;
+    color: #41464b;
+}
+
+.aa-ticket .alert-info,
+.aa-ticket-dash .alert-info {
+    background-color: #cff4fc;
+    border-color: #9eeaf9;
+    color: #055160;
+}
+
+/* Links and headings inside a notice take the notice's own text colour. */
+.aa-ticket .alert a,
+.aa-ticket .alert a:hover,
+.aa-ticket .alert a:focus-visible,
+.aa-ticket .alert .alert-heading,
+.aa-ticket-dash .alert a,
+.aa-ticket-dash .alert a:hover,
+.aa-ticket-dash .alert a:focus-visible {
+    color: inherit;
+}
+
+.aa-ticket .alert a:focus-visible,
+.aa-ticket-dash .alert a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* Filled red and grey buttons (Delete, Close, Cancel). */
+.aa-ticket .btn-danger,
+.aa-ticket .btn-danger:hover,
+.aa-ticket .btn-danger:focus-visible,
+.aa-ticket .btn-danger:active,
+.aa-ticket-dash .btn-danger,
+.aa-ticket-dash .btn-danger:hover,
+.aa-ticket-dash .btn-danger:focus-visible,
+.aa-ticket-dash .btn-danger:active {
+    background-color: #b02a37;
+    border-color: #b02a37;
+    color: #fff;
+}
+
+.aa-ticket .btn-danger:hover,
+.aa-ticket .btn-danger:focus-visible,
+.aa-ticket .btn-danger:active,
+.aa-ticket-dash .btn-danger:hover,
+.aa-ticket-dash .btn-danger:focus-visible,
+.aa-ticket-dash .btn-danger:active {
+    background-color: #842029;
+    border-color: #842029;
+}
+
+.aa-ticket .btn-secondary,
+.aa-ticket .btn-secondary:hover,
+.aa-ticket .btn-secondary:focus-visible,
+.aa-ticket .btn-secondary:active,
+.aa-ticket-dash .btn-secondary,
+.aa-ticket-dash .btn-secondary:hover,
+.aa-ticket-dash .btn-secondary:focus-visible,
+.aa-ticket-dash .btn-secondary:active {
+    background-color: #5c636a;
+    border-color: #5c636a;
+    color: #fff;
+}
+
+.aa-ticket .btn-secondary:hover,
+.aa-ticket .btn-secondary:focus-visible,
+.aa-ticket .btn-secondary:active,
+.aa-ticket-dash .btn-secondary:hover,
+.aa-ticket-dash .btn-secondary:focus-visible,
+.aa-ticket-dash .btn-secondary:active {
+    background-color: #41464b;
+    border-color: #41464b;
+}
+
+/* "Close ticket" in the sidebar: red text, dark red on light themes, light red on dark themes. */
+.aa-ticket .aa-ticket-close-btn,
+.aa-ticket .aa-ticket-close-btn:hover,
+.aa-ticket .aa-ticket-close-btn:focus-visible,
+.aa-ticket .aa-ticket-close-btn:active {
+    color: #b02a37;
+}
+
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:hover,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:focus-visible,
+[data-theme="darkly"] .aa-ticket .aa-ticket-close-btn:active,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:hover,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:focus-visible,
+[data-bs-theme="dark"] .aa-ticket .aa-ticket-close-btn:active {
+    color: #ea868f;
+}

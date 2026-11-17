@@ -1,0 +1,30 @@
+{% extends "aa_ticket/manage/base.html" %}
+{% load i18n %}
+
+{% block manage_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">{% translate "Canned replies" context 'aa_ticket' %}</h1>
+    <a class="btn btn-primary" href="{% url 'aa_ticket:manage_canned_edit' 0 %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Add canned reply" context 'aa_ticket' %}</a>
+</div>
+{% if items %}
+<div class="list-group">
+{% for c in items %}
+    <div class="list-group-item d-flex flex-wrap gap-2 align-items-center">
+        <div class="me-auto">
+            {% if editable_ids is None or c.department_id in editable_ids %}
+                <a class="fw-semibold" href="{% url 'aa_ticket:manage_canned_edit' c.pk %}">{{ c.title }}</a>
+            {% else %}
+                <span class="fw-semibold">{{ c.title }}</span>
+            {% endif %}
+            <div class="small text-body-secondary">{% if c.department %}{{ c.department.name }}{% else %}{% translate "All departments" context 'aa_ticket' %}{% endif %}</div>
+        </div>
+        {% if editable_ids is None or c.department_id in editable_ids %}
+            <form method="post" action="{% url 'aa_ticket:manage_canned_delete' c.pk %}" onsubmit="return confirm('{% translate "Delete this canned reply?" context 'aa_ticket' as q %}{{ q|escapejs }}');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">{% translate "Delete" context 'aa_ticket' %}</button></form>
+        {% endif %}
+    </div>
+{% endfor %}
+</div>
+{% else %}
+    <p class="text-body-secondary">{% translate "No canned replies yet." context 'aa_ticket' %}</p>
+{% endif %}
+{% endblock %}

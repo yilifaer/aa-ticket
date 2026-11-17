@@ -1,0 +1,25 @@
+{% load i18n aa_ticket %}
+{% with d=row.department %}
+    <div class="list-group-item d-flex flex-wrap gap-2 align-items-center">
+        <div class="me-auto" style="padding-left: {{ row.indent }}rem;">
+            <a class="fw-semibold" href="{% url 'aa_ticket:manage_department_edit' d.pk %}">{{ d.name }}</a>
+            {% if not d.is_active %}<span class="badge aa-badge-muted">{% translate "inactive" context 'aa_ticket' %}</span>{% endif %}
+            {% if row.parent_note %}<span class="small text-body-secondary">· {{ row.parent_note }}</span>{% endif %}
+            {% if not d.accepts_submissions %}<span class="badge aa-badge-muted">{% translate "no player tickets" context 'aa_ticket' %}</span>{% endif %}
+            <div class="small text-body-secondary">
+                {% translate "Staff groups" context 'aa_ticket' %}: {% for g in d.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% empty %}<span class="text-body"><i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i> {% translate "none — nobody can handle tickets here" context 'aa_ticket' %}</span>{% endfor %}
+            </div>
+            {% for g in row.joinable %}
+                <div class="small text-body"><i class="fas fa-circle-exclamation text-danger" aria-hidden="true"></i> {% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: anyone can join or request this group — they could read all tickets of this department.{% endblocktranslate %}</div>
+            {% endfor %}
+            {% if not d.webhook_url %}
+                <div class="small text-body"><i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i> {% translate "Discord channel not configured — new tickets will not be announced." context 'aa_ticket' %}</div>
+            {% elif d.last_webhook_error %}
+                <div class="small text-body"><i class="fas fa-circle-exclamation text-danger" aria-hidden="true"></i> {% blocktranslate context 'aa_ticket' with when=d.last_webhook_error_at|eve_time reason=d.last_webhook_error %}Last delivery failed ({{ when }}: {{ reason }}){% endblocktranslate %}</div>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'aa_ticket:manage_department_delete' d.pk %}" onsubmit="return confirm('{% translate "Delete this department? Its categories and canned replies are deleted too." context 'aa_ticket' as q %}{{ q|escapejs }}');">{% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger">{% translate "Delete" context 'aa_ticket' %}</button>
+        </form>
+    </div>
+{% endwith %}

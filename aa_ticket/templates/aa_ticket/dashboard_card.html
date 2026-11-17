@@ -1,0 +1,35 @@
+{% load i18n humanize static aa_ticket %}
+<link rel="stylesheet" href="{% static 'aa_ticket/css/ticket.css' %}">
+<div class="col-12 col-xl-6 mb-3 aa-ticket-dash">
+    <div class="card h-100">
+        <div class="card-body">
+            {% translate "Tickets" context 'aa_ticket' as widget_title %}
+            {% include "framework/dashboard/widget-title.html" with title=widget_title %}
+            {% if summary.urgent %}
+                <div class="alert alert-danger py-2 mb-2" role="status">
+                    <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                    {% translate "Urgent unclaimed" context 'aa_ticket' %}: <strong data-count="urgent">{{ summary.urgent }}</strong>
+                </div>
+            {% endif %}
+            <div class="d-flex flex-wrap gap-3 mb-2">
+                {% if not summary.is_staff or summary.open %}
+                    <div>{% translate "My open tickets" context 'aa_ticket' %}: <strong data-count="open">{{ summary.open }}</strong></div>
+                {% endif %}
+                {% if not summary.is_staff or summary.waiting %}
+                    <div class="{% if summary.waiting %}fw-bold{% endif %}">{% translate "Waiting for you" context 'aa_ticket' %}: <strong data-count="waiting">{{ summary.waiting }}</strong></div>
+                {% endif %}
+                {% if summary.is_staff %}
+                    <div>{% translate "Assigned to me" context 'aa_ticket' %}: <strong data-count="assigned">{{ summary.assigned }}</strong></div>
+                    <div>{% translate "Unclaimed in my departments" context 'aa_ticket' %}: <strong data-count="unclaimed">{{ summary.unclaimed }}</strong></div>
+                {% endif %}
+            </div>
+            <ul class="list-unstyled mb-2">
+                {% for ticket in summary.recent %}
+                    <li class="text-truncate"><a href="{% url 'aa_ticket:detail' ticket.pk %}">{{ ticket.display_number }} {{ ticket.title }}</a>
+                        <span class="small text-body-secondary">· {{ ticket.department.name }} · <span title="{{ ticket.last_reply_at|eve_time }}">{{ ticket.last_reply_at|naturaltime }}</span></span></li>
+                {% endfor %}
+            </ul>
+            <a class="small" href="{% url 'aa_ticket:index' %}">{% translate "View all" context 'aa_ticket' %}</a>
+        </div>
+    </div>
+</div>

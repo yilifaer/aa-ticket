@@ -1,0 +1,26 @@
+{% extends "aa_ticket/manage/base.html" %}
+{% load i18n %}
+
+{% block manage_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">{% translate "Categories" context 'aa_ticket' %}</h1>
+    <a class="btn btn-primary" href="{% url 'aa_ticket:manage_category_edit' 0 %}"><i class="fas fa-plus" aria-hidden="true"></i> {% translate "Add category" context 'aa_ticket' %}</a>
+</div>
+{% if items %}
+<div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th scope="col">{% translate "Department" context 'aa_ticket' %}</th><th scope="col">{% translate "Name" context 'aa_ticket' %}</th><th scope="col">{% translate "Template" context 'aa_ticket' %}</th><th scope="col"></th></tr></thead>
+    <tbody>
+    {% for c in items %}
+        <tr>
+            <td>{{ c.department.name }}</td>
+            <td><a href="{% url 'aa_ticket:manage_category_edit' c.pk %}">{{ c.name }}</a>{% if not c.is_active %} <span class="badge aa-badge-muted">{% translate "inactive" context 'aa_ticket' %}</span>{% endif %}</td>
+            <td>{% if c.template %}<span aria-hidden="true">✅</span><span class="visually-hidden">{% translate "Yes" context 'aa_ticket' %}</span>{% else %}<span aria-hidden="true">—</span><span class="visually-hidden">{% translate "No" context 'aa_ticket' %}</span>{% endif %}</td>
+            <td class="text-end"><form method="post" action="{% url 'aa_ticket:manage_category_delete' c.pk %}" onsubmit="return confirm('{% translate "Delete this category? Tickets that use it lose their category." context 'aa_ticket' as q %}{{ q|escapejs }}');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">{% translate "Delete" context 'aa_ticket' %}</button></form></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table></div>
+{% else %}
+    <p class="text-body-secondary">{% translate "No categories yet. Categories are optional; without them players only pick a department." context 'aa_ticket' %}</p>
+{% endif %}
+{% endblock %}
