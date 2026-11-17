@@ -3,7 +3,7 @@
 这份说明写给第一次装 AA 插件的人。每一步都写了**做什么、在哪里做、做完怎么确认**。
 先在树莓派上装好、测试没问题，再按同样的步骤装到正式服。
 
-**已经装过旧版本？** 直接看最后的「[从 0.2.0 升级到 0.3.0](#从-020-升级到-030)」（还是 0.1.0 的话，先看它下面的「从 0.1.0 升级到 0.2.0」）。
+**已经装过测试版（0.x）？** 直接看最后的「[升级](#升级)」。
 
 > 下面假设你的 AA 是按官方文档装的：
 > - 用户：`allianceserver`
@@ -73,11 +73,11 @@ ls -lh ~/alliance_auth.bak-aa-ticket-*
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-pip install "git+https://github.com/yilifaer/aa-ticket.git@claude/friendly-einstein-21gzh0"
+pip install "git+https://github.com/yilifaer/aa-ticket.git@v1.0.0"
 ```
 
 > 一定要先 `cd ~`。如果当前所在的文件夹 `allianceserver` 没有权限读，pip 会报 `PermissionError: __editable__...`。
-> 正式发布后，`@` 后面会换成版本号，比如 `@v0.3.0`。
+> `@` 后面是版本号。以后出了新版本，换成新的版本号就行。
 
 **做完怎么确认：**
 
@@ -86,7 +86,7 @@ pip show aa-ticket | head -2
 pip show allianceauth | head -2
 ```
 
-- `aa-ticket` 显示版本 `0.3.0`；
+- `aa-ticket` 显示版本 `1.0.0`；
 - `allianceauth` **仍然是 5.4.0**（插件不会顺带升级 AA）。
 
 ---
@@ -324,104 +324,15 @@ sudo supervisorctl status
 
 ---
 
-## 从 0.2.0 升级到 0.3.0
+## 升级
 
-0.3.0 加了**工单总览页**和 **AA 首页的工单卡片**，紧急程度多了「算作紧急」开关，停用的部门会折叠起来，深色主题下的警告文字也能看清了。升级前先做第 1 步的数据库备份。
-
-```bash
-sudo su allianceserver
-cd ~
-source /home/allianceserver/venv/auth/bin/activate
-pip install -U "git+https://github.com/yilifaer/aa-ticket.git@claude/friendly-einstein-21gzh0"
-cd /home/allianceserver/myauth
-python manage.py migrate
-python manage.py collectstatic --noinput
-exit
-sudo supervisorctl restart myauth:
-```
-
-**做完怎么确认：**
-- `pip show aa-ticket` 显示 `0.3.0`；
-- `migrate` 输出里有 `Applying aa_ticket.0004_priority_is_urgent... OK`；
-- 左侧点「工单」，第一页是「总览」；
-- AA 首页（Dashboard）上有「工单」卡片（没有任何待处理工单时卡片不显示，这是正常的）；
-- 「管理 → 紧急程度」里 Urgent 那一档显示「紧急：是」。如果你们把紧急的那一档改过名字，升级时会自动把排序最高的那一档设为紧急，需要的话自己改。
-
-### 升级出问题，退回 0.2.0（保留所有工单）
+从测试版（0.x）升到 1.0.0，或者以后升到更新的版本，都这样做。把命令里的 `v1.0.0` 换成要装的版本号。
 
 ```bash
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-cd /home/allianceserver/myauth
-python manage.py migrate aa_ticket 0003
-cd ~
-pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@ade5fa0"
-cd /home/allianceserver/myauth
-python manage.py collectstatic --noinput
-exit
-sudo supervisorctl restart myauth:
-```
-
-**做完怎么确认：** `pip show aa-ticket` 显示 `0.2.0`，工单都还在。
-
----
-
-## 从 0.1.0 升级到 0.2.0
-
-0.2.0 修了测试报告里的问题，并加了「频道语言」设置。升级前先做第 1 步的数据库备份。
-
-```bash
-sudo su allianceserver
-cd ~
-source /home/allianceserver/venv/auth/bin/activate
-pip install -U "git+https://github.com/yilifaer/aa-ticket.git@claude/friendly-einstein-21gzh0"
-cd /home/allianceserver/myauth
-python manage.py migrate
-python manage.py collectstatic --noinput
-exit
-sudo supervisorctl restart myauth:
-```
-
-**做完怎么确认：**
-- `pip show aa-ticket` 显示 `0.2.0`；
-- `migrate` 输出里有 `Applying aa_ticket.0003_language_settings_and_view_all_name... OK`；
-- 中文界面下工单详情页的按钮显示「接手」（以前会被别的插件显示成「补损申请」）；
-- 后台权限显示为 `Tickets | general | Can view and handle all tickets`。
-
-升级后看一眼「管理 → 设置」里的两个语言选项：频道消息默认是英文，需要中文就改成「简体中文」。
-
-> **升级后的第一个 5 分钟：** 0.2.0 会把「处理人已经不在部门组里」的工单自动退回「待接手」，并在部门频道各发一条提示（**不会 @ 身份组**）。测试机上之前把真实账号移出了测试组，所以升级后外交测试频道可能会一次收到好几条这样的消息，这是正常的。
-
-### 升级出问题，退回 0.1.0（保留所有工单）
-
-**不要**用上面「出问题时怎么回滚」的办法，那会删掉所有工单。按下面做：
-
-```bash
-sudo su allianceserver
-cd ~
-source /home/allianceserver/venv/auth/bin/activate
-cd /home/allianceserver/myauth
-python manage.py migrate aa_ticket 0002
-cd ~
-pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@d77d042"
-cd /home/allianceserver/myauth
-python manage.py collectstatic --noinput
-exit
-sudo supervisorctl restart myauth:
-```
-
-**做完怎么确认：** `pip show aa-ticket` 显示 `0.1.0`，工单都还在。
-
----
-
-## 以后升级
-
-```bash
-sudo su allianceserver
-cd ~
-source /home/allianceserver/venv/auth/bin/activate
-pip install -U "git+https://github.com/yilifaer/aa-ticket.git@新版本号"
+pip install -U "git+https://github.com/yilifaer/aa-ticket.git@v1.0.0"
 cd /home/allianceserver/myauth
 python manage.py migrate
 python manage.py collectstatic --noinput
@@ -431,4 +342,6 @@ sudo supervisorctl restart myauth:
 
 升级前同样先做第 1 步的备份。
 
-> **正式服**请用版本号（tag）安装，比如 `@v0.3.0`，不要用开发分支名。开发分支上随时可能有新的提交，用分支名安装的话，每次重装拿到的代码可能都不一样。
+> 一定要用版本号（比如 `@v1.0.0`）安装，不要用分支名。用分支名安装的话，每次重装拿到的代码可能都不一样。
+>
+> 升级后**不要**用上面「出问题时怎么回滚」的办法退回旧版本，那会删掉所有工单。新版本有问题时，用同样的命令装回旧的版本号就行（数据库不用动，除非新版本的说明里写了有数据库变化）。

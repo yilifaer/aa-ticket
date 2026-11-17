@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0]
+
+First stable release. The code is the same as 0.4.7; only the version number and the
+documentation changed. No database changes.
+
+### Documentation
+
+- Install from the version tag (`@v1.0.0`). The installation guide no longer installs from a
+  development branch, and the upgrade guides for the 0.x test versions were removed: upgrade
+  from any 0.x version with the steps under "升级" in `docs/install-raspberry-pi.zh-hans.md`.
+
 ## [0.4.7]
 
 Change from the 0.4.6 test round. No database changes.

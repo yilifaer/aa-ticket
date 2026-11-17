@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.7
+pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.0
 ```
 
 ### 2. Change `local.py`
