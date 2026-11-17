@@ -134,8 +134,10 @@ class TestLow3And11Escalation(Fixture):
         self.assertContains(r, "Lead has already been asked to step in.")
 
     def test_foreign_department_id_does_not_reveal_its_name(self):
+        # Long names: a two-letter name like "FC" can turn up by chance in the random CSRF token.
         hidden = make_department("Secret Ops", is_active=False)
-        for dept in (hidden, self.fc):
+        foreign = make_department("Foreign Fleet Command", groups=[make_group("Foreign")])
+        for dept in (hidden, foreign):
             r = self.post(dept.pk)
             self.assertNotContains(r, dept.name)
             self.assertContains(r, "no longer possible")
