@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Documentation
+
+- Screenshots in both READMEs.
+- The Chinese installation guide is now `docs/install.zh-hans.md` and no longer specific to a
+  test machine. Internal review notes, design and planning documents were removed.
+
 ## [1.0.0]
 
 First stable release. The code is the same as 0.4.7; only the version number and the
@@ -15,7 +21,7 @@ documentation changed. No database changes.
 
 - Install from the version tag (`@v1.0.0`). The installation guide no longer installs from a
   development branch, and the upgrade guides for the 0.x test versions were removed: upgrade
-  from any 0.x version with the steps under "升级" in `docs/install-raspberry-pi.zh-hans.md`.
+  from any 0.x version with the steps under "升级" in `docs/install.zh-hans.md`.
 
 ## [0.4.7]
 

@@ -9,9 +9,12 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 
 [中文说明](README.zh-hans.md)
 
+![A ticket seen by staff: conversation, internal note, image and actions](docs/images/ticket-en.png)
+
 ## Contents
 
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Permissions](#permissions)
@@ -51,6 +54,28 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
   escalated to them. A card on the Alliance Auth dashboard shows the counts.
 - **Canned replies**, a **workbench** for staff and **statistics** per department.
 - **Languages:** English, Simplified Chinese, German, Russian and Spanish.
+
+## Screenshots
+
+All names in the screenshots are made up. Theme: Darkly.
+
+**Overview** — what is assigned to you, what is waiting in your departments (urgent first), what
+was escalated or shared with you, and your own tickets.
+
+![Overview page](docs/images/overview-en.png)
+
+**Submitting a ticket** — the category fills in its template.
+
+![Submit form](docs/images/submit-en.png)
+
+**Departments** — parent and child departments, staff groups and a warning when no Discord
+channel is set up.
+
+![Department settings](docs/images/departments-en.png)
+
+**Priorities** — per priority: ping the role or not, reminder and escalation times.
+
+![Priority settings](docs/images/priorities-en.png)
 
 ## Requirements
 
