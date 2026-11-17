@@ -67,7 +67,7 @@ Everything is configured from the Alliance Auth front end; no code or Django adm
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.6
+pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.7
 ```
 
 ### 2. Change `local.py`
@@ -306,7 +306,8 @@ above, which contain the ticket title and the requester's main character name.
 
 Images are served only through a permission-checked page, never from a public URL. Uploads are
 re-encoded, which removes location, camera and other metadata; images with a longer edge above
-4096 pixels are scaled down to 4096 pixels, and images above 25 megapixels are refused (decoding
+4096 pixels are scaled down to 4096 pixels, and images above 25 megapixels, and animations above 25 megapixels across all
+frames, are refused (decoding
 larger PNG images needs too much memory on small servers such as a Raspberry Pi). Use
 *Delete images after (days)* to remove old images automatically. Superusers can delete single
 messages or images in the Django admin.

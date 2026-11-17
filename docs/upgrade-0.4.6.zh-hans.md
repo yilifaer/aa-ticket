@@ -101,14 +101,14 @@ sudo supervisorctl status
 第 5 条停、启 Celery 的命令（在你自己的账号下）：
 
 ```bash
-sudo supervisorctl stop myauth:worker
+sudo supervisorctl stop myauth:worker_00
 ```
 
 ```bash
-sudo supervisorctl start myauth:worker
+sudo supervisorctl start myauth:worker_00
 ```
 
-> 你那边 Celery 进程的名字如果不叫 `myauth:worker`，先用 `sudo supervisorctl status` 看一下，用列表里带 `worker` 的那个名字。第 5 条测完一定要确认它又是 `RUNNING`。
+> 你那边 Celery 进程的名字如果不叫 `myauth:worker_00`，先用 `sudo supervisorctl status` 看一下，用列表里带 `worker` 的那个名字。第 5 条测完一定要确认它又是 `RUNNING`。
 
 哪一条不对，记下编号、现象和截图发给我（截图里不要带 webhook 地址）。
 

@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.7]
+
+Change from the 0.4.6 test round. No database changes.
+
+### Changed
+
+- Animations (GIF, WEBP) may have at most 25 megapixels across all frames together (was 100).
+  A 4-frame 5000 × 5000 animation took about 860 MB of memory on a Raspberry Pi. The refusal
+  message now says that the animation as a whole is too large, gives the number of frames and
+  the frame size, and suggests fewer frames or a smaller size.
+
 ## [0.4.6]
 
 Changes from the 0.4.5 test round. No database changes.

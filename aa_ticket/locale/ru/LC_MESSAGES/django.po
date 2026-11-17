@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 23:27+0000\n"
+"POT-Creation-Date: 2026-11-17 05:24+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: ru\n"
@@ -56,7 +56,19 @@ msgctxt "aa_ticket"
 msgid "This image is too large. Please make it smaller and try again."
 msgstr "Изображение слишком большое. Уменьшите его и попробуйте снова."
 
-#: attachments.py:80
+#: attachments.py:58
+#, python-format
+msgctxt "aa_ticket"
+msgid ""
+"This animation is too large in total (%(count)d frames of %(width)d × "
+"%(height)d pixels). All frames together may have up to %(max)d megapixels. "
+"Use fewer frames or a smaller size."
+msgstr ""
+"Анимация слишком большая в сумме (кадров: %(count)d, каждый %(width)d × "
+"%(height)d пикселей). Все кадры вместе могут занимать не более %(max)d "
+"мегапикселей. Уменьшите число кадров или размер."
+
+#: attachments.py:91
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -66,13 +78,13 @@ msgstr ""
 "В этой анимации слишком много кадров (%(count)d). Допускается не больше "
 "%(max)d."
 
-#: attachments.py:109 attachments.py:185
+#: attachments.py:120 attachments.py:196
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "В одном сообщении можно прикрепить не более %(count)d изображений."
 
-#: attachments.py:114 attachments.py:191
+#: attachments.py:125 attachments.py:202
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
@@ -260,7 +272,7 @@ msgctxt "aa_ticket"
 msgid "Red"
 msgstr "Красный"
 
-#: discord/webhook.py:34
+#: discord/webhook.py:35
 msgctxt "aa_ticket"
 msgid ""
 "Paste the full webhook URL from Discord. It starts with https://discord.com/"
@@ -269,56 +281,56 @@ msgstr ""
 "Вставьте полный URL вебхука из Discord. Он начинается с https://discord.com/"
 "api/webhooks/"
 
-#: discord/webhook.py:42
+#: discord/webhook.py:43
 msgctxt "aa_ticket"
 msgid "New ticket"
 msgstr "Новая заявка"
 
-#: discord/webhook.py:44
+#: discord/webhook.py:45
 #, python-format
 msgctxt "aa_ticket"
 msgid "Ticket transferred to %(department)s"
 msgstr "Заявка передана в отдел «%(department)s»"
 
-#: discord/webhook.py:46
+#: discord/webhook.py:47
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s was invited to help"
 msgstr "Отдел «%(department)s» приглашён помочь"
 
-#: discord/webhook.py:48
+#: discord/webhook.py:49
 #, python-format
 msgctxt "aa_ticket"
 msgid "The requester asked %(department)s to step in"
 msgstr "Автор просил отдел «%(department)s» подключиться"
 
-#: discord/webhook.py:50
+#: discord/webhook.py:51
 msgctxt "aa_ticket"
 msgid "Still unclaimed — please take a look"
 msgstr "Заявка всё ещё не взята в работу — посмотрите, пожалуйста"
 
-#: discord/webhook.py:52
+#: discord/webhook.py:53
 #, python-format
 msgctxt "aa_ticket"
 msgid "A ticket of %(department)s is still unclaimed"
 msgstr "Заявка отдела «%(department)s» всё ещё не взята в работу"
 
-#: discord/webhook.py:54
+#: discord/webhook.py:55
 msgctxt "aa_ticket"
 msgid "The requester added information to an unclaimed ticket"
 msgstr "Автор дополнил заявку, которая ещё не взята в работу"
 
-#: discord/webhook.py:56
+#: discord/webhook.py:57
 msgctxt "aa_ticket"
 msgid "The assignee left the department — the ticket needs a new handler"
 msgstr "Исполнитель покинул отдел — заявке нужен новый исполнитель"
 
-#: discord/webhook.py:58
+#: discord/webhook.py:59
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply"
 msgstr "Автор всё ещё ждёт ответа"
 
-#: discord/webhook.py:69 notifications.py:110
+#: discord/webhook.py:72 notifications.py:121
 #: templates/aa_ticket/detail.html:125 templates/aa_ticket/detail.html:134
 #: templates/aa_ticket/detail.html:145
 #: templates/aa_ticket/manage/categories.html:11
@@ -328,53 +340,53 @@ msgctxt "aa_ticket"
 msgid "Department"
 msgstr "Отдел"
 
-#: discord/webhook.py:70 forms.py:11 templates/aa_ticket/detail.html:161
+#: discord/webhook.py:73 forms.py:11 templates/aa_ticket/detail.html:161
 #: templates/aa_ticket/partials/ticket_table.html:8
 #: templates/aa_ticket/workbench.html:19
 msgctxt "aa_ticket"
 msgid "Priority"
 msgstr "Приоритет"
 
-#: discord/webhook.py:73 forms.py:9 templates/aa_ticket/detail.html:170
+#: discord/webhook.py:76 forms.py:9 templates/aa_ticket/detail.html:170
 #: templates/aa_ticket/workbench.html:24
 msgctxt "aa_ticket"
 msgid "Category"
 msgstr "Категория"
 
-#: discord/webhook.py:75 templates/aa_ticket/detail.html:14
+#: discord/webhook.py:78 templates/aa_ticket/detail.html:14
 #: templates/aa_ticket/partials/ticket_table.html:10
 msgctxt "aa_ticket"
 msgid "Requester"
 msgstr "Автор"
 
-#: discord/webhook.py:107
+#: discord/webhook.py:111
 msgctxt "aa_ticket"
 msgid "No webhook configured."
 msgstr "Вебхук не настроен."
 
-#: discord/webhook.py:119
+#: discord/webhook.py:123
 msgctxt "aa_ticket"
 msgid "Test message"
 msgstr "Тестовое сообщение"
 
-#: discord/webhook.py:120
+#: discord/webhook.py:124
 #, python-format
 msgctxt "aa_ticket"
 msgid "Tickets for %(department)s will be announced in this channel."
 msgstr "Заявки отдела «%(department)s» будут объявляться в этом канале."
 
-#: discord/webhook.py:128
+#: discord/webhook.py:135
 #, python-format
 msgctxt "aa_ticket"
 msgid "Sending failed (%(reason)s)."
 msgstr "Не удалось отправить (%(reason)s)."
 
-#: discord/webhook.py:130
+#: discord/webhook.py:137
 msgctxt "aa_ticket"
 msgid "Test message sent. Check the Discord channel."
 msgstr "Тестовое сообщение отправлено. Проверьте канал Discord."
 
-#: discord/webhook.py:131
+#: discord/webhook.py:138
 #, python-format
 msgctxt "aa_ticket"
 msgid "Discord refused the message (HTTP %(status)s). Check the webhook URL."
@@ -837,66 +849,66 @@ msgctxt "aa_ticket"
 msgid "Ticket settings"
 msgstr "Настройки заявок"
 
-#: notifications.py:112 templates/aa_ticket/detail.html:15
+#: notifications.py:122 templates/aa_ticket/detail.html:15
 msgctxt "aa_ticket"
 msgid "Assignee"
 msgstr "Исполнитель"
 
-#: notifications.py:113
+#: notifications.py:122
 msgctxt "aa_ticket"
 msgid "Nobody yet"
 msgstr "Пока никто"
 
-#: notifications.py:121 notifications.py:125
+#: notifications.py:129 notifications.py:133
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(name)s is now handling your ticket."
 msgstr "%(name)s теперь занимается вашей заявкой."
 
-#: notifications.py:124
+#: notifications.py:132
 msgctxt "aa_ticket"
 msgid "You were assigned this ticket."
 msgstr "Вам назначена эта заявка."
 
-#: notifications.py:128
+#: notifications.py:136
 msgctxt "aa_ticket"
 msgid "There is a new reply on your ticket."
 msgstr "В вашей заявке новый ответ."
 
-#: notifications.py:129
+#: notifications.py:137
 msgctxt "aa_ticket"
 msgid "The requester replied."
 msgstr "Автор ответил."
 
-#: notifications.py:131
+#: notifications.py:139
 msgctxt "aa_ticket"
 msgid "The ticket was closed."
 msgstr "Заявка закрыта."
 
-#: notifications.py:133
+#: notifications.py:141
 msgctxt "aa_ticket"
 msgid "The ticket was reopened."
 msgstr "Заявка снова открыта."
 
-#: notifications.py:135
+#: notifications.py:144
 #, python-format
 msgctxt "aa_ticket"
 msgid "The ticket was transferred to %(department)s."
 msgstr "Заявка передана в отдел «%(department)s»."
 
-#: notifications.py:137
+#: notifications.py:146
 #, python-format
 msgctxt "aa_ticket"
 msgid "The priority was changed to %(priority)s."
 msgstr "Приоритет изменён на «%(priority)s»."
 
-#: notifications.py:139
+#: notifications.py:148
 #, python-format
 msgctxt "aa_ticket"
 msgid "The requester asked %(department)s to step in."
 msgstr "Автор просил отдел «%(department)s» подключиться."
 
-#: notifications.py:142
+#: notifications.py:151
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -906,7 +918,7 @@ msgstr ""
 "Эта заявка будет автоматически закрыта через %(hours)d ч, если никто не "
 "ответит."
 
-#: notifications.py:146
+#: notifications.py:155
 msgctxt "aa_ticket"
 msgid "The requester is still waiting for a reply."
 msgstr "Автор всё ещё ждёт ответа."
@@ -951,43 +963,43 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "Нет эскалированных заявок."
 
-#: services.py:101
+#: services.py:102
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "Загрузка изображений отключена на этом сервере."
 
-#: services.py:135
+#: services.py:136
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "Пожалуйста, уложитесь в %(count)d символов."
 
-#: services.py:147 templates/aa_ticket/submit.html:40
+#: services.py:148 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "Введите заголовок."
 
-#: services.py:149
+#: services.py:150
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "Заголовок должен быть короче 200 символов."
 
-#: services.py:151 templates/aa_ticket/submit.html:45
+#: services.py:152 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Опишите ваш запрос."
 
-#: services.py:153 services.py:397 templates/aa_ticket/submit.html:34
+#: services.py:154 services.py:399 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Выберите доступный приоритет."
 
-#: services.py:155 templates/aa_ticket/submit.html:24
+#: services.py:156 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Выберите категорию выбранного отдела."
 
-#: services.py:161
+#: services.py:162
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -997,64 +1009,64 @@ msgstr ""
 "У вас уже %(count)d открытых заявок. Закройте решённые заявки, прежде чем "
 "открывать новую."
 
-#: services.py:195 services.py:224
+#: services.py:196 services.py:226
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Напишите сообщение перед отправкой."
 
-#: services.py:250
+#: services.py:252
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Уже взято в работу: %(name)s."
 
-#: services.py:252
+#: services.py:254
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Эту заявку больше нельзя взять в работу."
 
-#: services.py:262
+#: services.py:264
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Выберите сотрудника ответственного отдела."
 
-#: services.py:288 services.py:312
+#: services.py:290 services.py:314
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Этот отдел не активен."
 
-#: services.py:290
+#: services.py:292
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Этот отдел уже отвечает за заявку."
 
-#: services.py:292
+#: services.py:294
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Этот отдел уже работает над заявкой."
 
-#: services.py:302
+#: services.py:304
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Этот отдел не работает над заявкой."
 
-#: services.py:314
+#: services.py:316
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Заявка уже в этом отделе."
 
-#: services.py:365 services.py:372 views/ticket.py:219
+#: services.py:367 services.py:374 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "Отдел «%(department)s» уже попросили подключиться."
 
-#: services.py:411
+#: services.py:413
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Выберите категорию ответственного отдела."
 
-#: services.py:432
+#: services.py:434
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr "Только автор заявки и исполнитель могут добавить последний ответ."

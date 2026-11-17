@@ -51,6 +51,17 @@ def _too_large_error(size=None):
     return ValidationError(pgettext("aa_ticket", "This image is too large. Please make it smaller and try again."))
 
 
+def _animation_too_large_error(frames, size):
+    return ValidationError(
+        pgettext(
+            "aa_ticket",
+            "This animation is too large in total (%(count)d frames of %(width)d × %(height)d pixels). "
+            "All frames together may have up to %(max)d megapixels. Use fewer frames or a smaller size.",
+        )
+        % {"count": frames, "width": size[0], "height": size[1], "max": MAX_ANIMATION_PIXELS // 1_000_000}
+    )
+
+
 def _decode_small(img):
     """For JPEG, let the decoder skip detail we would throw away when scaling down. Saves memory."""
     if img.format in ("JPEG", "MPO"):
@@ -81,7 +92,7 @@ def _detect_format(upload):
                         % {"count": frames, "max": MAX_FRAMES}
                     )
                 if frames * size[0] * size[1] > MAX_ANIMATION_PIXELS:
-                    raise _too_large_error(size)
+                    raise _animation_too_large_error(frames, size)
                 img.verify()
             # verify() does not decode pixel data; load once to catch truncated files.
             upload.seek(0)
