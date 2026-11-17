@@ -1,9 +1,9 @@
-# 在树莓派（测试机）上安装 aa-ticket
+# aa-ticket 安装步骤
 
 这份说明写给第一次装 AA 插件的人。每一步都写了**做什么、在哪里做、做完怎么确认**。
-先在树莓派上装好、测试没问题，再按同样的步骤装到正式服。
+有测试机的话，建议先在测试机上装好、测试没问题，再按同样的步骤装到正式服。
 
-**已经装过测试版（0.x）？** 直接看最后的「[升级](#升级)」。
+**已经装过旧版本？** 直接看最后的「[升级](#升级)」。
 
 > 下面假设你的 AA 是按官方文档装的：
 > - 用户：`allianceserver`
@@ -21,7 +21,7 @@
 
 ## 第 0 步：确认路径和版本
 
-**在哪里做：** 用 SSH 登录树莓派，然后切换到 `allianceserver`：
+**在哪里做：** 用 SSH 登录 AA 所在的服务器，然后切换到 `allianceserver`：
 
 ```bash
 sudo su allianceserver
@@ -38,7 +38,9 @@ source /home/allianceserver/venv/auth/bin/activate
 pip show allianceauth | head -2
 ```
 
-**做完怎么确认：** 显示 `Version: 5.4.0`。
+**做完怎么确认：** 显示 `Version: 5.0.0` 或更高。
+
+> AA 5.0 和 5.1 还要再装一个旧版的 django-sri：`pip install "django-sri<1"`。新版 django-sri 会让这两个 AA 版本自己的页面出错。
 
 ---
 
@@ -87,7 +89,7 @@ pip show allianceauth | head -2
 ```
 
 - `aa-ticket` 显示版本 `1.0.0`；
-- `allianceauth` **仍然是 5.4.0**（插件不会顺带升级 AA）。
+- `allianceauth` **和装之前的版本一样**（插件不会顺带升级 AA）。
 
 ---
 
@@ -156,7 +158,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`。
+**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`、`0005_ticket_indexes... OK`。
 
 ---
 
@@ -245,7 +247,7 @@ sudo supervisorctl status
 
 「部门」→「添加部门」：
 
-1. 名称填「外交」，简介写一句给玩家看的说明。
+1. 名称填部门名，比如「外交」；简介写一句给玩家看的说明。下面都以「外交」为例。
 2. 「人员权限组」选外交人员所在的组（这个组要先在 AA 里建好）。
    **这个组必须是「不公开、不能自己申请」的组**（在 AA 后台把组设成 Internal），否则谁都能加进来看工单和内部备注。设置错了，部门列表里会出现红色警告。
 3. Discord webhook：
@@ -293,7 +295,7 @@ sudo supervisorctl status
 5. 小号点「关闭工单」。
    - ✅ 工单状态变成「已关闭」，7 天内可以重新打开。
 
-有任何一步不对，把现象截图发给我（**截图里不要带 webhook 地址**）。
+有任何一步不对，可以到 [GitHub Issues](https://github.com/yilifaer/aa-ticket/issues) 提问，附上现象和截图（**截图里不要带 webhook 地址**）。
 
 ---
 
@@ -326,7 +328,7 @@ sudo supervisorctl status
 
 ## 升级
 
-从测试版（0.x）升到 1.0.0，或者以后升到更新的版本，都这样做。把命令里的 `v1.0.0` 换成要装的版本号。
+升到新版本都这样做。把命令里的 `v1.0.0` 换成要装的版本号（版本列表见 [Releases](https://github.com/yilifaer/aa-ticket/releases)）。
 
 ```bash
 sudo su allianceserver

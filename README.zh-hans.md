@@ -6,7 +6,9 @@
 工作人员在 AA 里接手工单、和玩家来回交流，可以邀请其他部门协作、移交、申请上级介入，最后关闭工单。
 所有配置都在 AA 前台完成，不用改代码，也不用进 Django 后台。
 
-[English](README.md) · [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)
+[English](README.md) · [安装步骤](docs/install.zh-hans.md)
+
+![工作人员看到的工单：来回对话、内部备注、图片和操作按钮](docs/images/ticket-zh.png)
 
 ## 功能
 
@@ -21,9 +23,29 @@
 - **回复模板**、**工作台**、**统计页**。
 - **语言**：英文、简体中文、德语、俄语、西班牙语。Discord 频道消息的语言在设置里选（默认英文）；私信可以跟随每个人的语言，也可以和频道一致。
 
+## 截图
+
+截图里的名字都是虚构的，主题是 Darkly。
+
+**总览**：分配给我的、我的部门待接手的（紧急的排前面）、申请上级介入或邀请协作的、我提交的。
+
+![总览页](docs/images/overview-zh.png)
+
+**提交工单**：选了分类会自动填入模板。
+
+![提交工单](docs/images/submit-zh.png)
+
+**部门设置**：上下级部门、人员权限组；没配 Discord 频道时会提醒。
+
+![部门设置](docs/images/departments-zh.png)
+
+**紧急程度**：每一档要不要 @ 身份组、多久提醒、多久自动申请上级介入。
+
+![紧急程度设置](docs/images/priorities-zh.png)
+
 ## 安装
 
-完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
+完整步骤（包括备份和回滚）见 [安装步骤](docs/install.zh-hans.md)。简要版：
 
 1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.0`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
