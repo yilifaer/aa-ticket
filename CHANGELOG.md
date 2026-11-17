@@ -16,6 +16,10 @@ Change from the 0.4.6 test round. No database changes.
   A 4-frame 5000 × 5000 animation took about 860 MB of memory on a Raspberry Pi. The refusal
   message now says that the animation as a whole is too large, gives the number of frames and
   the frame size, and suggests fewer frames or a smaller size.
+- Only GIF and WEBP count as animations. Phone photos that carry a hidden extra picture (MPO:
+  HDR gain map, depth map) and animated PNGs are saved as their first picture only, so only that
+  picture is checked against the 25 MP limit. Without this, ordinary 12 MP phone photos were
+  refused as "animations".
 
 ## [0.4.6]
 

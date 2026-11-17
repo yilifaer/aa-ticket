@@ -62,3 +62,54 @@ class TestAnimationTotal(TestCase):
             attachments.prepare_images([animation((6000, 5000), 1)])
         self.assertIn("6000 × 5000", " ".join(ctx.exception.messages))
         self.assertNotIn("frames", " ".join(ctx.exception.messages))
+
+
+def mpo(size, extra_size):
+    """A phone photo with a hidden extra picture (HDR gain map / depth map)."""
+    main = Image.new("RGB", size, (120, 80, 40))
+    extra = Image.new("RGB", extra_size, (10, 10, 10))
+    buf = io.BytesIO()
+    main.save(buf, format="MPO", save_all=True, append_images=[extra])
+    return SimpleUploadedFile("photo.jpg", buf.getvalue())
+
+
+class TestPhonePhotosWithExtraPicture(TestCase):
+    """Multi-picture JPEGs keep only the main picture, so they are not counted as animations."""
+
+    def test_pillow_reads_it_as_two_pictures(self):
+        upload = mpo((4080, 3072), (1020, 768))
+        with Image.open(upload) as img:
+            self.assertEqual((img.format, img.n_frames), ("MPO", 2))
+
+    def test_12mp_phone_photo_is_accepted_and_saved_as_one_jpeg(self):
+        prepared = attachments.prepare_images([mpo((4080, 3072), (1020, 768))])
+        content_type, data = prepared[0][1], prepared[0][3]
+        self.assertEqual(content_type, "image/jpeg")
+        with Image.open(io.BytesIO(data)) as img:
+            self.assertEqual(img.format, "JPEG")
+            self.assertEqual(getattr(img, "n_frames", 1), 1)
+            self.assertEqual(img.size, (4080, 3072))
+
+    def test_24mp_iphone_size_is_accepted_and_scaled(self):
+        data = attachments.prepare_images([mpo((4284, 5712), (1071, 1428))])[0][3]
+        with Image.open(io.BytesIO(data)) as img:
+            self.assertEqual(img.size, (3072, 4096))
+
+    def test_main_picture_above_25mp_is_still_refused_as_an_image(self):
+        with translation.override("en"), self.assertRaises(ValidationError) as ctx:
+            attachments.prepare_images([mpo((6000, 5000), (100, 100))])
+        text = " ".join(ctx.exception.messages)
+        self.assertIn("This image is too large (6000 × 5000 pixels)", text)
+        self.assertNotIn("animation", text)
+
+
+class TestAnimatedPng(TestCase):
+    """Animated PNGs are saved as their first frame only, so only that frame counts."""
+
+    def test_large_apng_is_accepted_as_still_image(self):
+        frames = [Image.new("RGB", (3000, 3000), (i * 60, 0, 0)) for i in range(4)]
+        buf = io.BytesIO()
+        frames[0].save(buf, format="PNG", save_all=True, append_images=frames[1:])
+        data = attachments.prepare_images([SimpleUploadedFile("a.png", buf.getvalue())])[0][3]
+        with Image.open(io.BytesIO(data)) as img:
+            self.assertEqual(getattr(img, "n_frames", 1), 1)

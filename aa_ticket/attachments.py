@@ -27,6 +27,10 @@ ALLOWED_FORMATS = {
 }
 
 
+# Formats saved with all their frames. Everything else is saved as its first picture only.
+ANIMATED_FORMATS = ("GIF", "WEBP")
+
+
 def uploads_enabled():
     root = getattr(settings, "MEDIA_ROOT", "")
     if not root:
@@ -85,7 +89,10 @@ def _detect_format(upload):
                 size = img.size
                 if size[0] * size[1] > MAX_IMAGE_PIXELS:
                     raise _too_large_error(size)
-                frames = getattr(img, "n_frames", 1)
+                # Only GIF and WEBP keep their frames when saved (see _reencode_unchecked). A phone
+                # photo with a hidden extra picture (MPO) or an animated PNG keeps just the first
+                # picture, so only that one counts, and it was checked above.
+                frames = getattr(img, "n_frames", 1) if fmt in ANIMATED_FORMATS else 1
                 if frames > MAX_FRAMES:
                     raise ValidationError(
                         pgettext("aa_ticket", "This animation has too many frames (%(count)d). Up to %(max)d frames are allowed.")
@@ -143,7 +150,7 @@ def _reencode_unchecked(upload, fmt):
         warnings.simplefilter("ignore", Image.DecompressionBombWarning)
         with Image.open(upload) as img:
             frames = getattr(img, "n_frames", 1)
-            if frames > 1 and fmt in ("GIF", "WEBP"):
+            if frames > 1 and fmt in ANIMATED_FORMATS:
                 _save_animation(img, out, fmt)
             else:
                 icc = img.info.get("icc_profile")
