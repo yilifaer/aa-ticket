@@ -88,10 +88,10 @@ class TestImages(Fixture):
         with Attachment.objects.get().file.open("rb") as fh:
             self.assertNotIn(b"SECRET-COMMENT", fh.read())
 
-    def test_pixel_limit_is_100mp(self):
+    def test_pixel_limit_is_25mp(self):
         from aa_ticket.app_settings import MAX_IMAGE_PIXELS
 
-        self.assertEqual(MAX_IMAGE_PIXELS, 100_000_000)
+        self.assertEqual(MAX_IMAGE_PIXELS, 25_000_000)
 
 
 class TestViews(Fixture):

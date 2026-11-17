@@ -104,19 +104,26 @@ def _personal_recipient_ids(ticket, event, data):
     return seen
 
 
-def dm_fields(ticket):
+def event_snapshot(ticket):
+    """Department name and assignee name as they are when the event happens.
+
+    Passed to the Discord tasks, so a message that waits in the queue still shows the state of
+    the moment it describes. An empty assignee means nobody had claimed the ticket.
+    """
+    assignee = ticket.assignee if ticket.assignee_id else None
+    return {"department": ticket.department.name, "assignee": display_name(assignee) if assignee else ""}
+
+
+def dm_fields(ticket, snapshot=None):
     """Department and assignee for the DM. Never the message body."""
-    assignee = ticket.assignee
+    snapshot = snapshot or event_snapshot(ticket)
     return [
-        (pgettext("aa_ticket", "Department"), ticket.department.name),
-        (
-            pgettext("aa_ticket", "Assignee"),
-            display_name(assignee) if assignee else pgettext("aa_ticket", "Nobody yet"),
-        ),
+        (pgettext("aa_ticket", "Department"), snapshot.get("department") or ticket.department.name),
+        (pgettext("aa_ticket", "Assignee"), snapshot.get("assignee") or pgettext("aa_ticket", "Nobody yet")),
     ]
 
 
-def personal_text(ticket, event, data, recipient_id=None):
+def personal_text(ticket, event, data, recipient_id=None, snapshot=None):
     """One-line, translated description of an event for one recipient."""
     if event == Event.CLAIMED:
         return pgettext("aa_ticket", "%(name)s is now handling your ticket.") % {"name": data.get("assignee", "")}
@@ -133,7 +140,8 @@ def personal_text(ticket, event, data, recipient_id=None):
     if event == Event.REOPENED:
         return pgettext("aa_ticket", "The ticket was reopened.")
     if event == Event.TRANSFERRED:
-        return pgettext("aa_ticket", "The ticket was transferred to %(department)s.") % {"department": ticket.department.name}
+        department = (snapshot or {}).get("department") or ticket.department.name
+        return pgettext("aa_ticket", "The ticket was transferred to %(department)s.") % {"department": department}
     if event == Event.PRIORITY_CHANGED:
         return pgettext("aa_ticket", "The priority was changed to %(priority)s.") % {"priority": ticket.priority.name}
     if event == Event.ESCALATION_REQUESTED:
@@ -182,6 +190,7 @@ def dispatch(event, ticket_id, actor_id, data, at=None):
         return
     data = data or {}
     at = at or timezone.now().isoformat()
+    snapshot = event_snapshot(ticket)
 
     targets = _channel_targets(ticket, event, data)
     # only departments that are active and really have a channel to post to
@@ -212,7 +221,7 @@ def dispatch(event, ticket_id, actor_id, data, at=None):
                     level=EVENT_LEVEL.get(event, "info"),
                 )
             if dm_available:
-                send_dm.delay(user.pk, ticket.pk, event, dm_data, actor_id, at)
+                send_dm.delay(user.pk, ticket.pk, event, dm_data, actor_id, at, snapshot)
         except Exception as exc:  # noqa: BLE001 - one recipient must not block the others
             logger.warning("Notification for ticket %s to user %s failed: %s", ticket.display_number, user_id, type(exc).__name__)
 
@@ -221,7 +230,7 @@ def dispatch(event, ticket_id, actor_id, data, at=None):
             if limited and not cache.add(limit_key, 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
                 continue  # this ticket already had its notice within the last hour
             try:
-                send_webhook.delay(department_id, ticket.pk, event, mention, actor_id, at)
+                send_webhook.delay(department_id, ticket.pk, event, mention, actor_id, at, snapshot)
             except Exception as exc:  # noqa: BLE001 - broker down: keep going
                 if limited:
                     cache.delete(limit_key)  # nothing was sent, so the next reply may try again

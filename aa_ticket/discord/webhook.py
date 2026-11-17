@@ -38,11 +38,11 @@ def validate_webhook_url(value):
         )
 
 
-def _event_text(ticket, event, department):
+def _event_text(ticket, event, department, ticket_department=None):
     if event == Event.SUBMITTED:
         return pgettext("aa_ticket", "New ticket")
     if event == Event.TRANSFERRED:
-        return pgettext("aa_ticket", "Ticket transferred to %(department)s") % {"department": ticket.department.name}
+        return pgettext("aa_ticket", "Ticket transferred to %(department)s") % {"department": ticket_department or ticket.department.name}
     if event == Event.INVITED:
         return pgettext("aa_ticket", "%(department)s was invited to help") % {"department": department.name}
     if event == Event.ESCALATION_REQUESTED:
@@ -50,7 +50,7 @@ def _event_text(ticket, event, department):
     if event == Event.UNCLAIMED_REMINDER:
         return pgettext("aa_ticket", "Still unclaimed — please take a look")
     if event == Event.ESCALATION_REMINDER:
-        return pgettext("aa_ticket", "A ticket of %(department)s is still unclaimed") % {"department": ticket.department.name}
+        return pgettext("aa_ticket", "A ticket of %(department)s is still unclaimed") % {"department": ticket_department or ticket.department.name}
     if event == Event.REPLIED:
         return pgettext("aa_ticket", "The requester added information to an unclaimed ticket")
     if event == Event.ASSIGNEE_LEFT:
@@ -60,14 +60,16 @@ def _event_text(ticket, event, department):
     return str(Event(event).label) if event in Event.values else event
 
 
-def build_payload(ticket, event, mention, department, actor=None, at=None):
+def build_payload(ticket, event, mention, department, actor=None, at=None, snapshot=None):
+    """`snapshot` holds the department name at the time of the event (see notifications.event_snapshot)."""
     role_ids = [str(x) for x in department.mention_role_id_list()] if mention else []
+    ticket_department = (snapshot or {}).get("department") or ticket.department.name
     with channel_language_active():
         title = f"{ticket.display_number} {ticket.title}"
         if len(title) > TITLE_LIMIT:
             title = title[: TITLE_LIMIT - 1] + "…"
         fields = [
-            {"name": pgettext("aa_ticket", "Department"), "value": ticket.department.name, "inline": True},
+            {"name": pgettext("aa_ticket", "Department"), "value": ticket_department, "inline": True},
             {"name": pgettext("aa_ticket", "Priority"), "value": ticket.priority.name, "inline": True},
         ]
         if ticket.category_id:
@@ -78,7 +80,7 @@ def build_payload(ticket, event, mention, department, actor=None, at=None):
         embed = {
             "title": title,
             "url": ticket_url(ticket),
-            "description": _event_text(ticket, event, department),
+            "description": _event_text(ticket, event, department, ticket_department),
             "color": PRIORITY_HEX.get(ticket.priority.color, PRIORITY_HEX["primary"]),
             "fields": fields,
             "footer": {"text": notice(sender_name(event, actor), department.name, at)},

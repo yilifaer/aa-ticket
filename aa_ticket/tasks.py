@@ -30,7 +30,7 @@ def _record_webhook_result(department_id, error):
 
 
 @shared_task(bind=True, max_retries=WEBHOOK_MAX_RETRIES, ignore_result=True)
-def send_webhook(self, department_id, ticket_id, event, mention, actor_id=None, at=None):
+def send_webhook(self, department_id, ticket_id, event, mention, actor_id=None, at=None, snapshot=None):
     from django.contrib.auth.models import User
 
     department = Department.objects.filter(pk=department_id).first()
@@ -38,7 +38,7 @@ def send_webhook(self, department_id, ticket_id, event, mention, actor_id=None, 
     if department is None or ticket is None or not department.webhook_url:
         return
     actor = User.objects.filter(pk=actor_id).first() if actor_id else None
-    payload = webhook.build_payload(ticket, event, mention, department, actor=actor, at=at)
+    payload = webhook.build_payload(ticket, event, mention, department, actor=actor, at=at, snapshot=snapshot)
     error = None
     countdown = None
     try:
@@ -71,7 +71,7 @@ def send_webhook(self, department_id, ticket_id, event, mention, actor_id=None, 
 
 
 @shared_task(ignore_result=True)
-def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None):
+def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None, snapshot=None):
     """Send one Discord DM. Never retries: an undeliverable DM is not an error."""
     from django.contrib.auth.models import User
 
@@ -92,8 +92,8 @@ def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None):
     if not UserPreference.for_user(user).discord_dm_enabled:
         return
     with dm_language_active(user):
-        text = personal_text(ticket, event, data or {}, recipient_id=user.pk)
-        fields = dm_fields(ticket)
+        text = personal_text(ticket, event, data or {}, recipient_id=user.pk, snapshot=snapshot)
+        fields = dm_fields(ticket, snapshot)
     actor = User.objects.filter(pk=actor_id).first() if actor_id else None
     footer = notice(sender_name(event, actor), display_name(user) or user.get_username(), at)
     try:

@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.6]
+
+Changes from the 0.4.5 test round. No database changes.
+
+### Changed
+
+- The image limit is back to 25 megapixels for every format. Decoding a 100-megapixel PNG took
+  about 1 GB of memory and 17 seconds on a Raspberry Pi. Images within the limit whose longer
+  edge is above 4096 pixels are still scaled down to 4096 pixels.
+- Discord messages show the department and the assignee as they were when the event happened,
+  not when the queued message is finally sent. Messages queued by an older version still look
+  up the current state.
+- The auto-close notice on the ticket page shows the exact EVE time on hover.
+
 ## [0.4.5]
 
 No database changes.

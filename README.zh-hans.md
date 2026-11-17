@@ -25,7 +25,7 @@
 
 完整步骤（包括备份和回滚）见 [树莓派安装步骤](docs/install-raspberry-pi.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.5`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v0.4.6`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -60,7 +60,7 @@
 
 除了上面说的 Discord 消息（包含工单标题和提交人主角色名），不会把数据发到你的服务器以外。
 
-图片只能通过带权限检查的页面查看，没有公开链接。上传时会去掉照片里的位置、拍摄设备等信息；长边超过 4096 像素的图片会按比例缩小到 4096 像素再保存，超过 1 亿像素的图片不收。可以在设置里开启「删除图片（天）」，自动清理旧图片。
+图片只能通过带权限检查的页面查看，没有公开链接。上传时会去掉照片里的位置、拍摄设备等信息；长边超过 4096 像素的图片会按比例缩小到 4096 像素再保存，超过 2500 万像素的图片不收（更大的 PNG 解码时太占内存，树莓派这类小机器扛不住）。可以在设置里开启「删除图片（天）」，自动清理旧图片。
 
 ## 卸载
 

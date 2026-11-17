@@ -18,7 +18,7 @@
 
 {% if autoclose_eta %}
     <div class="alert alert-warning py-2"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
-        {% blocktranslate context 'aa_ticket' with when=autoclose_eta|naturaltime %}Closes automatically {{ when }} unless someone replies.{% endblocktranslate %}
+        <span title="{{ autoclose_eta|eve_time }}">{% blocktranslate context 'aa_ticket' with when=autoclose_eta|naturaltime %}Closes automatically {{ when }} unless someone replies.{% endblocktranslate %}</span>
     </div>
 {% endif %}
 

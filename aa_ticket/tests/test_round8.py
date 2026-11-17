@@ -120,9 +120,9 @@ class TestImagesScaledDown(Fixture):
         self.assertIn("50 × 50", text)
         self.assertIn("smaller image", text)
 
-    def test_4900_by_4900_photo_is_accepted(self):
-        # 24 MP was already allowed; 6000 x 5000 (30 MP) used to be refused and is now scaled.
-        data = attachments.prepare_images([upload(Image.new("L", (6000, 5000)), "JPEG", "x.jpg")])[0][3]
+    def test_photo_within_limit_is_scaled(self):
+        # 0.4.6 lowered the limit back to 25 MP; a 20 MP photo is accepted and scaled.
+        data = attachments.prepare_images([upload(Image.new("L", (5000, 4000)), "JPEG", "x.jpg")])[0][3]
         with Image.open(io.BytesIO(data)) as img:
             self.assertEqual(max(img.size), 4096)
 
