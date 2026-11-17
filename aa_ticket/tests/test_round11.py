@@ -95,6 +95,11 @@ class TestPhonePhotosWithExtraPicture(TestCase):
         with Image.open(io.BytesIO(data)) as img:
             self.assertEqual(img.size, (3072, 4096))
 
+    def test_huge_extra_picture_is_never_decoded_or_kept(self):
+        data = attachments.prepare_images([mpo((64, 64), (6000, 6000))])[0][3]
+        with Image.open(io.BytesIO(data)) as img:
+            self.assertEqual((img.format, img.size, getattr(img, "n_frames", 1)), ("JPEG", (64, 64), 1))
+
     def test_main_picture_above_25mp_is_still_refused_as_an_image(self):
         with translation.override("en"), self.assertRaises(ValidationError) as ctx:
             attachments.prepare_images([mpo((6000, 5000), (100, 100))])
