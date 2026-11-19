@@ -1,0 +1,55 @@
+name: Publish to PyPI
+
+# Runs when a GitHub Release is published, or by hand for an existing tag
+# (Actions -> Publish to PyPI -> Run workflow). Uses PyPI trusted publishing:
+# no password or token is stored anywhere.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish, for example v1.0.3"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*
+      - name: Tag and package version match
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          VERSION=$(python -c "import re;print(re.search(r'__version__ = \"(.+)\"', open('aa_ticket/__init__.py').read()).group(1))")
+          test "v$VERSION" = "$TAG" || { echo "Tag $TAG does not match version $VERSION"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/aa-ticket
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
