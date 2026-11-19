@@ -47,7 +47,7 @@
 
 完整步骤（包括备份和回滚）见 [安装步骤](docs/install.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.0`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.1`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -58,8 +58,10 @@
 | 权限 | 给谁 | 作用 |
 |---|---|---|
 | `aa_ticket.basic_access` | 能提交工单的人（比如 Member 状态）**和所有部门人员** | 显示菜单、提交工单、查看自己的工单 |
-| `aa_ticket.view_all`（可查看并处理所有工单） | 需要看所有工单的高层（可选） | 能看到并处理所有工单，但不会被 @ |
-| `aa_ticket.manage` | 工单管理员 | 进入「管理」页面 |
+| `aa_ticket.view_all`（可查看并处理所有工单） | 需要看所有工单的高层（可选；**也要有 `basic_access`**） | 能看到并处理所有工单（包括内部备注和图片），但不会被 @ |
+| `aa_ticket.manage` | 工单管理员（**也要有 `basic_access`**） | 进入全部「管理」页面：部门、紧急程度、分类、所有部门的回复模板、设置。能改部门就能决定谁看哪些工单，所以只给你也愿意给 `view_all` 的人 |
+
+没有 `basic_access` 的人，不管还有什么权限，都看不到这个插件。部门人员不需要 `manage` 也能管理自己部门的回复模板。
 
 **部门人员不是靠权限决定的**，而是靠部门绑定的权限组。**部门的权限组必须是不公开、不能自己申请的组**，否则谁都能加进去看工单和内部备注。
 
@@ -80,13 +82,18 @@
 
 插件会保存每张工单的：提交人账号和主角色、所有回复和内部备注、上传的图片，以及谁在什么时候接手、移交、关闭了工单。
 
-除了上面说的 Discord 消息（包含工单标题和提交人主角色名），不会把数据发到你的服务器以外。
+除了上面说的 Discord 消息，不会把数据发到你的服务器以外。频道消息里有工单标题、部门、紧急程度、分类、提交人主角色名，以及触发这条消息的人的主角色名；私信里还有部门和处理人。已经发到 Discord 的消息收不回来。
+
+Discord webhook 地址以明文存在数据库里（所以备份里也有）。拿到地址的人就能往那个频道发消息。插件页面上从不显示完整地址；万一泄露，在 Discord 里删掉这个 webhook，再填一个新的。
 
 图片只能通过带权限检查的页面查看，没有公开链接。上传时会去掉照片里的位置、拍摄设备等信息；长边超过 4096 像素的图片会按比例缩小到 4096 像素再保存，超过 2500 万像素的图片、所有帧加起来超过 2500 万像素的动图不收（更大的 PNG 解码时太占内存，树莓派这类小机器扛不住）。可以在设置里开启「删除图片（天）」，自动清理旧图片。
 
 ## 卸载
 
-见英文 README 的 Uninstalling 部分。注意不要用 `remove_stale_contenttypes --include-stale-apps`，它会连带删除其他插件的数据。
+步骤见 [安装步骤](docs/install.zh-hans.md) 的「出问题时怎么回滚」，或英文 README 的 Uninstalling 部分。注意：
+
+- 不要用 `remove_stale_contenttypes --include-stale-apps`，它会连带删除其他插件的数据。
+- Celery Beat 会在数据库里另存一份定时任务，从 `local.py` 删掉之后还要删数据库里那 3 条 `aa_ticket_` 开头的记录，否则 Celery 会一直报找不到任务。
 
 ## 许可
 

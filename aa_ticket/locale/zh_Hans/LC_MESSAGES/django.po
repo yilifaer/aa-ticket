@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 05:24+0000\n"
+"POT-Creation-Date: 2026-11-19 05:31+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: zh_Hans\n"
@@ -32,12 +32,12 @@ msgctxt "aa_ticket"
 msgid "Claim the ticket to reply to the requester."
 msgstr "接手后才能回复提交人。"
 
-#: attachments.py:38
+#: attachments.py:49
 msgctxt "aa_ticket"
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "仅支持 PNG、JPG、GIF 和 WEBP 图片。"
 
-#: attachments.py:46
+#: attachments.py:57
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -47,12 +47,12 @@ msgstr ""
 "图片太大（%(width)d × %(height)d 像素）。最大支持 %(max)d 百万像素，请换一张"
 "更小的图片。"
 
-#: attachments.py:51
+#: attachments.py:62
 msgctxt "aa_ticket"
 msgid "This image is too large. Please make it smaller and try again."
 msgstr "图片尺寸过大，请缩小后再上传。"
 
-#: attachments.py:58
+#: attachments.py:69
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -63,7 +63,7 @@ msgstr ""
 "这个动图总量太大（%(count)d 帧，每帧 %(width)d × %(height)d 像素）。所有帧加"
 "起来最多 %(max)d 百万像素，请减少帧数或缩小尺寸。"
 
-#: attachments.py:91
+#: attachments.py:105
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -71,13 +71,13 @@ msgid ""
 "allowed."
 msgstr "这个动图的帧数太多（%(count)d 帧），最多允许 %(max)d 帧。"
 
-#: attachments.py:120 attachments.py:196
+#: attachments.py:134 attachments.py:210
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "每条消息最多附加 %(count)d 张图片。"
 
-#: attachments.py:125 attachments.py:202
+#: attachments.py:139 attachments.py:216
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
@@ -462,7 +462,16 @@ msgstr[0] ""
 "还有 %(count)d 张未关闭的工单在用这个紧急程度，请先改掉它们的紧急程度或关闭它"
 "们。"
 
-#: forms.py:211
+#: forms.py:214
+#, python-format
+msgctxt "aa_ticket"
+msgid ""
+"At most %(max)d MB. Five images of that size are just within the 32 MB "
+"upload limit recommended for the web server."
+msgstr ""
+"最多 %(max)d MB。5 张这么大的图片正好在网页服务器建议的 32 MB 上传上限以内。"
+
+#: forms.py:228
 #, python-format
 msgctxt "aa_ticket"
 msgid ""

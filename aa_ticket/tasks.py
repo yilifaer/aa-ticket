@@ -99,7 +99,8 @@ def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None, snapsh
     try:
         dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket), fields, footer)
     except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
-        logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
+        # A warning, so a missing Celery route or a broken bot does not go unnoticed.
+        logger.warning("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
 
 
 BATCH_SIZE = 500

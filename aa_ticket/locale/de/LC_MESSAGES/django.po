@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 05:24+0000\n"
+"POT-Creation-Date: 2026-11-19 05:31+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -36,12 +36,12 @@ msgctxt "aa_ticket"
 msgid "Claim the ticket to reply to the requester."
 msgstr "Übernimm das Ticket, um dem Ersteller zu antworten."
 
-#: attachments.py:38
+#: attachments.py:49
 msgctxt "aa_ticket"
 msgid "Only PNG, JPG, GIF and WEBP images are allowed."
 msgstr "Es sind nur PNG-, JPG-, GIF- und WEBP-Bilder erlaubt."
 
-#: attachments.py:46
+#: attachments.py:57
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -51,12 +51,12 @@ msgstr ""
 "Dieses Bild ist zu groß (%(width)d × %(height)d Pixel). Bilder bis %(max)d "
 "Megapixel werden angenommen. Bitte verwende ein kleineres Bild."
 
-#: attachments.py:51
+#: attachments.py:62
 msgctxt "aa_ticket"
 msgid "This image is too large. Please make it smaller and try again."
 msgstr "Dieses Bild ist zu groß. Bitte verkleinere es und versuche es erneut."
 
-#: attachments.py:58
+#: attachments.py:69
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -68,7 +68,7 @@ msgstr ""
 "%(height)d Pixel). Alle Frames zusammen dürfen höchstens %(max)d Megapixel "
 "haben. Verwende weniger Frames oder eine kleinere Größe."
 
-#: attachments.py:91
+#: attachments.py:105
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -78,13 +78,13 @@ msgstr ""
 "Diese Animation hat zu viele Einzelbilder (%(count)d). Erlaubt sind "
 "höchstens %(max)d."
 
-#: attachments.py:120 attachments.py:196
+#: attachments.py:134 attachments.py:210
 #, python-format
 msgctxt "aa_ticket"
 msgid "You can attach at most %(count)d images per message."
 msgstr "Du kannst höchstens %(count)d Bilder pro Nachricht anhängen."
 
-#: attachments.py:125 attachments.py:202
+#: attachments.py:139 attachments.py:216
 #, python-format
 msgctxt "aa_ticket"
 msgid "Each image must be smaller than %(size)d MB."
@@ -484,7 +484,17 @@ msgstr[1] ""
 "%(count)d offene Tickets verwenden diese Priorität noch. Ändere zuerst ihre "
 "Priorität oder schließe sie."
 
-#: forms.py:211
+#: forms.py:214
+#, python-format
+msgctxt "aa_ticket"
+msgid ""
+"At most %(max)d MB. Five images of that size are just within the 32 MB "
+"upload limit recommended for the web server."
+msgstr ""
+"Höchstens %(max)d MB. Fünf Bilder dieser Größe passen gerade noch in das für "
+"den Webserver empfohlene Upload-Limit von 32 MB."
+
+#: forms.py:228
 #, python-format
 msgctxt "aa_ticket"
 msgid ""

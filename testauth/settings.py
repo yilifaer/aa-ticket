@@ -51,3 +51,11 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+
+# The three periodic tasks the README asks for (keeps the aa_ticket.W003 check quiet in tests).
+CELERYBEAT_SCHEDULE = {
+    **globals().get("CELERYBEAT_SCHEDULE", {}),
+    "aa_ticket_check_unclaimed": {"task": "aa_ticket.tasks.check_unclaimed", "schedule": 300},
+    "aa_ticket_check_auto_close": {"task": "aa_ticket.tasks.check_auto_close", "schedule": 900},
+    "aa_ticket_cleanup_attachments": {"task": "aa_ticket.tasks.cleanup_attachments", "schedule": 86400},
+}

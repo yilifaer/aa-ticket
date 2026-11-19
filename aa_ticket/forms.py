@@ -201,6 +201,23 @@ class TicketSettingsForm(forms.ModelForm):
             "dm_language_mode",
         )
 
+    def clean_max_image_mb(self):
+        from django.utils.translation import pgettext
+
+        from .app_settings import MAX_IMAGE_MB
+
+        value = self.cleaned_data.get("max_image_mb")
+        if value is not None and value > MAX_IMAGE_MB:
+            raise forms.ValidationError(
+                pgettext(
+                    "aa_ticket",
+                    "At most %(max)d MB. Five images of that size are just within the 32 MB upload limit "
+                    "recommended for the web server.",
+                )
+                % {"max": MAX_IMAGE_MB}
+            )
+        return value
+
     def clean(self):
         cleaned = super().clean()
         days = cleaned.get("autoclose_days")

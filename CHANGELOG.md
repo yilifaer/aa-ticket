@@ -6,8 +6,30 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1]
+
+Fixes from the AA App Checklist review of 1.0.0. No database changes.
+
+### Added
+
+- System check `aa_ticket.W003` warns when one of the three periodic tasks is missing from
+  `CELERYBEAT_SCHEDULE`.
+
+### Changed
+
+- *Maximum image size* is limited to 6 MB. Older settings above that are treated as 6 MB. The
+  recommended nginx `client_max_body_size` is now `32m` (five images of 6 MB).
+- A Discord direct message that cannot be sent (bot error, missing Celery route) is logged as a
+  warning instead of info.
+
 ### Documentation
 
+- Uninstalling: delete the three `aa_ticket_*` periodic tasks that Celery Beat keeps in the
+  database.
+- Updating: back up first; how to go back to the previous version.
+- Permissions: `view_all` and `manage` also need `basic_access`; `manage` decides who can read
+  which tickets; department staff manage their own canned replies without `manage`.
+- Data protection: which names go to Discord; webhook URLs are stored in plain text.
 - Screenshots in both READMEs.
 - The Chinese installation guide is now `docs/install.zh-hans.md` and no longer specific to a
   test machine. Internal review notes, design and planning documents were removed.
