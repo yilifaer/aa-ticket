@@ -95,10 +95,12 @@ channel is set up.
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.3
+pip install aa-ticket==1.0.3
 ```
 
-For production you can also pin the exact commit shown on the release page instead of the tag.
+The app is on [PyPI](https://pypi.org/project/aa-ticket/). Pin the version (`==1.0.3`): a version
+on PyPI never changes once it is published. Versions before 1.0.3 exist only on GitHub, for
+example `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2`.
 
 ### 2. Change `local.py`
 
@@ -393,7 +395,7 @@ Browsers may keep an image they have shown for up to 5 minutes.
 Read the [CHANGELOG](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/CHANGELOG.md) first and back up your database. Then:
 
 ```bash
-pip install -U git+https://github.com/yilifaer/aa-ticket.git@<new tag>
+pip install -U aa-ticket==<new version>
 python manage.py migrate
 python manage.py collectstatic --noinput
 ```
@@ -402,8 +404,10 @@ Then restart Alliance Auth and Celery.
 
 To go back to the previous version: if the CHANGELOG lists database changes for the version you
 installed, first undo them with `python manage.py migrate aa_ticket <last migration of the
-previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous tag the same way
-and restart. (The tag `v1.0.0` was removed; to install 1.0.0 use its commit:
+previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous version the same
+way (`pip install aa-ticket==<previous version>`; versions before 1.0.3 only from GitHub, for
+example `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2`) and restart. (The tag
+`v1.0.0` was removed; to install 1.0.0 use its commit:
 `pip install git+https://github.com/yilifaer/aa-ticket.git@e989f39ba4c534e84c3a2348eb215f10c98cccf1`.) Going back from 1.0.1 to 1.0.0 also drops the hourly submission limit, and
 departments that were closed because their allowed states or groups were deleted are open to
 everyone again.
