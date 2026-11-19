@@ -47,7 +47,7 @@
 
 完整步骤（包括备份和回滚）见 [安装步骤](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/docs/install.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.3`
+1. `pip install aa-ticket==1.0.3`（已发布到 [PyPI](https://pypi.org/project/aa-ticket/)；1.0.3 之前的版本只能从 GitHub 装，例如 `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2`）
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 

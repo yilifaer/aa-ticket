@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Documentation
+
+- Install from PyPI: `pip install aa-ticket==<version>` (published from 1.0.3 on).
+
 ## [1.0.3]
 
 Documentation and tests only, from the 1.0.2 test round and a fresh AA App Checklist review.
