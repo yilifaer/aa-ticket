@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 06:08+0000\n"
+"POT-Creation-Date: 2026-11-19 06:38+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: es\n"
@@ -1523,11 +1523,12 @@ msgstr "Canal de Discord sin configurar: los tickets nuevos no se anunciarán."
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
-"%(group)s: everyone in a state joins this group automatically — they could "
-"all read all tickets of this department."
+"%(group)s: Alliance Auth fills this group automatically with a whole "
+"corporation or alliance — they could all read all tickets of this department."
 msgstr ""
-"%(group)s: todos los de un estado se unen automáticamente a este grupo; "
-"todos podrían leer todos los tickets de este departamento."
+"%(group)s: Alliance Auth llena este grupo automáticamente con toda una "
+"corporación o alianza; todos podrían leer todos los tickets de este "
+"departamento."
 
 #: templates/aa_ticket/manage/department_form.html:19
 #: templates/aa_ticket/partials/department_row.html:13
@@ -1881,7 +1882,7 @@ msgctxt "aa_ticket"
 msgid "%(m)d min"
 msgstr "%(m)d min"
 
-#: views/manage.py:26 views/manage.py:328
+#: views/manage.py:26 views/manage.py:344
 msgctxt "aa_ticket"
 msgid "Settings"
 msgstr "Configuración"
@@ -1896,29 +1897,29 @@ msgctxt "aa_ticket"
 msgid "Deleted."
 msgstr "Eliminado."
 
-#: views/manage.py:106
+#: views/manage.py:121
 #, python-format
 msgctxt "aa_ticket"
 msgid "Parent: %(name)s"
 msgstr "Superior: %(name)s"
 
-#: views/manage.py:107
+#: views/manage.py:122
 #, python-format
 msgctxt "aa_ticket"
 msgid "Parent: %(name)s (inactive)"
 msgstr "Superior: %(name)s (inactivo)"
 
-#: views/manage.py:167
+#: views/manage.py:183
 msgctxt "aa_ticket"
 msgid "New department"
 msgstr "Nuevo departamento"
 
-#: views/manage.py:167
+#: views/manage.py:183
 msgctxt "aa_ticket"
 msgid "Edit department"
 msgstr "Editar departamento"
 
-#: views/manage.py:182 views/manage.py:186
+#: views/manage.py:198 views/manage.py:202
 msgctxt "aa_ticket"
 msgid ""
 "This department still has tickets or sub-departments. Deactivate it instead."
@@ -1926,42 +1927,42 @@ msgstr ""
 "Este departamento aún tiene tickets o subdepartamentos. Desactívalo en su "
 "lugar."
 
-#: views/manage.py:215
+#: views/manage.py:231
 msgctxt "aa_ticket"
 msgid "New priority"
 msgstr "Nueva prioridad"
 
-#: views/manage.py:215
+#: views/manage.py:231
 msgctxt "aa_ticket"
 msgid "Edit priority"
 msgstr "Editar prioridad"
 
-#: views/manage.py:225
+#: views/manage.py:241
 msgctxt "aa_ticket"
 msgid "Tickets still use this priority. Deactivate it instead."
 msgstr "Aún hay tickets con esta prioridad. Desactívala en su lugar."
 
-#: views/manage.py:244
+#: views/manage.py:260
 msgctxt "aa_ticket"
 msgid "New category"
 msgstr "Nueva categoría"
 
-#: views/manage.py:244
+#: views/manage.py:260
 msgctxt "aa_ticket"
 msgid "Edit category"
 msgstr "Editar categoría"
 
-#: views/manage.py:295
+#: views/manage.py:311
 msgctxt "aa_ticket"
 msgid "New canned reply"
 msgstr "Nueva respuesta predefinida"
 
-#: views/manage.py:295
+#: views/manage.py:311
 msgctxt "aa_ticket"
 msgid "Edit canned reply"
 msgstr "Editar respuesta predefinida"
 
-#: views/manage.py:321
+#: views/manage.py:337
 msgctxt "aa_ticket"
 msgid "Settings saved."
 msgstr "Configuración guardada."

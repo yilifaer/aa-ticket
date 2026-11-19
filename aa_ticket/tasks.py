@@ -295,7 +295,11 @@ def cleanup_attachments():
     )[:BATCH_SIZE]
     count = 0
     for attachment in old:
-        delete_attachment(attachment)
+        try:
+            delete_attachment(attachment)
+        except OSError as exc:  # one broken file must not stop the clean-up for good
+            logger.warning("Could not delete ticket image %s: %s", attachment.pk, type(exc).__name__)
+            continue
         count += 1
     if count:
         logger.info("Deleted %d old ticket images.", count)

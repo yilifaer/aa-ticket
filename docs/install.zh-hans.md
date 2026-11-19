@@ -316,17 +316,26 @@ sudo supervisorctl status
    python manage.py shell -c "from django_celery_beat.models import PeriodicTask; PeriodicTask.objects.filter(name__startswith='aa_ticket_').delete()"
    ```
    > 只从 `local.py` 删掉不够，数据库里还留着，Celery 会一直报找不到任务。如果下面要恢复装插件之前的数据库备份，这一步可以跳过。
-3. 从 `local.py` 删掉安装时「第 3 步：修改 local.py」加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
-4. 卸载插件：
+3. 删掉插件的权限记录（同上，下面要恢复备份的话可以跳过）：
+   ```bash
+   python manage.py shell -c "from django.contrib.contenttypes.models import ContentType; ContentType.objects.filter(app_label='aa_ticket').delete()"
+   ```
+   > 不要用 `remove_stale_contenttypes --include-stale-apps`，它会连带删掉其他插件的数据。
+4. 从 `local.py` 删掉安装时「第 3 步：修改 local.py」加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
+5. 卸载插件：
    ```bash
    cd ~
    pip uninstall aa-ticket
    ```
-5. 回到自己的账号（`exit`），需要的话恢复数据库：
+6. 不再需要工单图片的话，删掉图片文件夹：
+   ```bash
+   rm -r /home/allianceserver/myauth/media/aa_ticket
+   ```
+7. 回到自己的账号（`exit`），需要的话恢复数据库：
    ```bash
    sudo mysql alliance_auth < ~/alliance_auth.bak-aa-ticket-时间.sql
    ```
-6. 重启：
+8. 重启：
    ```bash
    sudo supervisorctl restart myauth:
    ```
@@ -363,4 +372,10 @@ sudo supervisorctl restart myauth:
 > python manage.py migrate aa_ticket 0005
 > ```
 >
-> 然后再装回 `@v1.0.0`、收集静态文件、重启。
+> 然后再装回旧版本、收集静态文件、重启。1.0.0 的版本标签已经删掉了，装 1.0.0 要用它的提交编号：
+>
+> ```bash
+> pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@e989f39ba4c534e84c3a2348eb215f10c98cccf1"
+> ```
+>
+> 从 1.0.1 退回 1.0.0 后：「每人每小时最多提交」的限制没有了；因为允许提交的组被删光而关闭的部门，会重新对所有人开放。

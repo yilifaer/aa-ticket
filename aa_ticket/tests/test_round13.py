@@ -45,15 +45,29 @@ class TestStaffGroupWarning(TestCase):
         dept = make_department("Diplomacy", groups=[g])
         self.assertEqual(joinable_groups(dept), [])
 
-    def test_group_given_to_a_state_is_flagged(self):
+    def test_group_restricted_to_a_state_is_not_flagged(self):
+        # In Alliance Auth a group's states only limit who may join; nobody is added automatically.
         g = make_group("Diplomats")
         g.authgroup.internal = True
         g.authgroup.save()
-        state = State.objects.create(name="Fake Member", priority=5000)
-        g.authgroup.states.add(state)
+        g.authgroup.states.add(State.objects.create(name="Fake Member", priority=5000))
         dept = make_department("Diplomacy", groups=[g])
-        rows = joinable_groups(dept)
-        self.assertEqual([(r["name"], r["auto"]) for r in rows], [("Diplomats", True)])
+        self.assertEqual(joinable_groups(dept), [])
+
+    def test_corp_autogroup_is_flagged(self):
+        g = make_group("Corp Some Corp")
+        g.authgroup.internal = True
+        g.authgroup.save()
+        dept = make_department("Diplomacy", groups=[g])
+        with patch("aa_ticket.views.manage.auto_filled_group_ids", return_value={g.pk}):
+            rows = joinable_groups(dept)
+        self.assertEqual([(r["name"], r["auto"]) for r in rows], [("Corp Some Corp", True)])
+
+    def test_without_autogroups_app_nothing_is_auto(self):
+        from aa_ticket.views.manage import auto_filled_group_ids
+
+        with patch("django.apps.apps.is_installed", return_value=False):
+            self.assertEqual(auto_filled_group_ids(), set())
 
     def test_joinable_group_is_flagged(self):
         g = make_group("Open")
@@ -64,15 +78,14 @@ class TestStaffGroupWarning(TestCase):
 
     def test_warning_text_on_manage_page(self):
         admin = make_user("Admin E", perms=("basic_access", "manage"))
-        g = make_group("Diplomats")
+        g = make_group("Corp Some Corp")
         g.authgroup.internal = True
         g.authgroup.save()
-        g.authgroup.states.add(State.objects.create(name="Fake Member", priority=5000))
         make_department("Diplomacy", groups=[g])
         self.client.force_login(admin)
-        with translation.override("en"):
+        with translation.override("en"), patch("aa_ticket.views.manage.auto_filled_group_ids", return_value={g.pk}):
             html = self.client.get(reverse("aa_ticket:manage_departments")).content.decode()
-        self.assertIn("joins this group automatically", html)
+        self.assertIn("fills this group automatically with a whole corporation or alliance", html)
 
 
 class TestSmallFixes(TestCase):
@@ -417,3 +430,33 @@ class TestEraseRefusesActiveAccount(TestCase):
         claimed = TicketMessage.objects.get(ticket=t, event_type="claimed")
         with translation.override("zh-hans"):
             self.assertIn("已删除的用户", str(event_text(claimed, True)))
+
+
+class TestRetentionSkipsBrokenFiles(TestCase):
+    def test_one_undeletable_image_does_not_stop_the_rest(self):
+        from aa_ticket import tasks
+
+        dept = make_department("Diplomacy")
+        user = make_user("Pilot A")
+        for _ in range(2):
+            t = services.create_ticket(fresh(user), dept, priority("normal"), "Help", "Body", images=[png()])
+            services.close(fresh(user), t, ClosedReason.REQUESTER)
+        Ticket.objects.update(closed_at=timezone.now() - timedelta(days=40))
+        s = TicketSettings.get_solo()
+        s.attachment_retention_days = 30
+        s.save()
+        from aa_ticket import attachments
+
+        original = attachments.delete_attachment
+        calls = []
+
+        def flaky(attachment):
+            calls.append(attachment.pk)
+            if len(calls) == 1:
+                raise OSError("read-only")
+            return original(attachment)
+
+        with patch("aa_ticket.attachments.delete_attachment", side_effect=flaky):
+            tasks.cleanup_attachments()
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(Attachment.objects.count(), 1)

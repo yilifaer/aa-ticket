@@ -26,13 +26,18 @@ Fixes from the AA App Checklist review of 1.0.0. One database migration
 
 - *Maximum image size* is limited to 6 MB. Older settings above that are treated as 6 MB. The
   recommended nginx `client_max_body_size` is now `32m` (five images of 6 MB).
-- A Discord direct message that cannot be sent (bot error, missing Celery route) is logged as a
-  warning instead of info.
+- A Discord direct message that aa-discordbot refuses to take is logged as a warning instead of
+  info. (A stopped bot or a missing Celery route for aa-discordbot still only shows in the worker
+  log.)
 - Submissions limited to some states or groups stay limited when all of them are deleted:
   nobody can submit then (before, the department silently opened up to everyone), and the
   department list shows a warning. Existing departments with such limits are marked by the
   migration.
-- The staff group warning also covers groups that members of a state join automatically.
+- The staff group warning also covers corporation and alliance groups that Alliance Auth fills
+  automatically (autogroups).
+- The daily image clean-up skips an image it cannot delete instead of stopping for good.
+- A cache outage while sending the "requester replied" notice no longer stops the remaining
+  notifications.
 - Messages whose author account was deleted or erased show *Deleted user* instead of *System*.
 - Opening the preferences page no longer creates a database row; images are cached by the
   browser for 5 minutes instead of an hour.

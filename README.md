@@ -183,8 +183,9 @@ to a department (see below).
 **Use closed groups for department staff.** Anyone who can join a staff group can read all
 tickets of that department and the departments below it, including internal notes. Do not
 use open, requestable or auto-assigned groups as staff groups. The department list shows a red
-warning for groups that anyone can join or request, and for groups that members of a state join
-automatically.
+warning for groups that anyone can join or request, and for corporation or alliance groups that
+Alliance Auth fills automatically ("autogroups"). A group's *states* setting only limits who may
+join and is not a problem on its own.
 
 **Superusers** pass every permission check in Django, so they have `view_all` and `manage`.
 They are not staff of any department unless they are in a department's group, so they are
@@ -363,7 +364,8 @@ messages or images in the Django admin.
 Tickets are kept as a record: a user who has submitted tickets cannot be deleted in Alliance
 Auth while those tickets exist. Deactivate the user instead, or erase their ticket data first.
 
-**Erasing one person's data** (for example after a data protection request):
+**Erasing one person's data** (for example after a data protection request). Back up the
+database first; erasing cannot be undone.
 
 ```bash
 python manage.py aa_ticket_erase_user <username>        # shows what would happen
@@ -395,7 +397,9 @@ Then restart Alliance Auth and Celery.
 To go back to the previous version: if the CHANGELOG lists database changes for the version you
 installed, first undo them with `python manage.py migrate aa_ticket <last migration of the
 previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous tag the same way
-and restart.
+and restart. Going back from 1.0.1 to 1.0.0 also drops the hourly submission limit, and
+departments that were closed because their allowed states or groups were deleted are open to
+everyone again.
 
 ## Uninstalling
 

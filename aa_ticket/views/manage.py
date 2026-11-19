@@ -70,20 +70,35 @@ def _delete(request, obj, list_url, refused_message):
 # ----- departments ---------------------------------------------------------
 
 
-def joinable_groups(department):
+def auto_filled_group_ids():
+    """Groups that Alliance Auth fills on its own with a whole corporation or alliance.
+
+    These come from the optional "autogroups" app. (A group's "states" setting only limits who
+    may join; it does not add anyone, so it is not checked here.)
+    """
+    from django.apps import apps
+
+    if not apps.is_installed("allianceauth.eveonline.autogroups"):
+        return set()
+    from allianceauth.eveonline.autogroups.models import ManagedGroup
+
+    return set(ManagedGroup.objects.values_list("group_id", flat=True))
+
+
+def joinable_groups(department, auto_ids=None):
     """Staff groups that people can get into without an admin picking them.
 
-    Either anyone can join or request them (not "internal"), or they are given automatically to
-    everyone in a state. Members of a staff group read all tickets of the department.
+    Either anyone can join or request them (not "internal"), or Alliance Auth fills them with a
+    whole corporation or alliance. Members of a staff group read all tickets of the department.
     """
+    auto_ids = auto_filled_group_ids() if auto_ids is None else auto_ids
     result = []
     for group in department.groups.all():
-        auth_group = getattr(group, "authgroup", None)
-        if auth_group is None:
-            continue
-        if auth_group.states.all():
+        if group.pk in auto_ids:
             result.append({"name": group.name, "auto": True})
-        elif not auth_group.internal:
+            continue
+        auth_group = getattr(group, "authgroup", None)
+        if auth_group is not None and not auth_group.internal:
             result.append({"name": group.name, "auto": False})
     return result
 
@@ -109,7 +124,8 @@ def _parent_note(department, by_pk):
 
 def _department_rows():
     """Active departments as a tree, inactive ones as a flat list with their parent named."""
-    departments = list(Department.objects.prefetch_related("groups__authgroup__states", "submit_states", "submit_groups").order_by("order", "name"))
+    departments = list(Department.objects.prefetch_related("groups__authgroup", "submit_states", "submit_groups").order_by("order", "name"))
+    auto_ids = auto_filled_group_ids()
     by_pk = {d.pk: d for d in departments}
     active = [d for d in departments if d.is_active]
     children = {}
@@ -124,7 +140,7 @@ def _department_rows():
             "department": d,
             "depth": depth,
             "indent": depth * 1.5,
-            "joinable": joinable_groups(d),
+            "joinable": joinable_groups(d, auto_ids),
             "nobody_can_submit": nobody_can_submit(d),
             "parent_note": note,
         }
