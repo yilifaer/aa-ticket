@@ -315,8 +315,8 @@ sudo supervisorctl status
    ```bash
    python manage.py shell -c "from django_celery_beat.models import PeriodicTask; PeriodicTask.objects.filter(name__startswith='aa_ticket_').delete()"
    ```
-   > 只从 `local.py` 删掉不够，数据库里还留着，Celery 会一直报找不到任务。如果第 5 步要恢复装插件之前的数据库备份，这一步可以跳过。
-3. 从 `local.py` 删掉第 3 步加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
+   > 只从 `local.py` 删掉不够，数据库里还留着，Celery 会一直报找不到任务。如果下面要恢复装插件之前的数据库备份，这一步可以跳过。
+3. 从 `local.py` 删掉安装时「第 3 步：修改 local.py」加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
 4. 卸载插件：
    ```bash
    cd ~
