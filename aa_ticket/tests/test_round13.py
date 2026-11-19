@@ -477,3 +477,41 @@ class TestErasePreviewIsComplete(TestCase):
         self.assertIn("1 other ticket(s) they closed", text)
         self.assertIn("escalation request(s)", text)
         self.assertIn("reasons they typed", text)
+
+
+class TestEraseClosedAndEscalationsForReal(TestCase):
+    """1.0.2 test report, low 3: check the preview numbers and what --yes really clears."""
+
+    def setUp(self):
+        from aa_ticket.models import EscalationRequest
+
+        self.g = make_group("Diplomats")
+        self.lead = make_department("Leadership")
+        self.dept = make_department("Diplomacy", groups=[self.g], parent=self.lead)
+        self.leaver = make_user("Leaving Pilot", groups=[self.g])
+        other = make_user("Other Pilot")
+        self.ticket = services.create_ticket(other, self.dept, priority("normal"), "Help", "Body")
+        services.claim(fresh(self.leaver), self.ticket)
+        services.close(fresh(self.leaver), fresh(self.ticket), ClosedReason.STAFF)
+        # The app only lets requesters escalate their own tickets, so this row is made directly.
+        self.escalation = EscalationRequest.objects.create(
+            ticket=self.ticket, to_department=self.lead, requested_by=self.leaver, reason="Please look at this"
+        )
+
+    def test_preview_counts_one_of_each(self):
+        out = io.StringIO()
+        call_command("aa_ticket_erase_user", self.leaver.username, stdout=out)
+        text = out.getvalue()
+        self.assertIn("1 other ticket(s) they closed", text)
+        self.assertIn("1 escalation request(s)", text)
+
+    def test_erase_clears_closer_and_requester_but_keeps_the_reason(self):
+        from aa_ticket.models import EscalationRequest
+
+        User.objects.filter(pk=self.leaver.pk).update(is_active=False)
+        with self.captureOnCommitCallbacks(execute=True):
+            call_command("aa_ticket_erase_user", self.leaver.username, "--yes", stdout=io.StringIO())
+        self.assertIsNone(fresh(self.ticket).closed_by_id)
+        escalation = EscalationRequest.objects.get(pk=self.escalation.pk)
+        self.assertIsNone(escalation.requested_by_id)
+        self.assertEqual(escalation.reason, "Please look at this")

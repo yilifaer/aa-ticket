@@ -7,9 +7,9 @@ pinged in its own Discord channel. Staff claim the ticket in Alliance Auth, talk
 player, bring in other departments, hand the ticket over or escalate it, and close it.
 Everything is configured from the Alliance Auth front end; no code or Django admin needed.
 
-[中文说明](https://github.com/yilifaer/aa-ticket/blob/main/README.zh-hans.md)
+[中文说明](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/README.zh-hans.md)
 
-![A ticket seen by staff: conversation, internal note, image and actions](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/ticket-en.png)
+![A ticket seen by staff: conversation, internal note, image and actions](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/ticket-en.png)
 
 ## Contents
 
@@ -62,25 +62,28 @@ All names in the screenshots are made up. Theme: Darkly.
 **Overview** — what is assigned to you, what is waiting in your departments (urgent first), what
 was escalated or shared with you, and your own tickets.
 
-![Overview page](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/overview-en.png)
+![Overview page](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/overview-en.png)
 
 **Submitting a ticket** — the category fills in its template.
 
-![Submit form](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/submit-en.png)
+![Submit form](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/submit-en.png)
 
 **Departments** — parent and child departments, staff groups and a warning when no Discord
 channel is set up.
 
-![Department settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/departments-en.png)
+![Department settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/departments-en.png)
 
 **Priorities** — per priority: ping the role or not, reminder and escalation times.
 
-![Priority settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/priorities-en.png)
+![Priority settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/priorities-en.png)
 
 ## Requirements
 
-- Alliance Auth 5.0 or newer (tested with 5.4.0). On Alliance Auth 5.0 and 5.1 also install
-  `django-sri<1`; newer django-sri versions break Alliance Auth's own templates there.
+- Alliance Auth 5.0 or newer (tested with 5.0, 5.2 and 5.4.0). On older Alliance Auth 5.x
+  releases, if pages fail with an error about `sri_static`, install `django-sri<1`; newer
+  django-sri versions break those Alliance Auth templates.
+- Pillow (installed automatically with the app; it is not part of Alliance Auth itself, so
+  `pip install` may add or upgrade it in your Alliance Auth environment)
 - Python 3.10 or newer
 - Celery and Celery Beat running, as for every Alliance Auth install
 - Optional: aa-discordbot, for Discord direct messages
@@ -92,8 +95,10 @@ channel is set up.
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2
+pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.3
 ```
+
+For production you can also pin the exact commit shown on the release page instead of the tag.
 
 ### 2. Change `local.py`
 
@@ -346,8 +351,8 @@ all replies and internal notes, uploaded images, who claimed, transferred and cl
 ticket, and when. Nothing is sent outside your server except the Discord messages described
 above. Channel messages contain the ticket title, department, priority, category, the
 requester's main character name and the main character name of the person who caused the
-message; direct messages also contain the department and the assignee. Messages already sent to
-Discord cannot be recalled.
+message; direct messages also contain the ticket title, the department and the assignee.
+Messages already sent to Discord cannot be recalled.
 
 The Discord webhook URLs are stored in plain text in the database (and therefore in your
 backups). Anyone who has one can post to that channel. The app never shows them in full; if one
@@ -355,8 +360,8 @@ leaks, delete the webhook in Discord and paste a new one.
 
 Images are served only through a permission-checked page, never from a public URL. Uploads are
 re-encoded, which removes location, camera and other metadata; images with a longer edge above
-4096 pixels are scaled down to 4096 pixels, and images above 25 megapixels, and animations above 25 megapixels across all
-frames, are refused (decoding
+4096 pixels are scaled down to 4096 pixels. Images above 25 megapixels, animations above
+25 megapixels across all frames and animations with more than 100 frames are refused (decoding
 larger PNG images needs too much memory on small servers such as a Raspberry Pi). Use
 *Delete images after (days)* to remove old images automatically. Superusers can delete single
 messages or images in the Django admin.
@@ -377,14 +382,15 @@ sent; the command refuses to erase an active account. The command deletes the ti
 images. In other tickets their messages show *Deleted user*, in-progress tickets assigned to them
 become unclaimed, and the history no longer names them (also under older main characters).
 Kept: the text and images of messages they wrote in other people's tickets (they are part of
-that ticket), Alliance Auth notifications, and Discord messages already sent. Afterwards the
+that ticket), the reasons they typed when transferring a ticket or asking for escalation,
+Alliance Auth notifications, and Discord messages already sent. Afterwards the
 account can be deleted in Alliance Auth.
 
 Browsers may keep an image they have shown for up to 5 minutes.
 
 ## Updating
 
-Read the [CHANGELOG](https://github.com/yilifaer/aa-ticket/blob/main/CHANGELOG.md) first and back up your database. Then:
+Read the [CHANGELOG](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/CHANGELOG.md) first and back up your database. Then:
 
 ```bash
 pip install -U git+https://github.com/yilifaer/aa-ticket.git@<new tag>
@@ -397,7 +403,8 @@ Then restart Alliance Auth and Celery.
 To go back to the previous version: if the CHANGELOG lists database changes for the version you
 installed, first undo them with `python manage.py migrate aa_ticket <last migration of the
 previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous tag the same way
-and restart. Going back from 1.0.1 to 1.0.0 also drops the hourly submission limit, and
+and restart. (The tag `v1.0.0` was removed; to install 1.0.0 use its commit:
+`pip install git+https://github.com/yilifaer/aa-ticket.git@e989f39ba4c534e84c3a2348eb215f10c98cccf1`.) Going back from 1.0.1 to 1.0.0 also drops the hourly submission limit, and
 departments that were closed because their allowed states or groups were deleted are open to
 everyone again.
 
@@ -426,6 +433,9 @@ everyone again.
 6. Delete `MEDIA_ROOT/aa_ticket/` if you no longer need the images.
 7. Restart Alliance Auth and Celery.
 
+Alliance Auth notifications the app sent earlier stay in each person's notification list; their
+links lead to pages that no longer exist. Delete them in the Django admin if you want.
+
 ## Translations
 
 The interface follows the language each person picks in Alliance Auth. Alliance Auth
@@ -453,4 +463,4 @@ python runtests.py aa_ticket -v 2
 
 ## License
 
-MIT, see [LICENSE](https://github.com/yilifaer/aa-ticket/blob/main/LICENSE).
+MIT, see [LICENSE](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/LICENSE).

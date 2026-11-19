@@ -6,9 +6,9 @@
 工作人员在 AA 里接手工单、和玩家来回交流，可以邀请其他部门协作、移交、申请上级介入，最后关闭工单。
 所有配置都在 AA 前台完成，不用改代码，也不用进 Django 后台。
 
-[English](README.md) · [安装步骤](docs/install.zh-hans.md)
+[English](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/README.md) · [安装步骤](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/docs/install.zh-hans.md)
 
-![工作人员看到的工单：来回对话、内部备注、图片和操作按钮](docs/images/ticket-zh.png)
+![工作人员看到的工单：来回对话、内部备注、图片和操作按钮](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/ticket-zh.png)
 
 ## 功能
 
@@ -29,25 +29,25 @@
 
 **总览**：分配给我的、我的部门待接手的（紧急的排前面）、申请上级介入或邀请协作的、我提交的。
 
-![总览页](docs/images/overview-zh.png)
+![总览页](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/overview-zh.png)
 
 **提交工单**：选了分类会自动填入模板。
 
-![提交工单](docs/images/submit-zh.png)
+![提交工单](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/submit-zh.png)
 
 **部门设置**：上下级部门、人员权限组；没配 Discord 频道时会提醒。
 
-![部门设置](docs/images/departments-zh.png)
+![部门设置](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/departments-zh.png)
 
 **紧急程度**：每一档要不要 @ 身份组、多久提醒、多久自动申请上级介入。
 
-![紧急程度设置](docs/images/priorities-zh.png)
+![紧急程度设置](https://raw.githubusercontent.com/yilifaer/aa-ticket/v1.0.3/docs/images/priorities-zh.png)
 
 ## 安装
 
-完整步骤（包括备份和回滚）见 [安装步骤](docs/install.zh-hans.md)。简要版：
+完整步骤（包括备份和回滚）见 [安装步骤](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/docs/install.zh-hans.md)。简要版：
 
-1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2`
+1. `pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.3`
 2. 在 `local.py` 里加上 `INSTALLED_APPS += ["aa_ticket"]`、设置 `MEDIA_ROOT`，并添加三个定时任务（写法见英文 README 的 Installation 部分）。
 3. 执行 `python manage.py migrate` 和 `python manage.py collectstatic --noinput`，然后重启 AA 和 Celery。
 
@@ -88,7 +88,7 @@
 
 插件会保存每张工单的：提交人账号和主角色、所有回复和内部备注、上传的图片，以及谁在什么时候接手、移交、关闭了工单。
 
-除了上面说的 Discord 消息，不会把数据发到你的服务器以外。频道消息里有工单标题、部门、紧急程度、分类、提交人主角色名，以及触发这条消息的人的主角色名；私信里还有部门和处理人。已经发到 Discord 的消息收不回来。
+除了上面说的 Discord 消息，不会把数据发到你的服务器以外。频道消息里有工单标题、部门、紧急程度、分类、提交人主角色名，以及触发这条消息的人的主角色名；私信里还有工单标题、部门和处理人。已经发到 Discord 的消息收不回来。
 
 **删除某个人的数据**（比如有人按隐私法要求）。先备份数据库，删了就恢复不了：
 
@@ -102,7 +102,7 @@ python manage.py aa_ticket_erase_user 用户名
 python manage.py aa_ticket_erase_user 用户名 --yes
 ```
 
-先在 AA 里停用这个账号，等几分钟（让排队中的 Discord 消息发完）再执行；账号没停用时命令会拒绝删除。会删掉这个人提交的工单和图片；在别人的工单里，他的回复显示为「已删除的用户」，他正在处理的工单回到待接手，记录里也不再出现他的名字（包括以前用过的主角色名）。保留的：他在别人工单里写的文字和传的图片（那是别人工单的一部分）、AA 自己的通知、已经发到 Discord 的消息。之后就可以在 AA 里删除这个账号了。
+先在 AA 里停用这个账号，等几分钟（让排队中的 Discord 消息发完）再执行；账号没停用时命令会拒绝删除。会删掉这个人提交的工单和图片；在别人的工单里，他的回复显示为「已删除的用户」，他正在处理的工单回到待接手，记录里也不再出现他的名字（包括以前用过的主角色名）。保留的：他在别人工单里写的文字和传的图片（那是别人工单的一部分）、他移交工单或申请上级时填的理由、AA 自己的通知、已经发到 Discord 的消息。之后就可以在 AA 里删除这个账号了。
 
 Discord webhook 地址以明文存在数据库里（所以备份里也有）。拿到地址的人就能往那个频道发消息。插件页面上从不显示完整地址；万一泄露，在 Discord 里删掉这个 webhook，再填一个新的。
 
@@ -110,7 +110,7 @@ Discord webhook 地址以明文存在数据库里（所以备份里也有）。�
 
 ## 卸载
 
-步骤见 [安装步骤](docs/install.zh-hans.md) 的「出问题时怎么回滚」，或英文 README 的 Uninstalling 部分。注意：
+步骤见 [安装步骤](https://github.com/yilifaer/aa-ticket/blob/v1.0.3/docs/install.zh-hans.md) 的「出问题时怎么回滚」，或英文 README 的 Uninstalling 部分。注意：
 
 - 不要用 `remove_stale_contenttypes --include-stale-apps`，它会连带删除其他插件的数据。
 - Celery Beat 会在数据库里另存一份定时任务，从 `local.py` 删掉之后还要删数据库里那 3 条 `aa_ticket_` 开头的记录，否则 Celery 会一直报找不到任务。

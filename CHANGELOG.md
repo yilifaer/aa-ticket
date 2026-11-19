@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.3]
+
+Documentation and tests only, from the 1.0.2 test round and a fresh AA App Checklist review.
+No code or database changes.
+
+### Documentation
+
+- README links and screenshots point to this release's tag instead of `main` (both languages).
+- Requirements mention Pillow; the django-sri note is less specific about AA versions.
+- How to install 1.0.0 by its commit (its tag was removed); production installs can pin the
+  commit shown on the release page.
+- Data protection: direct messages also contain the ticket title; the erase command keeps the
+  reasons typed when transferring or escalating; animations with more than 100 frames are
+  refused; uninstalling leaves earlier Alliance Auth notifications behind.
+- Chinese install guide: Apache upload limit raised to 32 MB.
+
+### Tests
+
+- The erase command tests create an escalation request in someone else's ticket and check that
+  the preview counts it and that erasing clears the closer and the requester but keeps the reason.
+
 ## [1.0.2]
 
 From the 1.0.1 test round. No database changes.
