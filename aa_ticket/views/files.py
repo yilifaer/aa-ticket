@@ -23,5 +23,5 @@ def attachment(request, pk):
     response = FileResponse(handle, content_type=att.content_type, filename=att.original_name)
     response["X-Content-Type-Options"] = "nosniff"
     response["Content-Security-Policy"] = "sandbox"
-    response["Cache-Control"] = "private, max-age=3600"
+    response["Cache-Control"] = "private, max-age=300"  # short, so removed staff lose access soon
     return response

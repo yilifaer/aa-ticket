@@ -130,6 +130,7 @@ class TestOfficerOverview(Fixture):
 
         s = TicketSettings.get_solo()
         s.max_open_tickets = 20
+        s.max_new_tickets_per_hour = 0
         s.save()
         for i in range(7):
             self.new(title=f"T{i}")

@@ -38,6 +38,18 @@ def eve_time(value):
 
 
 @register.filter
+def author_name(message):
+    """Who wrote a timeline entry. Events without an author come from the system; anything else
+    without an author belonged to an account that was deleted or erased."""
+    if message.author_id and message.author:
+        return _display_name(message.author)
+    erased = (message.event_data or {}).get("author_erased")
+    if message.kind == "event" and not erased:
+        return pgettext("aa_ticket", "System")
+    return pgettext("aa_ticket", "Deleted user")
+
+
+@register.filter
 def display_name(user):
     return _display_name(user) if user else pgettext("aa_ticket", "System")
 

@@ -49,3 +49,17 @@ def check_beat_schedule(app_configs, **kwargs):
             id="aa_ticket.W003",
         )
     ]
+
+
+@register()
+def check_site_url(app_configs, **kwargs):
+    """Discord messages link to the ticket; without SITE_URL those links are not clickable."""
+    if getattr(settings, "SITE_URL", ""):
+        return []
+    return [
+        Warning(
+            "SITE_URL is not set; links in Discord messages will not work.",
+            hint='Set SITE_URL in local.py to the address of your Alliance Auth, e.g. "https://auth.example.com".',
+            id="aa_ticket.W004",
+        )
+    ]

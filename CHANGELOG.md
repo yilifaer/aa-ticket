@@ -8,12 +8,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [1.0.1]
 
-Fixes from the AA App Checklist review of 1.0.0. No database changes.
+Fixes from the AA App Checklist review of 1.0.0. One database migration
+(`0006_submit_restriction_and_hourly_limit`): run `migrate`.
 
 ### Added
 
 - System check `aa_ticket.W003` warns when one of the three periodic tasks is missing from
-  `CELERYBEAT_SCHEDULE`.
+  `CELERYBEAT_SCHEDULE`; `aa_ticket.W004` warns when `SITE_URL` is not set.
+- Management command `aa_ticket_erase_user <username> [--yes]` erases one person's ticket data
+  (their tickets and images are deleted, their name is removed from other tickets), so the account
+  can then be deleted in Alliance Auth.
+- Setting *New tickets per person per hour* (default 5, `0` = no limit), so one person cannot
+  ping a department over and over.
 
 ### Changed
 
@@ -21,6 +27,15 @@ Fixes from the AA App Checklist review of 1.0.0. No database changes.
   recommended nginx `client_max_body_size` is now `32m` (five images of 6 MB).
 - A Discord direct message that cannot be sent (bot error, missing Celery route) is logged as a
   warning instead of info.
+- Submissions limited to some states or groups stay limited when all of them are deleted:
+  nobody can submit then (before, the department silently opened up to everyone), and the
+  department list shows a warning. Existing departments with such limits are marked by the
+  migration.
+- The staff group warning also covers groups that members of a state join automatically.
+- Messages whose author account was deleted or erased show *Deleted user* instead of *System*.
+- Opening the preferences page no longer creates a database row; images are cached by the
+  browser for 5 minutes instead of an hour.
+- CI also tests Python 3.11, Alliance Auth 5.2 and MariaDB with Alliance Auth 5.0.
 
 ### Documentation
 
@@ -29,7 +44,9 @@ Fixes from the AA App Checklist review of 1.0.0. No database changes.
 - Updating: back up first; how to go back to the previous version.
 - Permissions: `view_all` and `manage` also need `basic_access`; `manage` decides who can read
   which tickets; department staff manage their own canned replies without `manage`.
-- Data protection: which names go to Discord; webhook URLs are stored in plain text.
+- Data protection: which names go to Discord; webhook URLs are stored in plain text; how to erase
+  one person's data.
+- The default priorities ping and remind as soon as a department has a webhook: check them first.
 - Screenshots in both READMEs.
 - The Chinese installation guide is now `docs/install.zh-hans.md` and no longer specific to a
   test machine. Internal review notes, design and planning documents were removed.

@@ -14,7 +14,7 @@ def prefs(request):
     available = dm.is_available()
     if request.method == "POST" and available:
         pref.discord_dm_enabled = bool(request.POST.get("discord_dm_enabled"))
-        pref.save(update_fields=["discord_dm_enabled"])
+        pref.save()
         messages.success(request, pgettext("aa_ticket", "Preferences saved."))
         return redirect("aa_ticket:prefs")
     return render(request, "aa_ticket/prefs.html", {"pref": pref, "available": available, "nav_active": "prefs"})

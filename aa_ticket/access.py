@@ -212,7 +212,9 @@ def assignable_users(ticket):
 def submittable_departments(user):
     qs = Department.objects.filter(is_active=True, accepts_submissions=True)
     state = getattr(getattr(user, "profile", None), "state", None)
-    open_q = Q(submit_states__isnull=True) & Q(submit_groups__isnull=True)
+    # Open to everyone only when no restriction was ever set. A restricted department whose states
+    # and groups were all deleted accepts nobody instead of silently opening up.
+    open_q = Q(restrict_submissions=False) & Q(submit_states__isnull=True) & Q(submit_groups__isnull=True)
     allowed_q = Q(submit_groups__in=user.groups.all())
     if state is not None:
         allowed_q |= Q(submit_states=state)

@@ -199,7 +199,7 @@ class TestSettings(ManageFixture):
         self.login(self.admin)
         r = self.client.post("/ticket/manage/settings/", {
             "autoclose_days": "10", "autoclose_warning_hours": "12", "reopen_days": "3", "max_open_tickets": "2",
-            "max_image_mb": "4", "attachment_retention_days": "", "discord_dm_enabled": "",
+            "max_new_tickets_per_hour": "3", "max_image_mb": "4", "attachment_retention_days": "", "discord_dm_enabled": "",
             "channel_language": "en", "dm_language_mode": "personal",
         })
         self.assertRedirects(r, "/ticket/manage/settings/")

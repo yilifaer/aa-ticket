@@ -118,6 +118,9 @@ class DepartmentForm(forms.ModelForm):
 
     def save(self, commit=True):
         department = super().save(commit=False)
+        department.restrict_submissions = bool(
+            self.cleaned_data.get("submit_states") or self.cleaned_data.get("submit_groups")
+        )
         if self.cleaned_data.get("clear_webhook"):
             department.webhook_url = ""
             department.last_webhook_error = ""
@@ -194,6 +197,7 @@ class TicketSettingsForm(forms.ModelForm):
             "autoclose_warning_hours",
             "reopen_days",
             "max_open_tickets",
+            "max_new_tickets_per_hour",
             "max_image_mb",
             "attachment_retention_days",
             "discord_dm_enabled",

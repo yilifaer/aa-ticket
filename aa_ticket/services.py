@@ -7,6 +7,7 @@ writes a system event to the ticket's timeline and hands the event to
 
 import contextvars
 import functools
+from datetime import timedelta
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.storage import default_storage
@@ -138,6 +139,28 @@ def _clean_text(text, max_length=None):
     return text
 
 
+def _check_hourly_limit(user):
+    """Stop one person from submitting (and so pinging a department) over and over."""
+    per_hour = TicketSettings.get_solo().max_new_tickets_per_hour
+    if not per_hour:
+        return
+    since = timezone.now() - timedelta(hours=1)
+    recent = list(
+        Ticket.objects.filter(requester=user, created_at__gte=since).order_by("created_at").values_list("created_at", flat=True)
+    )
+    if len(recent) < per_hour:
+        return
+    wait = recent[len(recent) - per_hour] + timedelta(hours=1) - timezone.now()
+    minutes = max(1, int(wait.total_seconds() // 60) + 1)
+    raise TicketActionError(
+        pgettext(
+            "aa_ticket",
+            "You can submit at most %(count)d tickets per hour. Please try again in about %(minutes)d min.",
+        )
+        % {"count": per_hour, "minutes": minutes}
+    )
+
+
 @_removes_files_on_failure
 def create_ticket(user, department, priority, title, body, category=None, images=()):
     if department not in access.submittable_departments(user):
@@ -164,6 +187,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
             )
             % {"count": open_count}
         )
+    _check_hourly_limit(user)
     prepared = _prepare(images)
     now = timezone.now()
     ticket = Ticket.objects.create(

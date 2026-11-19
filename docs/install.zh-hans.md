@@ -144,7 +144,7 @@ cd /home/allianceserver/myauth
 python manage.py check
 ```
 
-输出里**没有** `aa_ticket.W001`、`aa_ticket.W002`（图片文件夹没设置、不存在或不能写）和 `aa_ticket.W003`（上面 3 个定时任务少了哪个，它会写出来）。
+输出里**没有** `aa_ticket.W001`、`aa_ticket.W002`（图片文件夹没设置、不存在或不能写）、`aa_ticket.W003`（上面 3 个定时任务少了哪个，它会写出来）和 `aa_ticket.W004`（没设 `SITE_URL`，Discord 里的链接会打不开；AA 的 `local.py` 一般已经设好了）。
 
 ---
 
@@ -158,7 +158,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`、`0005_ticket_indexes... OK`。
+**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`、`0005_ticket_indexes... OK`、`0006_submit_restriction_and_hourly_limit... OK`。
 
 ---
 

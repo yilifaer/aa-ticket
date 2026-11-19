@@ -69,6 +69,12 @@ class Department(models.Model):
         blank=True,
         related_name="+",
     )
+    restrict_submissions = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Set when states or groups allowed to submit were chosen. Stays on if they are deleted later, "
+        "so the department does not silently open up to everyone.",
+    )
     accepts_submissions = models.BooleanField(
         pgettext_lazy("aa_ticket", "accepts tickets from players"),
         default=True,
@@ -247,6 +253,13 @@ class TicketSettings(SingletonModel):
         validators=[MinValueValidator(1)],
         help_text=pgettext_lazy("aa_ticket", "A person cannot submit a new ticket while this many of their tickets are still open."),
     )
+    max_new_tickets_per_hour = models.PositiveIntegerField(
+        pgettext_lazy("aa_ticket", "new tickets per person per hour"),
+        default=5,
+        help_text=pgettext_lazy(
+            "aa_ticket", "Limits how often one person can submit (and so ping a department). 0 means no limit."
+        ),
+    )
     max_image_mb = models.PositiveIntegerField(
         pgettext_lazy("aa_ticket", "maximum image size (MB)"), default=5, validators=[MinValueValidator(1)]
     )
@@ -293,5 +306,5 @@ class UserPreference(models.Model):
 
     @classmethod
     def for_user(cls, user):
-        obj, _created = cls.objects.get_or_create(user=user)
-        return obj
+        """The saved preference, or the defaults (not saved) if the person never changed anything."""
+        return cls.objects.filter(user=user).first() or cls(user=user)
