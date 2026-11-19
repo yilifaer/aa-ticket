@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 05:56+0000\n"
+"POT-Creation-Date: 2026-11-19 06:08+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -1037,7 +1037,7 @@ msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Bitte beschreibe dein Anliegen."
 
-#: services.py:178 services.py:426 templates/aa_ticket/submit.html:34
+#: services.py:178 services.py:427 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Bitte wähle eine verfügbare Priorität."
@@ -1047,7 +1047,7 @@ msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Bitte wähle eine Kategorie der gewählten Abteilung."
 
-#: services.py:188
+#: services.py:190
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1057,64 +1057,64 @@ msgstr ""
 "Du hast bereits %(count)d offene Tickets. Bitte schließe erledigte Tickets, "
 "bevor du ein neues öffnest."
 
-#: services.py:223 services.py:253
+#: services.py:224 services.py:254
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Bitte schreibe eine Nachricht, bevor du sie sendest."
 
-#: services.py:279
+#: services.py:280
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Bereits von %(name)s übernommen."
 
-#: services.py:281
+#: services.py:282
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Dieses Ticket kann nicht mehr übernommen werden."
 
-#: services.py:291
+#: services.py:292
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Wähle jemanden aus der zuständigen Abteilung."
 
-#: services.py:317 services.py:341
+#: services.py:318 services.py:342
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Diese Abteilung ist nicht aktiv."
 
-#: services.py:319
+#: services.py:320
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Diese Abteilung ist bereits für das Ticket zuständig."
 
-#: services.py:321
+#: services.py:322
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Diese Abteilung arbeitet bereits an dem Ticket."
 
-#: services.py:331
+#: services.py:332
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Diese Abteilung arbeitet nicht an dem Ticket."
 
-#: services.py:343
+#: services.py:344
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Das Ticket liegt bereits bei dieser Abteilung."
 
-#: services.py:394 services.py:401 views/ticket.py:219
+#: services.py:395 services.py:402 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "%(department)s wurde bereits um Unterstützung gebeten."
 
-#: services.py:440
+#: services.py:441
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Bitte wähle eine Kategorie der zuständigen Abteilung."
 
-#: services.py:461
+#: services.py:462
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr ""
@@ -1845,41 +1845,41 @@ msgctxt "aa_ticket"
 msgid "Nothing here right now."
 msgstr "Aktuell nichts vorhanden."
 
-#: templatetags/aa_ticket.py:48 templatetags/aa_ticket.py:54
+#: templatetags/aa_ticket.py:50 templatetags/aa_ticket.py:56
 msgctxt "aa_ticket"
 msgid "System"
 msgstr "System"
 
-#: templatetags/aa_ticket.py:49
+#: templatetags/aa_ticket.py:51 templatetags/aa_ticket.py:77
 msgctxt "aa_ticket"
 msgid "Deleted user"
 msgstr "Gelöschter Benutzer"
 
-#: templatetags/aa_ticket.py:67
+#: templatetags/aa_ticket.py:69
 #, python-format
 msgctxt "aa_ticket"
 msgid "from %(from)s to %(to)s"
 msgstr "von %(from)s zu %(to)s"
 
-#: templatetags/aa_ticket.py:71
+#: templatetags/aa_ticket.py:73
 #, python-format
 msgctxt "aa_ticket"
 msgid "to %(value)s"
 msgstr "zu %(value)s"
 
-#: templatetags/aa_ticket.py:134
+#: templatetags/aa_ticket.py:138
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(d)d d %(h)d h"
 msgstr "%(d)d T %(h)d Std."
 
-#: templatetags/aa_ticket.py:136
+#: templatetags/aa_ticket.py:140
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(h)d h %(m)d min"
 msgstr "%(h)d Std. %(m)d Min."
 
-#: templatetags/aa_ticket.py:137
+#: templatetags/aa_ticket.py:141
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(m)d min"

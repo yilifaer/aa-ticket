@@ -218,6 +218,8 @@ class TestEraseUser(TestCase):
         self.files = [a.file.path for a in Attachment.objects.filter(message__ticket=self.own)]
 
     def erase(self, *args):
+        if "--yes" in args:
+            User.objects.filter(pk=self.leaver.pk).update(is_active=False)
         out = io.StringIO()
         with self.captureOnCommitCallbacks(execute=True):
             call_command("aa_ticket_erase_user", self.leaver.username, *args, stdout=out)
@@ -276,6 +278,7 @@ class TestEraseTouchesOnlyThePerson(TestCase):
         self.bystander = make_user("Bystander")
 
     def erase(self):
+        User.objects.filter(pk=self.leaver.pk).update(is_active=False)
         with self.captureOnCommitCallbacks(execute=True):
             call_command("aa_ticket_erase_user", self.leaver.username, "--yes", stdout=io.StringIO())
 
@@ -378,3 +381,39 @@ class TestPrefsDoubleSave(TestCase):
                 r = self.client.post(reverse("aa_ticket:prefs"), {"discord_dm_enabled": ""})
                 self.assertEqual(r.status_code, 302)
         self.assertFalse(UserPreference.objects.get(user=user).discord_dm_enabled)
+
+
+class TestEraseRefusesActiveAccount(TestCase):
+    def test_active_account_is_refused(self):
+        from django.core.management.base import CommandError
+
+        user = make_user("Still Here")
+        dept = make_department("Diplomacy")
+        services.create_ticket(user, dept, priority("normal"), "Help", "Body")
+        with self.assertRaises(CommandError):
+            call_command("aa_ticket_erase_user", user.username, "--yes", stdout=io.StringIO())
+        self.assertTrue(Ticket.objects.filter(requester=user).exists())
+
+    def test_deactivated_staff_member_gets_the_right_hint(self):
+        g = make_group("Diplomats")
+        make_department("Diplomacy", groups=[g])
+        user = make_user("Gone Staff", groups=[g])
+        User.objects.filter(pk=user.pk).update(is_active=False)
+        out = io.StringIO()
+        call_command("aa_ticket_erase_user", user.username, stdout=out)
+        self.assertNotIn("still active", out.getvalue())
+        self.assertIn("staff group", out.getvalue())
+
+    def test_erased_assignee_shows_translated_label(self):
+        from aa_ticket.templatetags.aa_ticket import event_text
+
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        staff = make_user("Staff S", groups=[g])
+        t = services.create_ticket(make_user("Pilot P"), dept, priority("normal"), "Help", "Body")
+        services.claim(staff, t)
+        User.objects.filter(pk=staff.pk).update(is_active=False)
+        call_command("aa_ticket_erase_user", staff.username, "--yes", stdout=io.StringIO())
+        claimed = TicketMessage.objects.get(ticket=t, event_type="claimed")
+        with translation.override("zh-hans"):
+            self.assertIn("已删除的用户", str(event_text(claimed, True)))

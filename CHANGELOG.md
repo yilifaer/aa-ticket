@@ -15,9 +15,10 @@ Fixes from the AA App Checklist review of 1.0.0. One database migration
 
 - System check `aa_ticket.W003` warns when one of the three periodic tasks is missing from
   `CELERYBEAT_SCHEDULE`; `aa_ticket.W004` warns when `SITE_URL` is not set.
-- Management command `aa_ticket_erase_user <username> [--yes]` erases one person's ticket data
-  (their tickets and images are deleted, their name is removed from other tickets), so the account
-  can then be deleted in Alliance Auth.
+- Management command `aa_ticket_erase_user <username> [--yes]` erases one person's ticket data:
+  their tickets and images are deleted, and other tickets no longer name them (found by user ID,
+  so older main characters are covered; nothing is changed by matching text). The account must be
+  deactivated first. Afterwards it can be deleted in Alliance Auth.
 - Setting *New tickets per person per hour* (default 5, `0` = no limit), so one person cannot
   ping a department over and over.
 

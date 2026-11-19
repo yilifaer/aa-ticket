@@ -370,7 +370,8 @@ python manage.py aa_ticket_erase_user <username>        # shows what would happe
 python manage.py aa_ticket_erase_user <username> --yes  # erases
 ```
 
-Deactivate the account first. The command deletes the tickets the person submitted, with their
+Deactivate the account first and wait a few minutes, so Discord messages still in the queue are
+sent; the command refuses to erase an active account. The command deletes the tickets the person submitted, with their
 images. In other tickets their messages show *Deleted user*, in-progress tickets assigned to them
 become unclaimed, and the history no longer names them (also under older main characters).
 Kept: the text and images of messages they wrote in other people's tickets (they are part of

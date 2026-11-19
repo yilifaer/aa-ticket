@@ -81,15 +81,20 @@ class Command(BaseCommand):
             "Kept: the text and images of messages they wrote in other people's tickets, Alliance Auth "
             "notifications, and Discord messages already sent."
         )
-        staff_groups = Department.objects.filter(groups__in=user.groups.all()).exists()
-        if user.is_active or staff_groups:
+        if user.is_active:
             self.stdout.write(
                 self.style.WARNING(
-                    "The account is still active"
-                    + (" and in a department staff group" if staff_groups else "")
-                    + ". Deactivate it first, otherwise new ticket data can appear right after erasing."
+                    "The account is still active. Deactivate it in Alliance Auth first and wait a few minutes, "
+                    "so no new ticket data appears and queued Discord messages have been sent. "
+                    "Erasing an active account is refused."
                 )
             )
+        elif Department.objects.filter(groups__in=user.groups.all()).exists():
+            self.stdout.write(
+                self.style.WARNING("The account is still in a department staff group. Remove it from those groups too.")
+            )
+        if yes and user.is_active:
+            raise CommandError("The account is still active. Deactivate it first, then run the command again.")
         if not yes:
             self.stdout.write("Nothing was changed. Run again with --yes to erase.")
             return

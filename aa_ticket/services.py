@@ -178,6 +178,8 @@ def create_ticket(user, department, priority, title, body, category=None, images
         raise TicketActionError(pgettext("aa_ticket", "Please pick an available priority."))
     if category is not None and (category.department_id != department.pk or not category.is_active):
         raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the selected department."))
+    # Decode the images first: slow, and it must not hold the lock below.
+    prepared = _prepare(images)
     # One submission per person at a time, so parallel requests cannot get past the limits below.
     get_user_model().objects.select_for_update().filter(pk=user.pk).first()
     limit = TicketSettings.get_solo().max_open_tickets
@@ -191,7 +193,6 @@ def create_ticket(user, department, priority, title, body, category=None, images
             % {"count": open_count}
         )
     _check_hourly_limit(user)
-    prepared = _prepare(images)
     now = timezone.now()
     ticket = Ticket.objects.create(
         title=title,

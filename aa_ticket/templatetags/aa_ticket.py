@@ -14,6 +14,8 @@ from ..utils import display_name as _display_name
 
 register = template.Library()
 
+ERASED_NAME = "[deleted user]"  # written by the aa_ticket_erase_user command
+
 STAFF_ONLY_EVENTS = {
     Event.UNCLAIMED_REMINDER,
     Event.ESCALATION_REMINDER,
@@ -71,6 +73,8 @@ def event_text(message, is_staff=False):
         detail = pgettext("aa_ticket", "to %(value)s") % {"value": data.get("to") or "—"}
     elif event in (Event.CLAIMED, Event.ASSIGNED):
         detail = data.get("assignee", "")
+        if detail == ERASED_NAME:
+            detail = pgettext("aa_ticket", "Deleted user")
     elif event == Event.CLOSED and data.get("reason"):
         try:
             detail = str(ClosedReason(data["reason"]).label)
