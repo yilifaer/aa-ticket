@@ -7,9 +7,9 @@ pinged in its own Discord channel. Staff claim the ticket in Alliance Auth, talk
 player, bring in other departments, hand the ticket over or escalate it, and close it.
 Everything is configured from the Alliance Auth front end; no code or Django admin needed.
 
-[中文说明](README.zh-hans.md)
+[中文说明](https://github.com/yilifaer/aa-ticket/blob/main/README.zh-hans.md)
 
-![A ticket seen by staff: conversation, internal note, image and actions](docs/images/ticket-en.png)
+![A ticket seen by staff: conversation, internal note, image and actions](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/ticket-en.png)
 
 ## Contents
 
@@ -62,20 +62,20 @@ All names in the screenshots are made up. Theme: Darkly.
 **Overview** — what is assigned to you, what is waiting in your departments (urgent first), what
 was escalated or shared with you, and your own tickets.
 
-![Overview page](docs/images/overview-en.png)
+![Overview page](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/overview-en.png)
 
 **Submitting a ticket** — the category fills in its template.
 
-![Submit form](docs/images/submit-en.png)
+![Submit form](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/submit-en.png)
 
 **Departments** — parent and child departments, staff groups and a warning when no Discord
 channel is set up.
 
-![Department settings](docs/images/departments-en.png)
+![Department settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/departments-en.png)
 
 **Priorities** — per priority: ping the role or not, reminder and escalation times.
 
-![Priority settings](docs/images/priorities-en.png)
+![Priority settings](https://raw.githubusercontent.com/yilifaer/aa-ticket/main/docs/images/priorities-en.png)
 
 ## Requirements
 
@@ -92,7 +92,7 @@ channel is set up.
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.1
+pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.2
 ```
 
 ### 2. Change `local.py`
@@ -384,7 +384,7 @@ Browsers may keep an image they have shown for up to 5 minutes.
 
 ## Updating
 
-Read the [CHANGELOG](CHANGELOG.md) first and back up your database. Then:
+Read the [CHANGELOG](https://github.com/yilifaer/aa-ticket/blob/main/CHANGELOG.md) first and back up your database. Then:
 
 ```bash
 pip install -U git+https://github.com/yilifaer/aa-ticket.git@<new tag>
@@ -453,4 +453,4 @@ python runtests.py aa_ticket -v 2
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](https://github.com/yilifaer/aa-ticket/blob/main/LICENSE).

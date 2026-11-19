@@ -75,7 +75,7 @@ ls -lh ~/alliance_auth.bak-aa-ticket-*
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-pip install "git+https://github.com/yilifaer/aa-ticket.git@v1.0.1"
+pip install "git+https://github.com/yilifaer/aa-ticket.git@v1.0.2"
 ```
 
 > 一定要先 `cd ~`。如果当前所在的文件夹 `allianceserver` 没有权限读，pip 会报 `PermissionError: __editable__...`。
@@ -88,7 +88,7 @@ pip show aa-ticket | head -2
 pip show allianceauth | head -2
 ```
 
-- `aa-ticket` 显示版本 `1.0.1`；
+- `aa-ticket` 显示版本 `1.0.2`；
 - `allianceauth` **和装之前的版本一样**（插件不会顺带升级 AA）。
 
 ---
@@ -346,13 +346,13 @@ sudo supervisorctl status
 
 ## 升级
 
-升到新版本都这样做。把命令里的 `v1.0.1` 换成要装的版本号（版本列表见 [Releases](https://github.com/yilifaer/aa-ticket/releases)）。
+升到新版本都这样做。把命令里的 `v1.0.2` 换成要装的版本号（版本列表见 [Releases](https://github.com/yilifaer/aa-ticket/releases)）。
 
 ```bash
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-pip install -U "git+https://github.com/yilifaer/aa-ticket.git@v1.0.1"
+pip install -U "git+https://github.com/yilifaer/aa-ticket.git@v1.0.2"
 cd /home/allianceserver/myauth
 python manage.py migrate
 python manage.py collectstatic --noinput
@@ -362,7 +362,7 @@ sudo supervisorctl restart myauth:
 
 升级前同样先做第 1 步的备份。
 
-> 一定要用版本号（比如 `@v1.0.1`）安装，不要用分支名。用分支名安装的话，每次重装拿到的代码可能都不一样。
+> 一定要用版本号（比如 `@v1.0.2`）安装，不要用分支名。用分支名安装的话，每次重装拿到的代码可能都不一样。
 >
 > 升级后**不要**用上面「出问题时怎么回滚」的办法退回旧版本，那会删掉所有工单。新版本有问题时，用同样的命令装回旧的版本号。
 >

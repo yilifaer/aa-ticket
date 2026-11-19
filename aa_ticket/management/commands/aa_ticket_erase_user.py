@@ -71,15 +71,20 @@ class Command(BaseCommand):
         messages = TicketMessage.objects.filter(author=user).exclude(ticket__in=own_ids).exclude(kind="event").count()
         events = _related_events(user.pk, own_ids).count()
         assigned = Ticket.objects.filter(assignee=user).exclude(pk__in=own_ids).count()
+        closed = Ticket.objects.filter(closed_by=user).exclude(pk__in=own_ids).count()
+        escalations = EscalationRequest.objects.filter(requested_by=user).exclude(ticket__in=own_ids).count()
 
         self.stdout.write(f"Person: {username}")
         self.stdout.write(f"- {len(own_ids)} ticket(s) they submitted will be deleted, with {images} image(s).")
         self.stdout.write(f"- {messages} message(s) they wrote in other tickets will show 'Deleted user'.")
         self.stdout.write(f"- {events} event(s) in other tickets will no longer name them.")
         self.stdout.write(f"- {assigned} other ticket(s) assigned to them lose their assignee.")
+        self.stdout.write(f"- {closed} other ticket(s) they closed no longer name them as the one who closed it.")
+        self.stdout.write(f"- {escalations} escalation request(s) they made in other tickets no longer name them.")
         self.stdout.write(
-            "Kept: the text and images of messages they wrote in other people's tickets, Alliance Auth "
-            "notifications, and Discord messages already sent."
+            "Kept: the text and images of messages they wrote in other people's tickets, the reasons they "
+            "typed when transferring a ticket or asking for escalation, Alliance Auth notifications, and "
+            "Discord messages already sent."
         )
         if user.is_active:
             self.stdout.write(
