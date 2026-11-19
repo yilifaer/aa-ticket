@@ -204,7 +204,7 @@ Open **Tickets → Manage → Departments → Add department**.
 | Parent department | Staff of the parent see all tickets of this department. Leave empty for a top department |
 | Staff groups | Members of these Alliance Auth groups are staff of this department |
 | Accepts tickets from players | Turn off for departments that only receive transfers or escalations, such as *Leadership* |
-| States / groups allowed to submit | Optional. Leave both empty to let everyone with `basic_access` submit. If every state and group you picked is later deleted, nobody can submit to this department (it does not open up to everyone) and the department list shows a red warning |
+| States / groups allowed to submit | Optional. Leave both empty to let everyone with `basic_access` submit. If every state and group you picked is later deleted, nobody can submit to this department (it does not open up to everyone) and the department list shows a red warning; tick *Let everyone submit again* on the department page to open it |
 | Discord webhook | The channel where this department is pinged. See [Discord](#discord) |
 | Discord role IDs to mention | The roles pinged for new tickets, depending on the priority |
 | Active | Inactive departments disappear from all choices. Existing tickets stay |
@@ -370,11 +370,12 @@ python manage.py aa_ticket_erase_user <username>        # shows what would happe
 python manage.py aa_ticket_erase_user <username> --yes  # erases
 ```
 
-This deletes the tickets the person submitted, with their images. In other tickets their name is
-replaced: their messages show *Deleted user* (the text stays, it belongs to the other person's
-ticket), tickets assigned to them become unclaimed, and their name is removed from the history.
-Afterwards the account can be deleted in Alliance Auth. Discord messages already sent cannot be
-recalled.
+Deactivate the account first. The command deletes the tickets the person submitted, with their
+images. In other tickets their messages show *Deleted user*, in-progress tickets assigned to them
+become unclaimed, and the history no longer names them (also under older main characters).
+Kept: the text and images of messages they wrote in other people's tickets (they are part of
+that ticket), Alliance Auth notifications, and Discord messages already sent. Afterwards the
+account can be deleted in Alliance Auth.
 
 Browsers may keep an image they have shown for up to 5 minutes.
 
@@ -388,8 +389,12 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-Then restart Alliance Auth and Celery. To go back to the previous version, install the previous
-tag the same way; restore the backup only if the CHANGELOG lists database changes.
+Then restart Alliance Auth and Celery.
+
+To go back to the previous version: if the CHANGELOG lists database changes for the version you
+installed, first undo them with `python manage.py migrate aa_ticket <last migration of the
+previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous tag the same way
+and restart.
 
 ## Uninstalling
 

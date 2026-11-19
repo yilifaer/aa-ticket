@@ -264,3 +264,117 @@ class TestEraseUser(TestCase):
 
         with self.assertRaises(CommandError):
             call_command("aa_ticket_erase_user", "nobody-here", stdout=io.StringIO())
+
+
+class TestEraseTouchesOnlyThePerson(TestCase):
+    """Review findings: erasing must never change other people's records by matching numbers or text."""
+
+    def setUp(self):
+        self.g = make_group("Diplomats")
+        self.leaver = make_user("Leaving Pilot", groups=[self.g])
+        self.dept = make_department("Diplomacy", groups=[self.g])
+        self.bystander = make_user("Bystander")
+
+    def erase(self):
+        with self.captureOnCommitCallbacks(execute=True):
+            call_command("aa_ticket_erase_user", self.leaver.username, "--yes", stdout=io.StringIO())
+
+    def test_department_id_equal_to_user_pk_is_kept(self):
+        dept = Department.objects.filter(pk=self.leaver.pk).first() or Department.objects.create(
+            pk=self.leaver.pk, name="Same Number"
+        )
+        dept.groups.add(self.g)
+        t = services.create_ticket(fresh(self.bystander), dept, priority("normal"), "Help", "Body")
+        self.erase()
+        submitted = TicketMessage.objects.get(ticket=t, event_type="submitted")
+        self.assertEqual(submitted.event_data["department_id"], dept.pk)
+
+    def test_department_named_like_the_person_is_kept(self):
+        dept = make_department("Leaving Pilot", groups=[self.g])
+        t = services.create_ticket(fresh(self.bystander), dept, priority("normal"), "Help", "Body")
+        self.erase()
+        submitted = TicketMessage.objects.get(ticket=t, event_type="submitted")
+        self.assertEqual(submitted.event_data["department"], "Leaving Pilot")
+
+    def test_old_main_character_name_is_removed_too(self):
+        t = services.create_ticket(fresh(self.bystander), self.dept, priority("normal"), "Help", "Body")
+        services.claim(fresh(self.leaver), t)
+        colleague = make_user("Colleague C", groups=[self.g])
+        t2 = services.create_ticket(fresh(self.bystander), self.dept, priority("normal"), "Help 2", "Body")
+        services.assign(fresh(colleague), t2, fresh(self.leaver))
+        # the person switches main character afterwards
+        from allianceauth.eveonline.models import EveCharacter
+
+        EveCharacter.objects.filter(pk=self.leaver.profile.main_character_id).update(character_name="New Main")
+        self.erase()
+        for m in TicketMessage.objects.filter(ticket__in=[t, t2], kind="event"):
+            self.assertNotIn("Leaving Pilot", str(m.event_data), m.event_type)
+        assigned = TicketMessage.objects.get(ticket=t2, event_type="assigned")
+        self.assertEqual(assigned.event_data["assignee"], "[deleted user]")
+        self.assertIsNone(assigned.event_data["assignee_id"])
+
+    def test_colleague_named_in_events_by_the_person_is_kept(self):
+        colleague = make_user("Colleague C", groups=[self.g])
+        t = services.create_ticket(fresh(self.bystander), self.dept, priority("normal"), "Help", "Body")
+        services.assign(fresh(self.leaver), t, fresh(colleague))
+        self.erase()
+        assigned = TicketMessage.objects.get(ticket=t, event_type="assigned")
+        self.assertEqual(assigned.event_data["assignee"], "Colleague C")
+        self.assertEqual(assigned.event_data["assignee_id"], colleague.pk)
+        self.assertIsNone(assigned.author_id)
+        self.assertTrue(assigned.event_data["author_erased"])
+
+    def test_dry_run_warns_about_active_account(self):
+        out = io.StringIO()
+        call_command("aa_ticket_erase_user", self.leaver.username, stdout=out)
+        self.assertIn("still active", out.getvalue())
+
+
+class TestOrphanedRestrictionStaysClosedOnSave(TestCase):
+    def setUp(self):
+        self.allowed = make_group("Allowed")
+        self.dept = make_department("Diplomacy")
+        self.other = make_user("Pilot B")
+
+    def data(self, **extra):
+        data = {"name": "Diplomacy", "description": "", "order": 0, "is_active": "on", "accepts_submissions": "on",
+                "submit_groups": [], "submit_states": [], "groups": [], "mention_role_ids": ""}
+        data.update(extra)
+        return data
+
+    def orphan(self):
+        f = DepartmentForm(data=self.data(submit_groups=[self.allowed.pk]), instance=self.dept)
+        self.assertTrue(f.is_valid(), f.errors)
+        f.save()
+        self.allowed.delete()
+
+    def test_renaming_keeps_it_closed(self):
+        self.orphan()
+        f = DepartmentForm(data=self.data(name="Diplomacy Corps"), instance=fresh(self.dept))
+        self.assertIn("open_submissions", f.fields)
+        self.assertTrue(f.is_valid(), f.errors)
+        f.save()
+        self.assertTrue(fresh(self.dept).restrict_submissions)
+        self.assertNotIn(self.dept, access.submittable_departments(fresh(self.other)))
+
+    def test_ticking_the_box_opens_it(self):
+        self.orphan()
+        f = DepartmentForm(data=self.data(open_submissions="on"), instance=fresh(self.dept))
+        self.assertTrue(f.is_valid(), f.errors)
+        f.save()
+        self.assertFalse(fresh(self.dept).restrict_submissions)
+        self.assertIn(self.dept, access.submittable_departments(fresh(self.other)))
+
+    def test_box_only_shown_when_orphaned(self):
+        self.assertNotIn("open_submissions", DepartmentForm(instance=self.dept).fields)
+
+
+class TestPrefsDoubleSave(TestCase):
+    def test_second_post_does_not_fail(self):
+        user = make_user("Pilot A")
+        self.client.force_login(user)
+        with patch("aa_ticket.views.prefs.dm.is_available", return_value=True):
+            for _ in range(2):
+                r = self.client.post(reverse("aa_ticket:prefs"), {"discord_dm_enabled": ""})
+                self.assertEqual(r.status_code, 302)
+        self.assertFalse(UserPreference.objects.get(user=user).discord_dm_enabled)

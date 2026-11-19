@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 05:45+0000\n"
+"POT-Creation-Date: 2026-11-19 05:56+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: de\n"
@@ -428,7 +428,22 @@ msgctxt "aa_ticket"
 msgid "Remove the webhook"
 msgstr "Webhook entfernen"
 
-#: forms.py:66
+#: forms.py:44
+msgctxt "aa_ticket"
+msgid "Let everyone submit again"
+msgstr "Wieder allen das Einreichen erlauben"
+
+#: forms.py:48
+msgctxt "aa_ticket"
+msgid ""
+"Only needed when the states and groups allowed to submit were all deleted: "
+"tick this to let everyone with access submit to this department again."
+msgstr ""
+"Nur nötig, wenn alle zum Einreichen erlaubten Status und Gruppen gelöscht "
+"wurden: Mit dem Haken können wieder alle mit Zugriff Tickets an diese "
+"Abteilung schicken."
+
+#: forms.py:75
 msgctxt "aa_ticket"
 msgid ""
 "In Discord, enable Developer Mode, right-click the role and choose 'Copy "
@@ -437,13 +452,13 @@ msgstr ""
 "Aktiviere in Discord den Entwicklermodus, klicke mit der rechten Maustaste "
 "auf die Rolle und wähle „Rollen-ID kopieren“. Mehrere IDs mit Kommas trennen."
 
-#: forms.py:87
+#: forms.py:104
 msgctxt "aa_ticket"
 msgid "Another department already has this name. Please pick a different one."
 msgstr ""
 "Eine andere Abteilung hat bereits diesen Namen. Bitte wähle einen anderen."
 
-#: forms.py:98
+#: forms.py:115
 msgctxt "aa_ticket"
 msgid ""
 "This department still has active sub-departments. Deactivate or move them "
@@ -452,7 +467,7 @@ msgstr ""
 "Diese Abteilung hat noch aktive Unterabteilungen. Deaktiviere oder "
 "verschiebe sie zuerst."
 
-#: forms.py:105
+#: forms.py:122
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -468,7 +483,7 @@ msgstr[1] ""
 "Diese Abteilung hat noch %(count)d offene Tickets. Leite sie weiter oder "
 "schließe sie, bevor du die Abteilung deaktivierst."
 
-#: forms.py:162
+#: forms.py:185
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -484,7 +499,7 @@ msgstr[1] ""
 "%(count)d offene Tickets verwenden diese Priorität noch. Ändere zuerst ihre "
 "Priorität oder schließe sie."
 
-#: forms.py:218
+#: forms.py:241
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -494,7 +509,7 @@ msgstr ""
 "Höchstens %(max)d MB. Fünf Bilder dieser Größe passen gerade noch in das für "
 "den Webserver empfohlene Upload-Limit von 32 MB."
 
-#: forms.py:232
+#: forms.py:255
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -986,18 +1001,18 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "Keine eskalierten Tickets."
 
-#: services.py:103
+#: services.py:104
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "Bild-Uploads sind auf diesem Server deaktiviert."
 
-#: services.py:137
+#: services.py:138
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "Bitte halte den Text unter %(count)d Zeichen."
 
-#: services.py:158
+#: services.py:159
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1007,32 +1022,32 @@ msgstr ""
 "Du kannst höchstens %(count)d Tickets pro Stunde einreichen. Bitte versuche "
 "es in etwa %(minutes)d Min. erneut."
 
-#: services.py:171 templates/aa_ticket/submit.html:40
+#: services.py:172 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "Bitte gib einen Titel ein."
 
-#: services.py:173
+#: services.py:174
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "Bitte halte den Titel unter 200 Zeichen."
 
-#: services.py:175 templates/aa_ticket/submit.html:45
+#: services.py:176 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Bitte beschreibe dein Anliegen."
 
-#: services.py:177 services.py:423 templates/aa_ticket/submit.html:34
+#: services.py:178 services.py:426 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Bitte wähle eine verfügbare Priorität."
 
-#: services.py:179 templates/aa_ticket/submit.html:24
+#: services.py:180 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Bitte wähle eine Kategorie der gewählten Abteilung."
 
-#: services.py:185
+#: services.py:188
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1042,64 +1057,64 @@ msgstr ""
 "Du hast bereits %(count)d offene Tickets. Bitte schließe erledigte Tickets, "
 "bevor du ein neues öffnest."
 
-#: services.py:220 services.py:250
+#: services.py:223 services.py:253
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Bitte schreibe eine Nachricht, bevor du sie sendest."
 
-#: services.py:276
+#: services.py:279
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Bereits von %(name)s übernommen."
 
-#: services.py:278
+#: services.py:281
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Dieses Ticket kann nicht mehr übernommen werden."
 
-#: services.py:288
+#: services.py:291
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Wähle jemanden aus der zuständigen Abteilung."
 
-#: services.py:314 services.py:338
+#: services.py:317 services.py:341
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Diese Abteilung ist nicht aktiv."
 
-#: services.py:316
+#: services.py:319
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Diese Abteilung ist bereits für das Ticket zuständig."
 
-#: services.py:318
+#: services.py:321
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Diese Abteilung arbeitet bereits an dem Ticket."
 
-#: services.py:328
+#: services.py:331
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Diese Abteilung arbeitet nicht an dem Ticket."
 
-#: services.py:340
+#: services.py:343
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Das Ticket liegt bereits bei dieser Abteilung."
 
-#: services.py:391 services.py:398 views/ticket.py:219
+#: services.py:394 services.py:401 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "%(department)s wurde bereits um Unterstützung gebeten."
 
-#: services.py:437
+#: services.py:440
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Bitte wähle eine Kategorie der zuständigen Abteilung."
 
-#: services.py:458
+#: services.py:461
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr ""
@@ -1531,15 +1546,15 @@ msgstr ""
 "könnte dann alle Tickets dieser Abteilung lesen."
 
 #: templates/aa_ticket/manage/department_form.html:22
-#: templates/aa_ticket/partials/department_row.html:16
 msgctxt "aa_ticket"
 msgid ""
 "Submissions are limited to states or groups that no longer exist — nobody "
-"can submit tickets here. Pick new ones or clear both lists."
+"can submit tickets here. Pick new ones, or tick “Let everyone submit again” "
+"below."
 msgstr ""
 "Einreichungen sind auf Status oder Gruppen beschränkt, die es nicht mehr "
-"gibt — niemand kann hier Tickets einreichen. Wähle neue aus oder leere beide "
-"Listen."
+"gibt — niemand kann hier Tickets einreichen. Wähle neue aus oder setze unten "
+"den Haken bei „Wieder allen das Einreichen erlauben“."
 
 #: templates/aa_ticket/manage/departments.html:6 views/manage.py:22
 msgctxt "aa_ticket"
@@ -1643,6 +1658,17 @@ msgstr "Team-Gruppen"
 msgctxt "aa_ticket"
 msgid "none — nobody can handle tickets here"
 msgstr "keine — niemand kann hier Tickets bearbeiten"
+
+#: templates/aa_ticket/partials/department_row.html:16
+msgctxt "aa_ticket"
+msgid ""
+"Submissions are limited to states or groups that no longer exist — nobody "
+"can submit tickets here. Pick new ones, or tick “Let everyone submit again” "
+"on the department page."
+msgstr ""
+"Einreichungen sind auf Status oder Gruppen beschränkt, die es nicht mehr "
+"gibt — niemand kann hier Tickets einreichen. Wähle neue aus oder setze auf "
+"der Seite der Abteilung den Haken bei „Wieder allen das Einreichen erlauben“."
 
 #: templates/aa_ticket/partials/department_row.html:21
 #, python-format
@@ -1944,7 +1970,7 @@ msgctxt "aa_ticket"
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: views/prefs.py:18
+#: views/prefs.py:19
 msgctxt "aa_ticket"
 msgid "Preferences saved."
 msgstr "Einstellungen gespeichert."

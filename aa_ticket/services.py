@@ -9,6 +9,7 @@ import contextvars
 import functools
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.storage import default_storage
 from django.db import transaction
@@ -177,6 +178,8 @@ def create_ticket(user, department, priority, title, body, category=None, images
         raise TicketActionError(pgettext("aa_ticket", "Please pick an available priority."))
     if category is not None and (category.department_id != department.pk or not category.is_active):
         raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the selected department."))
+    # One submission per person at a time, so parallel requests cannot get past the limits below.
+    get_user_model().objects.select_for_update().filter(pk=user.pk).first()
     limit = TicketSettings.get_solo().max_open_tickets
     open_count = Ticket.objects.filter(requester=user).exclude(status=Status.CLOSED).count()
     if open_count >= limit:

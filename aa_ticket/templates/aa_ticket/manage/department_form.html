@@ -19,7 +19,7 @@
     <div class="alert alert-warning py-2">⚠️ {% if g.auto %}{% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: everyone in a state joins this group automatically — they could all read all tickets of this department.{% endblocktranslate %}{% else %}{% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: anyone can join or request this group — they could read all tickets of this department.{% endblocktranslate %}{% endif %}</div>
 {% endfor %}
 {% if nobody_can_submit %}
-    <div class="alert alert-danger py-2">⚠️ {% translate "Submissions are limited to states or groups that no longer exist — nobody can submit tickets here. Pick new ones or clear both lists." context 'aa_ticket' %}</div>
+    <div class="alert alert-danger py-2">⚠️ {% translate "Submissions are limited to states or groups that no longer exist — nobody can submit tickets here. Pick new ones, or tick “Let everyone submit again” below." context 'aa_ticket' %}</div>
 {% endif %}
 <form method="post" class="aa-ticket-form" style="max-width: 48rem;">
     {% csrf_token %}

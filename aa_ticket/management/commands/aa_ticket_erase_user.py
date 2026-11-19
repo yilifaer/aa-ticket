@@ -1,32 +1,54 @@
 """Erase one person's ticket data, for example after a data protection request.
 
 Without --yes nothing is changed; the command only lists what would happen.
+
+Only data that clearly belongs to the person is touched: the tickets they submitted, the
+author of their messages and events, and the event fields that name them as assignee (found by
+their user ID, so older character names are covered too). Nothing is changed by matching text,
+so departments, priorities or reasons that happen to have the same name stay as they are.
 """
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from ...constants import Event, Status
-from ...models import Attachment, EscalationRequest, Ticket, TicketMessage, UserPreference
-from ...utils import display_name
+from ...models import Attachment, Department, EscalationRequest, Ticket, TicketMessage, UserPreference
 
 ERASED = "[deleted user]"
+# event_data keys that hold a user's primary key; the name of that user is in "assignee"
+USER_ID_KEYS = ("assignee_id", "previous_assignee_id")
 
 
-def _scrub(value, names, user_pk):
-    """Replace the person's names and IDs inside an event's data."""
-    if isinstance(value, dict):
-        return {
-            key: (None if key.endswith("_id") and item == user_pk else _scrub(item, names, user_pk))
-            for key, item in value.items()
-        }
-    if isinstance(value, list):
-        return [_scrub(item, names, user_pk) for item in value]
-    if isinstance(value, str) and value in names:
-        return ERASED
-    return value
+def _erase_from_event(message, user_pk):
+    """Return the event data with the person removed, or None if the event does not name them."""
+    data = dict(message.event_data or {})
+    changed = False
+    names_them = (
+        message.author_id == user_pk and message.event_type == Event.CLAIMED
+    ) or data.get("assignee_id") == user_pk
+    if names_them and "assignee" in data:
+        data["assignee"] = ERASED
+        changed = True
+    for key in USER_ID_KEYS:
+        if data.get(key) == user_pk:
+            data[key] = None
+            changed = True
+    if message.author_id == user_pk and message.kind == "event":
+        data["author_erased"] = True
+        changed = True
+    return data if changed else None
+
+
+def _related_events(user_pk, exclude_ticket_ids):
+    by_id = Q(event_data__assignee_id=user_pk) | Q(event_data__previous_assignee_id=user_pk)
+    return (
+        TicketMessage.objects.filter(kind="event")
+        .filter(Q(author_id=user_pk) | by_id)
+        .exclude(ticket__in=exclude_ticket_ids)
+    )
 
 
 class Command(BaseCommand):
@@ -43,33 +65,50 @@ class Command(BaseCommand):
         user = User.objects.filter(username=username).first()
         if user is None:
             raise CommandError(f"No user with the username {username!r}.")
-        names = {name for name in (display_name(user), user.username) if name}
 
-        own = Ticket.objects.filter(requester=user)
-        own_ids = list(own.values_list("pk", flat=True))
-        images = Attachment.objects.filter(message__ticket__in=own_ids)
-        others_messages = TicketMessage.objects.filter(author=user).exclude(ticket__in=own_ids)
-        assigned = Ticket.objects.filter(assignee=user).exclude(pk__in=own_ids)
+        own_ids = list(Ticket.objects.filter(requester=user).values_list("pk", flat=True))
+        images = Attachment.objects.filter(message__ticket__in=own_ids).count()
+        messages = TicketMessage.objects.filter(author=user).exclude(ticket__in=own_ids).exclude(kind="event").count()
+        events = _related_events(user.pk, own_ids).count()
+        assigned = Ticket.objects.filter(assignee=user).exclude(pk__in=own_ids).count()
 
-        self.stdout.write(f"Person: {username} ({', '.join(sorted(names))})")
-        self.stdout.write(f"- {len(own_ids)} ticket(s) they submitted will be deleted, with {images.count()} image(s).")
+        self.stdout.write(f"Person: {username}")
+        self.stdout.write(f"- {len(own_ids)} ticket(s) they submitted will be deleted, with {images} image(s).")
+        self.stdout.write(f"- {messages} message(s) they wrote in other tickets will show 'Deleted user'.")
+        self.stdout.write(f"- {events} event(s) in other tickets will no longer name them.")
+        self.stdout.write(f"- {assigned} other ticket(s) assigned to them lose their assignee.")
         self.stdout.write(
-            f"- {others_messages.count()} message(s) and event(s) in other tickets will show 'Deleted user'."
+            "Kept: the text and images of messages they wrote in other people's tickets, Alliance Auth "
+            "notifications, and Discord messages already sent."
         )
-        self.stdout.write(f"- {assigned.count()} other ticket(s) assigned to them lose their assignee.")
-        self.stdout.write("Messages they wrote in other people's tickets keep their text.")
+        staff_groups = Department.objects.filter(groups__in=user.groups.all()).exists()
+        if user.is_active or staff_groups:
+            self.stdout.write(
+                self.style.WARNING(
+                    "The account is still active"
+                    + (" and in a department staff group" if staff_groups else "")
+                    + ". Deactivate it first, otherwise new ticket data can appear right after erasing."
+                )
+            )
         if not yes:
             self.stdout.write("Nothing was changed. Run again with --yes to erase.")
             return
 
         with transaction.atomic():
-            self._erase(user, names, own_ids, images, others_messages, assigned)
+            # Lock the person, so they cannot submit a ticket while we erase (create_ticket locks too).
+            User.objects.select_for_update().get(pk=user.pk)
+            self._erase(user)
         self.stdout.write(self.style.SUCCESS("Erased. The account can now be deleted in Alliance Auth if wanted."))
 
-    def _erase(self, user, names, own_ids, images, others_messages, assigned):
+    def _erase(self, user):
         from ...services import _emit
 
-        files = [(attachment.file.storage, attachment.file.name) for attachment in images if attachment.file]
+        own_ids = list(Ticket.objects.filter(requester=user).values_list("pk", flat=True))
+        files = [
+            (attachment.file.storage, attachment.file.name)
+            for attachment in Attachment.objects.filter(message__ticket__in=own_ids)
+            if attachment.file
+        ]
         Ticket.objects.filter(pk__in=own_ids).delete()  # messages, images and escalations go with them
 
         def remove_files():
@@ -81,19 +120,14 @@ class Command(BaseCommand):
 
         transaction.on_commit(remove_files)
 
-        for message in others_messages.select_for_update():
-            data = _scrub(message.event_data or {}, names, user.pk)
-            if message.kind == "event":
-                data["author_erased"] = True
-            TicketMessage.objects.filter(pk=message.pk).update(author=None, event_data=data)
-        for message in TicketMessage.objects.filter(kind="event").exclude(ticket__in=own_ids).iterator():
-            data = message.event_data or {}
-            scrubbed = _scrub(data, names, user.pk)
-            if scrubbed != data:
-                TicketMessage.objects.filter(pk=message.pk).update(event_data=scrubbed)
+        for message in _related_events(user.pk, own_ids).iterator():
+            data = _erase_from_event(message, user.pk)
+            if data is not None:
+                TicketMessage.objects.filter(pk=message.pk).update(event_data=data)
+        TicketMessage.objects.filter(author=user).exclude(ticket__in=own_ids).update(author=None)
 
         now = timezone.now()
-        for ticket in assigned.select_for_update():
+        for ticket in Ticket.objects.filter(assignee=user).exclude(pk__in=own_ids).select_for_update():
             if ticket.status == Status.IN_PROGRESS:
                 Ticket.objects.filter(pk=ticket.pk).update(
                     status=Status.OPEN,

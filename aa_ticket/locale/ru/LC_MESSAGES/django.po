@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aa-ticket\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 05:45+0000\n"
+"POT-Creation-Date: 2026-11-19 05:56+0000\n"
 "PO-Revision-Date: 2026-11-14 00:00+0000\n"
 "Last-Translator: aa-ticket contributors\n"
 "Language-Team: ru\n"
@@ -425,7 +425,21 @@ msgctxt "aa_ticket"
 msgid "Remove the webhook"
 msgstr "Удалить вебхук"
 
-#: forms.py:66
+#: forms.py:44
+msgctxt "aa_ticket"
+msgid "Let everyone submit again"
+msgstr "Снова разрешить подачу всем"
+
+#: forms.py:48
+msgctxt "aa_ticket"
+msgid ""
+"Only needed when the states and groups allowed to submit were all deleted: "
+"tick this to let everyone with access submit to this department again."
+msgstr ""
+"Нужно, только если все статусы и группы, которым разрешена подача, удалены: "
+"отметьте, чтобы снова все с доступом могли подавать заявки в этот отдел."
+
+#: forms.py:75
 msgctxt "aa_ticket"
 msgid ""
 "In Discord, enable Developer Mode, right-click the role and choose 'Copy "
@@ -434,12 +448,12 @@ msgstr ""
 "В Discord включите режим разработчика, щёлкните правой кнопкой мыши по роли "
 "и выберите «Копировать ID роли». Несколько ID разделяйте запятыми."
 
-#: forms.py:87
+#: forms.py:104
 msgctxt "aa_ticket"
 msgid "Another department already has this name. Please pick a different one."
 msgstr "Отдел с таким названием уже есть. Выберите другое название."
 
-#: forms.py:98
+#: forms.py:115
 msgctxt "aa_ticket"
 msgid ""
 "This department still has active sub-departments. Deactivate or move them "
@@ -448,7 +462,7 @@ msgstr ""
 "В этом отделе ещё есть активные подотделы. Сначала отключите или перенесите "
 "их."
 
-#: forms.py:105
+#: forms.py:122
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -470,7 +484,7 @@ msgstr[3] ""
 "В этом отделе ещё %(count)d открытых заявок. Передайте или закройте их, "
 "прежде чем отключать отдел."
 
-#: forms.py:162
+#: forms.py:185
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -492,7 +506,7 @@ msgstr[3] ""
 "Этот приоритет ещё используют %(count)d открытых заявок. Сначала измените их "
 "приоритет или закройте их."
 
-#: forms.py:218
+#: forms.py:241
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -502,7 +516,7 @@ msgstr ""
 "Не более %(max)d МБ. Пять изображений такого размера как раз укладываются в "
 "рекомендуемый для веб-сервера лимит загрузки 32 МБ."
 
-#: forms.py:232
+#: forms.py:255
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -987,18 +1001,18 @@ msgctxt "aa_ticket"
 msgid "No escalated tickets."
 msgstr "Нет эскалированных заявок."
 
-#: services.py:103
+#: services.py:104
 msgctxt "aa_ticket"
 msgid "Image uploads are turned off on this server."
 msgstr "Загрузка изображений отключена на этом сервере."
 
-#: services.py:137
+#: services.py:138
 #, python-format
 msgctxt "aa_ticket"
 msgid "Please keep the text under %(count)d characters."
 msgstr "Пожалуйста, уложитесь в %(count)d символов."
 
-#: services.py:158
+#: services.py:159
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1008,32 +1022,32 @@ msgstr ""
 "Можно подавать не более %(count)d заявок в час. Попробуйте снова примерно "
 "через %(minutes)d мин."
 
-#: services.py:171 templates/aa_ticket/submit.html:40
+#: services.py:172 templates/aa_ticket/submit.html:40
 msgctxt "aa_ticket"
 msgid "Please enter a title."
 msgstr "Введите заголовок."
 
-#: services.py:173
+#: services.py:174
 msgctxt "aa_ticket"
 msgid "Please keep the title under 200 characters."
 msgstr "Заголовок должен быть короче 200 символов."
 
-#: services.py:175 templates/aa_ticket/submit.html:45
+#: services.py:176 templates/aa_ticket/submit.html:45
 msgctxt "aa_ticket"
 msgid "Please describe your request."
 msgstr "Опишите ваш запрос."
 
-#: services.py:177 services.py:423 templates/aa_ticket/submit.html:34
+#: services.py:178 services.py:426 templates/aa_ticket/submit.html:34
 msgctxt "aa_ticket"
 msgid "Please pick an available priority."
 msgstr "Выберите доступный приоритет."
 
-#: services.py:179 templates/aa_ticket/submit.html:24
+#: services.py:180 templates/aa_ticket/submit.html:24
 msgctxt "aa_ticket"
 msgid "Please pick a category of the selected department."
 msgstr "Выберите категорию выбранного отдела."
 
-#: services.py:185
+#: services.py:188
 #, python-format
 msgctxt "aa_ticket"
 msgid ""
@@ -1043,64 +1057,64 @@ msgstr ""
 "У вас уже %(count)d открытых заявок. Закройте решённые заявки, прежде чем "
 "открывать новую."
 
-#: services.py:220 services.py:250
+#: services.py:223 services.py:253
 msgctxt "aa_ticket"
 msgid "Please write a message before sending."
 msgstr "Напишите сообщение перед отправкой."
 
-#: services.py:276
+#: services.py:279
 #, python-format
 msgctxt "aa_ticket"
 msgid "Already claimed by %(name)s."
 msgstr "Уже взято в работу: %(name)s."
 
-#: services.py:278
+#: services.py:281
 msgctxt "aa_ticket"
 msgid "This ticket can no longer be claimed."
 msgstr "Эту заявку больше нельзя взять в работу."
 
-#: services.py:288
+#: services.py:291
 msgctxt "aa_ticket"
 msgid "Pick someone from the responsible department."
 msgstr "Выберите сотрудника ответственного отдела."
 
-#: services.py:314 services.py:338
+#: services.py:317 services.py:341
 msgctxt "aa_ticket"
 msgid "This department is not active."
 msgstr "Этот отдел не активен."
 
-#: services.py:316
+#: services.py:319
 msgctxt "aa_ticket"
 msgid "This department is already responsible for the ticket."
 msgstr "Этот отдел уже отвечает за заявку."
 
-#: services.py:318
+#: services.py:321
 msgctxt "aa_ticket"
 msgid "This department is already working on the ticket."
 msgstr "Этот отдел уже работает над заявкой."
 
-#: services.py:328
+#: services.py:331
 msgctxt "aa_ticket"
 msgid "This department is not working on the ticket."
 msgstr "Этот отдел не работает над заявкой."
 
-#: services.py:340
+#: services.py:343
 msgctxt "aa_ticket"
 msgid "The ticket is already with this department."
 msgstr "Заявка уже в этом отделе."
 
-#: services.py:391 services.py:398 views/ticket.py:219
+#: services.py:394 services.py:401 views/ticket.py:219
 #, python-format
 msgctxt "aa_ticket"
 msgid "%(department)s has already been asked to step in."
 msgstr "Отдел «%(department)s» уже попросили подключиться."
 
-#: services.py:437
+#: services.py:440
 msgctxt "aa_ticket"
 msgid "Please pick a category of the responsible department."
 msgstr "Выберите категорию ответственного отдела."
 
-#: services.py:458
+#: services.py:461
 msgctxt "aa_ticket"
 msgid "Only the requester and the assignee can add a final reply."
 msgstr "Только автор заявки и исполнитель могут добавить последний ответ."
@@ -1528,14 +1542,15 @@ msgstr ""
 "сможет читать все заявки этого отдела."
 
 #: templates/aa_ticket/manage/department_form.html:22
-#: templates/aa_ticket/partials/department_row.html:16
 msgctxt "aa_ticket"
 msgid ""
 "Submissions are limited to states or groups that no longer exist — nobody "
-"can submit tickets here. Pick new ones or clear both lists."
+"can submit tickets here. Pick new ones, or tick “Let everyone submit again” "
+"below."
 msgstr ""
 "Подача заявок ограничена статусами или группами, которых больше нет — здесь "
-"никто не может подать заявку. Выберите новые или очистите оба списка."
+"никто не может подать заявку. Выберите новые или отметьте ниже «Снова "
+"разрешить подачу всем»."
 
 #: templates/aa_ticket/manage/departments.html:6 views/manage.py:22
 msgctxt "aa_ticket"
@@ -1639,6 +1654,17 @@ msgstr "Группы сотрудников"
 msgctxt "aa_ticket"
 msgid "none — nobody can handle tickets here"
 msgstr "нет — никто не может обрабатывать здесь заявки"
+
+#: templates/aa_ticket/partials/department_row.html:16
+msgctxt "aa_ticket"
+msgid ""
+"Submissions are limited to states or groups that no longer exist — nobody "
+"can submit tickets here. Pick new ones, or tick “Let everyone submit again” "
+"on the department page."
+msgstr ""
+"Подача заявок ограничена статусами или группами, которых больше нет — здесь "
+"никто не может подать заявку. Выберите новые или отметьте «Снова разрешить "
+"подачу всем» на странице отдела."
 
 #: templates/aa_ticket/partials/department_row.html:21
 #, python-format
@@ -1938,7 +1964,7 @@ msgctxt "aa_ticket"
 msgid "Settings saved."
 msgstr "Настройки сохранены."
 
-#: views/prefs.py:18
+#: views/prefs.py:19
 msgctxt "aa_ticket"
 msgid "Preferences saved."
 msgstr "Предпочтения сохранены."
