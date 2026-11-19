@@ -460,3 +460,20 @@ class TestRetentionSkipsBrokenFiles(TestCase):
             tasks.cleanup_attachments()
         self.assertEqual(len(calls), 2)
         self.assertEqual(Attachment.objects.count(), 1)
+
+
+class TestErasePreviewIsComplete(TestCase):
+    def test_preview_counts_closed_and_escalations_and_names_kept_reasons(self):
+        g = make_group("Diplomats")
+        dept = make_department("Diplomacy", groups=[g])
+        leaver = make_user("Leaving Pilot", groups=[g])
+        other = make_user("Other Pilot")
+        t = services.create_ticket(other, dept, priority("normal"), "Help", "Body")
+        services.claim(fresh(leaver), t)
+        services.close(fresh(leaver), fresh(t), ClosedReason.STAFF)
+        out = io.StringIO()
+        call_command("aa_ticket_erase_user", leaver.username, stdout=out)
+        text = out.getvalue()
+        self.assertIn("1 other ticket(s) they closed", text)
+        self.assertIn("escalation request(s)", text)
+        self.assertIn("reasons they typed", text)

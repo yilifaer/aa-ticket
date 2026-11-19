@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.2]
+
+From the 1.0.1 test round. No database changes.
+
+### Changed
+
+- The `aa_ticket_erase_user` preview also counts the tickets the person closed and the
+  escalation requests they made in other tickets, and says that the reasons they typed when
+  transferring a ticket or asking for escalation are kept.
+
 ## [1.0.1]
 
 Fixes from the AA App Checklist review of 1.0.0. One database migration
