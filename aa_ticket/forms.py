@@ -40,6 +40,15 @@ class DepartmentForm(forms.ModelForm):
         help_text=pgettext_lazy("aa_ticket", "Paste a new webhook URL to change it. Leave empty to keep the current one."),
     )
     clear_webhook = forms.BooleanField(label=pgettext_lazy("aa_ticket", "Remove the webhook"), required=False)
+    open_submissions = forms.BooleanField(
+        label=pgettext_lazy("aa_ticket", "Let everyone submit again"),
+        required=False,
+        help_text=pgettext_lazy(
+            "aa_ticket",
+            "Only needed when the states and groups allowed to submit were all deleted: tick this to let "
+            "everyone with access submit to this department again.",
+        ),
+    )
 
     class Meta:
         model = Department
@@ -76,6 +85,14 @@ class DepartmentForm(forms.ModelForm):
         self.fields["parent"].queryset = parents
         if self.instance.webhook_url:
             self.fields["new_webhook_url"].widget.attrs["placeholder"] = self.instance.masked_webhook()
+        orphaned = (
+            self.instance.pk
+            and self.instance.restrict_submissions
+            and not self.instance.submit_states.exists()
+            and not self.instance.submit_groups.exists()
+        )
+        if not orphaned:
+            del self.fields["open_submissions"]
 
     def clean_name(self):
         name = (self.cleaned_data.get("name") or "").strip()
@@ -117,7 +134,16 @@ class DepartmentForm(forms.ModelForm):
         return value
 
     def save(self, commit=True):
+        had_lists = bool(
+            self.instance.pk and (self.instance.submit_states.exists() or self.instance.submit_groups.exists())
+        )
         department = super().save(commit=False)
+        if self.cleaned_data.get("submit_states") or self.cleaned_data.get("submit_groups"):
+            department.restrict_submissions = True
+        elif had_lists or self.cleaned_data.get("open_submissions"):
+            # The admin cleared the lists on purpose, or confirmed opening an orphaned restriction.
+            department.restrict_submissions = False
+        # Otherwise keep the flag: saving an orphaned restricted department must not open it.
         if self.cleaned_data.get("clear_webhook"):
             department.webhook_url = ""
             department.last_webhook_error = ""
@@ -194,12 +220,30 @@ class TicketSettingsForm(forms.ModelForm):
             "autoclose_warning_hours",
             "reopen_days",
             "max_open_tickets",
+            "max_new_tickets_per_hour",
             "max_image_mb",
             "attachment_retention_days",
             "discord_dm_enabled",
             "channel_language",
             "dm_language_mode",
         )
+
+    def clean_max_image_mb(self):
+        from django.utils.translation import pgettext
+
+        from .app_settings import MAX_IMAGE_MB
+
+        value = self.cleaned_data.get("max_image_mb")
+        if value is not None and value > MAX_IMAGE_MB:
+            raise forms.ValidationError(
+                pgettext(
+                    "aa_ticket",
+                    "At most %(max)d MB. Five images of that size are just within the 32 MB upload limit "
+                    "recommended for the web server.",
+                )
+                % {"max": MAX_IMAGE_MB}
+            )
+        return value
 
     def clean(self):
         cleaned = super().clean()

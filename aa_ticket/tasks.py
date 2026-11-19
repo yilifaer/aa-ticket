@@ -99,7 +99,8 @@ def send_dm(user_id, ticket_id, event, data=None, actor_id=None, at=None, snapsh
     try:
         dm.send(user.pk, personal_title(ticket), text, ticket_url(ticket), fields, footer)
     except Exception as exc:  # noqa: BLE001 - any bot error must not break the app
-        logger.info("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
+        # A warning, so a missing Celery route or a broken bot does not go unnoticed.
+        logger.warning("Discord DM to user %s not sent: %s", user.pk, type(exc).__name__)
 
 
 BATCH_SIZE = 500
@@ -294,7 +295,11 @@ def cleanup_attachments():
     )[:BATCH_SIZE]
     count = 0
     for attachment in old:
-        delete_attachment(attachment)
+        try:
+            delete_attachment(attachment)
+        except OSError as exc:  # one broken file must not stop the clean-up for good
+            logger.warning("Could not delete ticket image %s: %s", attachment.pk, type(exc).__name__)
+            continue
         count += 1
     if count:
         logger.info("Deleted %d old ticket images.", count)

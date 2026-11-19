@@ -75,7 +75,7 @@ ls -lh ~/alliance_auth.bak-aa-ticket-*
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-pip install "git+https://github.com/yilifaer/aa-ticket.git@v1.0.0"
+pip install "git+https://github.com/yilifaer/aa-ticket.git@v1.0.1"
 ```
 
 > 一定要先 `cd ~`。如果当前所在的文件夹 `allianceserver` 没有权限读，pip 会报 `PermissionError: __editable__...`。
@@ -88,7 +88,7 @@ pip show aa-ticket | head -2
 pip show allianceauth | head -2
 ```
 
-- `aa-ticket` 显示版本 `1.0.0`；
+- `aa-ticket` 显示版本 `1.0.1`；
 - `allianceauth` **和装之前的版本一样**（插件不会顺带升级 AA）。
 
 ---
@@ -144,7 +144,7 @@ cd /home/allianceserver/myauth
 python manage.py check
 ```
 
-输出里**没有** `aa_ticket.W001` 和 `aa_ticket.W002`（这两条表示图片文件夹没设置、不存在或不能写）。
+输出里**没有** `aa_ticket.W001`、`aa_ticket.W002`（图片文件夹没设置、不存在或不能写）、`aa_ticket.W003`（上面 3 个定时任务少了哪个，它会写出来）和 `aa_ticket.W004`（没设 `SITE_URL`，Discord 里的链接会打不开；AA 的 `local.py` 一般已经设好了）。
 
 ---
 
@@ -158,7 +158,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`、`0005_ticket_indexes... OK`。
+**做完怎么确认：** `migrate` 的输出里有 `Applying aa_ticket.0001_initial... OK`、`0002_default_priorities... OK`、`0003_language_settings_and_view_all_name... OK`、`0004_priority_is_urgent... OK`、`0005_ticket_indexes... OK`、`0006_submit_restriction_and_hourly_limit... OK`。
 
 ---
 
@@ -180,8 +180,10 @@ sudo nano /etc/nginx/sites-available/allianceauth.conf
 
 按 `Ctrl + W` 搜索 `client_max_body_size`：
 
-- **找到了**：把后面的数字改成 `30m`，比如 `client_max_body_size 30m;`。
-- **没找到**：在 `server {` 下面加一行 `client_max_body_size 30m;`。
+- **找到了**：把后面的数字改成 `32m`，比如 `client_max_body_size 32m;`。
+- **没找到**：在 `server {` 下面加一行 `client_max_body_size 32m;`。
+
+> 32m 刚好够一次回复传 5 张最大尺寸（每张 6 MB）的图片。
 
 > 同一个 `server` 里不能写两行 `client_max_body_size`，否则 nginx 会报错。
 
@@ -230,8 +232,10 @@ sudo supervisorctl status
 1. **所有成员都能提交工单：** Authentication → States → 打开 `Member` → Permissions 里加上
    `Tickets | general | Can submit and view own tickets` → 保存。
 2. **部门人员和管理员也要有上面这条权限**，否则他们打不开工单页面。
-3. **管理员：** 给你自己所在的组再加上 `Tickets | general | Can manage ticket settings`。
+3. **管理员：** 给你自己所在的组再加上 `Tickets | general | Can manage ticket settings`。这个权限能决定谁看哪些工单，只给信得过的一两个人。
 4. **（可选）联盟高层看并处理所有工单：** 给高层的组加上 `Tickets | general | Can view and handle all tickets`。
+
+> 第 3、4 条的组也必须有第 1 条的 `Can submit and view own tickets`，否则这些人看不到插件。这些组要设成不公开、不能自己申请（Internal）。
 
 **做完怎么确认：** 刷新 AA，左侧菜单出现「工单」。
 
@@ -307,17 +311,31 @@ sudo supervisorctl status
    python manage.py migrate aa_ticket zero
    ```
    > 这一步要在恢复数据库之前做。否则恢复后插件的表还留着，以后再装会报 `table already exists`。
-2. 从 `local.py` 删掉第 3 步加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
-3. 卸载插件：
+2. 删掉 Celery Beat 存在数据库里的 3 条定时任务（还是 `allianceserver`，在项目目录里）：
+   ```bash
+   python manage.py shell -c "from django_celery_beat.models import PeriodicTask; PeriodicTask.objects.filter(name__startswith='aa_ticket_').delete()"
+   ```
+   > 只从 `local.py` 删掉不够，数据库里还留着，Celery 会一直报找不到任务。如果下面要恢复装插件之前的数据库备份，这一步可以跳过。
+3. 删掉插件的权限记录（同上，下面要恢复备份的话可以跳过）：
+   ```bash
+   python manage.py shell -c "from django.contrib.contenttypes.models import ContentType; ContentType.objects.filter(app_label='aa_ticket').delete()"
+   ```
+   > 不要用 `remove_stale_contenttypes --include-stale-apps`，它会连带删掉其他插件的数据。
+4. 从 `local.py` 删掉安装时「第 3 步：修改 local.py」加的那段（或者把 `local.py.bak-aa-ticket-...` 复制回 `local.py`）。
+5. 卸载插件：
    ```bash
    cd ~
    pip uninstall aa-ticket
    ```
-4. 回到自己的账号（`exit`），需要的话恢复数据库：
+6. 不再需要工单图片的话，删掉图片文件夹：
+   ```bash
+   rm -r /home/allianceserver/myauth/media/aa_ticket
+   ```
+7. 回到自己的账号（`exit`），需要的话恢复数据库：
    ```bash
    sudo mysql alliance_auth < ~/alliance_auth.bak-aa-ticket-时间.sql
    ```
-5. 重启：
+8. 重启：
    ```bash
    sudo supervisorctl restart myauth:
    ```
@@ -328,13 +346,13 @@ sudo supervisorctl status
 
 ## 升级
 
-升到新版本都这样做。把命令里的 `v1.0.0` 换成要装的版本号（版本列表见 [Releases](https://github.com/yilifaer/aa-ticket/releases)）。
+升到新版本都这样做。把命令里的 `v1.0.1` 换成要装的版本号（版本列表见 [Releases](https://github.com/yilifaer/aa-ticket/releases)）。
 
 ```bash
 sudo su allianceserver
 cd ~
 source /home/allianceserver/venv/auth/bin/activate
-pip install -U "git+https://github.com/yilifaer/aa-ticket.git@v1.0.0"
+pip install -U "git+https://github.com/yilifaer/aa-ticket.git@v1.0.1"
 cd /home/allianceserver/myauth
 python manage.py migrate
 python manage.py collectstatic --noinput
@@ -344,6 +362,20 @@ sudo supervisorctl restart myauth:
 
 升级前同样先做第 1 步的备份。
 
-> 一定要用版本号（比如 `@v1.0.0`）安装，不要用分支名。用分支名安装的话，每次重装拿到的代码可能都不一样。
+> 一定要用版本号（比如 `@v1.0.1`）安装，不要用分支名。用分支名安装的话，每次重装拿到的代码可能都不一样。
 >
-> 升级后**不要**用上面「出问题时怎么回滚」的办法退回旧版本，那会删掉所有工单。新版本有问题时，用同样的命令装回旧的版本号就行（数据库不用动，除非新版本的说明里写了有数据库变化）。
+> 升级后**不要**用上面「出问题时怎么回滚」的办法退回旧版本，那会删掉所有工单。新版本有问题时，用同样的命令装回旧的版本号。
+>
+> **新版本有数据库变化时**（CHANGELOG 里会写，比如 1.0.1 加了 `0006`），装回旧版本**之前**要先把数据库退回去，否则旧版本会出错。比如从 1.0.1 退回 1.0.0：
+>
+> ```bash
+> python manage.py migrate aa_ticket 0005
+> ```
+>
+> 然后再装回旧版本、收集静态文件、重启。1.0.0 的版本标签已经删掉了，装 1.0.0 要用它的提交编号：
+>
+> ```bash
+> pip install --force-reinstall --no-deps "git+https://github.com/yilifaer/aa-ticket.git@e989f39ba4c534e84c3a2348eb215f10c98cccf1"
+> ```
+>
+> 从 1.0.1 退回 1.0.0 后：「每人每小时最多提交」的限制没有了；因为允许提交的组被删光而关闭的部门，会重新对所有人开放。

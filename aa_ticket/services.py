@@ -7,7 +7,9 @@ writes a system event to the ticket's timeline and hands the event to
 
 import contextvars
 import functools
+from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.storage import default_storage
 from django.db import transaction
@@ -138,6 +140,28 @@ def _clean_text(text, max_length=None):
     return text
 
 
+def _check_hourly_limit(user):
+    """Stop one person from submitting (and so pinging a department) over and over."""
+    per_hour = TicketSettings.get_solo().max_new_tickets_per_hour
+    if not per_hour:
+        return
+    since = timezone.now() - timedelta(hours=1)
+    recent = list(
+        Ticket.objects.filter(requester=user, created_at__gte=since).order_by("created_at").values_list("created_at", flat=True)
+    )
+    if len(recent) < per_hour:
+        return
+    wait = recent[len(recent) - per_hour] + timedelta(hours=1) - timezone.now()
+    minutes = max(1, int(wait.total_seconds() // 60) + 1)
+    raise TicketActionError(
+        pgettext(
+            "aa_ticket",
+            "You can submit at most %(count)d tickets per hour. Please try again in about %(minutes)d min.",
+        )
+        % {"count": per_hour, "minutes": minutes}
+    )
+
+
 @_removes_files_on_failure
 def create_ticket(user, department, priority, title, body, category=None, images=()):
     if department not in access.submittable_departments(user):
@@ -154,6 +178,10 @@ def create_ticket(user, department, priority, title, body, category=None, images
         raise TicketActionError(pgettext("aa_ticket", "Please pick an available priority."))
     if category is not None and (category.department_id != department.pk or not category.is_active):
         raise TicketActionError(pgettext("aa_ticket", "Please pick a category of the selected department."))
+    # Decode the images first: slow, and it must not hold the lock below.
+    prepared = _prepare(images)
+    # One submission per person at a time, so parallel requests cannot get past the limits below.
+    get_user_model().objects.select_for_update().filter(pk=user.pk).first()
     limit = TicketSettings.get_solo().max_open_tickets
     open_count = Ticket.objects.filter(requester=user).exclude(status=Status.CLOSED).count()
     if open_count >= limit:
@@ -164,7 +192,7 @@ def create_ticket(user, department, priority, title, body, category=None, images
             )
             % {"count": open_count}
         )
-    prepared = _prepare(images)
+    _check_hourly_limit(user)
     now = timezone.now()
     ticket = Ticket.objects.create(
         title=title,

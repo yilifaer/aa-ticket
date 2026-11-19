@@ -227,13 +227,16 @@ def dispatch(event, ticket_id, actor_id, data, at=None):
 
     for department_id, mention in targets:
         if department_id in existing:
-            if limited and not cache.add(limit_key, 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
-                continue  # this ticket already had its notice within the last hour
             try:
+                if limited and not cache.add(limit_key, 1, UNCLAIMED_REPLY_NOTICE_SECONDS):
+                    continue  # this ticket already had its notice within the last hour
                 send_webhook.delay(department_id, ticket.pk, event, mention, actor_id, at, snapshot)
             except Exception as exc:  # noqa: BLE001 - broker down: keep going
                 if limited:
-                    cache.delete(limit_key)  # nothing was sent, so the next reply may try again
+                    try:
+                        cache.delete(limit_key)  # nothing was sent, so the next reply may try again
+                    except Exception:  # noqa: BLE001 - cache down as well
+                        pass
                 logger.warning("Could not queue Discord message for ticket %s: %s", ticket.display_number, type(exc).__name__)
 
     try:

@@ -24,3 +24,42 @@ def check_media_root(app_configs, **kwargs):
             )
         ]
     return []
+
+
+BEAT_TASKS = (
+    "aa_ticket.tasks.check_unclaimed",
+    "aa_ticket.tasks.check_auto_close",
+    "aa_ticket.tasks.cleanup_attachments",
+)
+
+
+@register()
+def check_beat_schedule(app_configs, **kwargs):
+    """Without these periodic tasks reminders, escalation, auto-close and image clean-up never run."""
+    schedule = getattr(settings, "CELERYBEAT_SCHEDULE", None) or {}
+    configured = {entry.get("task") for entry in schedule.values() if isinstance(entry, dict)}
+    missing = [task for task in BEAT_TASKS if task not in configured]
+    if not missing:
+        return []
+    return [
+        Warning(
+            "Periodic tasks missing from CELERYBEAT_SCHEDULE: " + ", ".join(missing) + ".",
+            hint="Add the three aa_ticket entries to local.py as shown in the aa-ticket README, then restart "
+            "Celery Beat. Without them reminders, escalation, auto-close and image clean-up do not run.",
+            id="aa_ticket.W003",
+        )
+    ]
+
+
+@register()
+def check_site_url(app_configs, **kwargs):
+    """Discord messages link to the ticket; without SITE_URL those links are not clickable."""
+    if getattr(settings, "SITE_URL", ""):
+        return []
+    return [
+        Warning(
+            "SITE_URL is not set; links in Discord messages will not work.",
+            hint='Set SITE_URL in local.py to the address of your Alliance Auth, e.g. "https://auth.example.com".',
+            id="aa_ticket.W004",
+        )
+    ]

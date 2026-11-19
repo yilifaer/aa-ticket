@@ -16,7 +16,14 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.utils.translation import pgettext
 
-from .app_settings import MAX_ANIMATION_PIXELS, MAX_FRAMES, MAX_IMAGE_EDGE, MAX_IMAGE_PIXELS, MAX_IMAGES_PER_MESSAGE
+from .app_settings import (
+    MAX_ANIMATION_PIXELS,
+    MAX_FRAMES,
+    MAX_IMAGE_EDGE,
+    MAX_IMAGE_MB,
+    MAX_IMAGE_PIXELS,
+    MAX_IMAGES_PER_MESSAGE,
+)
 from .models import Attachment, TicketSettings
 
 ALLOWED_FORMATS = {
@@ -126,7 +133,7 @@ def validate_images(files):
         raise ValidationError(
             pgettext("aa_ticket", "You can attach at most %(count)d images per message.") % {"count": MAX_IMAGES_PER_MESSAGE}
         )
-    max_mb = TicketSettings.get_solo().max_image_mb
+    max_mb = min(TicketSettings.get_solo().max_image_mb, MAX_IMAGE_MB)  # older settings may be higher
     for upload in files:
         if upload.size > max_mb * 1024 * 1024:
             raise ValidationError(pgettext("aa_ticket", "Each image must be smaller than %(size)d MB.") % {"size": max_mb})
@@ -202,7 +209,7 @@ def prepare_images(files):
         raise ValidationError(
             pgettext("aa_ticket", "You can attach at most %(count)d images per message.") % {"count": MAX_IMAGES_PER_MESSAGE}
         )
-    max_mb = TicketSettings.get_solo().max_image_mb
+    max_mb = min(TicketSettings.get_solo().max_image_mb, MAX_IMAGE_MB)  # older settings may be higher
     prepared = []
     for upload in files:
         if upload.size > max_mb * 1024 * 1024:

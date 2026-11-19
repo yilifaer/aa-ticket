@@ -70,14 +70,47 @@ def _delete(request, obj, list_url, refused_message):
 # ----- departments ---------------------------------------------------------
 
 
-def joinable_groups(department):
-    """Staff groups that people can join or request themselves."""
+def auto_filled_group_ids():
+    """Groups that Alliance Auth fills on its own with a whole corporation or alliance.
+
+    These come from the optional "autogroups" app. (A group's "states" setting only limits who
+    may join; it does not add anyone, so it is not checked here.)
+    """
+    from django.apps import apps
+
+    if not apps.is_installed("allianceauth.eveonline.autogroups"):
+        return set()
+    from allianceauth.eveonline.autogroups.models import ManagedGroup
+
+    return set(ManagedGroup.objects.values_list("group_id", flat=True))
+
+
+def joinable_groups(department, auto_ids=None):
+    """Staff groups that people can get into without an admin picking them.
+
+    Either anyone can join or request them (not "internal"), or Alliance Auth fills them with a
+    whole corporation or alliance. Members of a staff group read all tickets of the department.
+    """
+    auto_ids = auto_filled_group_ids() if auto_ids is None else auto_ids
     result = []
     for group in department.groups.all():
+        if group.pk in auto_ids:
+            result.append({"name": group.name, "auto": True})
+            continue
         auth_group = getattr(group, "authgroup", None)
         if auth_group is not None and not auth_group.internal:
-            result.append(group)
+            result.append({"name": group.name, "auto": False})
     return result
+
+
+def nobody_can_submit(department):
+    """Submissions are limited to some states or groups, but none of them exist any more."""
+    return (
+        department.restrict_submissions
+        and department.accepts_submissions
+        and not department.submit_states.all()
+        and not department.submit_groups.all()
+    )
 
 
 def _parent_note(department, by_pk):
@@ -91,7 +124,8 @@ def _parent_note(department, by_pk):
 
 def _department_rows():
     """Active departments as a tree, inactive ones as a flat list with their parent named."""
-    departments = list(Department.objects.prefetch_related("groups__authgroup").order_by("order", "name"))
+    departments = list(Department.objects.prefetch_related("groups__authgroup", "submit_states", "submit_groups").order_by("order", "name"))
+    auto_ids = auto_filled_group_ids()
     by_pk = {d.pk: d for d in departments}
     active = [d for d in departments if d.is_active]
     children = {}
@@ -102,7 +136,14 @@ def _department_rows():
     rows, seen = [], set()
 
     def row(d, depth, note=""):
-        return {"department": d, "depth": depth, "indent": depth * 1.5, "joinable": joinable_groups(d), "parent_note": note}
+        return {
+            "department": d,
+            "depth": depth,
+            "indent": depth * 1.5,
+            "joinable": joinable_groups(d, auto_ids),
+            "nobody_can_submit": nobody_can_submit(d),
+            "parent_note": note,
+        }
 
     def walk(parent_id, depth):
         for d in children.get(parent_id, []):
@@ -140,7 +181,10 @@ def department_edit(request, pk):
     return _edit(
         request, pk, Department, DepartmentForm, "departments", "aa_ticket:manage_departments",
         pgettext("aa_ticket", "New department"), pgettext("aa_ticket", "Edit department"), template="aa_ticket/manage/department_form.html",
-        extra={"joinable": joinable_groups(get_object_or_404(Department, pk=pk)) if pk else []},
+        extra={
+            "joinable": joinable_groups(get_object_or_404(Department, pk=pk)) if pk else [],
+            "nobody_can_submit": nobody_can_submit(get_object_or_404(Department, pk=pk)) if pk else False,
+        },
     )
 
 

@@ -92,7 +92,7 @@ channel is set up.
 With your Alliance Auth virtual environment active:
 
 ```bash
-pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.0
+pip install git+https://github.com/yilifaer/aa-ticket.git@v1.0.1
 ```
 
 ### 2. Change `local.py`
@@ -114,7 +114,10 @@ The daily `cleanup_attachments` task also removes image files that no ticket ref
 (for example after a failed upload); it leaves files younger than one day alone.
 
 Without `MEDIA_ROOT` the app still works, but image uploads are turned off and
-`python manage.py check` shows the warning `aa_ticket.W001`.
+`python manage.py check` shows the warning `aa_ticket.W001`. The same command shows
+`aa_ticket.W003` if one of the three periodic tasks below is missing, and `aa_ticket.W004` if
+`SITE_URL` is not set (links in Discord messages need it; Alliance Auth's `local.py` normally
+sets it).
 
 **Do not serve `MEDIA_ROOT` publicly** from your web server (no `location /media/` that
 points to it for this folder). Images are delivered only through the app's
@@ -124,8 +127,10 @@ Your web server must accept uploads of a few MB. nginx allows only 1 MB by defau
 the Alliance Auth `server` block and reload nginx:
 
 ```nginx
-client_max_body_size 30m;
+client_max_body_size 32m;
 ```
+
+This fits five images at the largest allowed size (6 MB each, see *Maximum image size*).
 
 Add the periodic tasks:
 
@@ -166,15 +171,21 @@ The app adds three permissions. It does not give them to anyone; you decide.
 | Permission | Who should get it | What it does |
 |---|---|---|
 | `aa_ticket.basic_access` | Everyone who may submit tickets (for example the Member state) **and all department staff** | Shows the menu, lets the person submit tickets and see their own tickets |
-| `aa_ticket.view_all` ("Can view and handle all tickets") | Top leadership, if you want them to see every ticket | Sees all tickets and can act on them like the parent of every department. Is never pinged |
-| `aa_ticket.manage` | Ticket administrators (they also need `basic_access`) | Opens the *Manage* pages: departments, priorities, categories, canned replies, settings |
+| `aa_ticket.view_all` ("Can view and handle all tickets") | Top leadership, if you want them to see every ticket (they also need `basic_access`) | Sees all tickets, including internal notes and images, and can act on them like the parent of every department. Is never pinged |
+| `aa_ticket.manage` | Ticket administrators (they also need `basic_access`) | Opens all *Manage* pages: departments, priorities, categories, canned replies of every department, settings. Whoever can change departments can also decide who reads which tickets, so give it only to people you would also give `view_all` |
+
+Without `basic_access` nobody sees the app, whatever else they have. Department staff can manage
+the canned replies of their own departments without `manage`.
 
 Department staff are not set by a permission. They are the members of the groups you link
 to a department (see below).
 
 **Use closed groups for department staff.** Anyone who can join a staff group can read all
 tickets of that department and the departments below it, including internal notes. Do not
-use open, requestable or auto-assigned groups as staff groups.
+use open, requestable or auto-assigned groups as staff groups. The department list shows a red
+warning for groups that anyone can join or request, and for corporation or alliance groups that
+Alliance Auth fills automatically ("autogroups"). A group's *states* setting only limits who may
+join and is not a problem on its own.
 
 **Superusers** pass every permission check in Django, so they have `view_all` and `manage`.
 They are not staff of any department unless they are in a department's group, so they are
@@ -194,7 +205,7 @@ Open **Tickets → Manage → Departments → Add department**.
 | Parent department | Staff of the parent see all tickets of this department. Leave empty for a top department |
 | Staff groups | Members of these Alliance Auth groups are staff of this department |
 | Accepts tickets from players | Turn off for departments that only receive transfers or escalations, such as *Leadership* |
-| States / groups allowed to submit | Optional. Leave both empty to let everyone with `basic_access` submit |
+| States / groups allowed to submit | Optional. Leave both empty to let everyone with `basic_access` submit. If every state and group you picked is later deleted, nobody can submit to this department (it does not open up to everyone) and the department list shows a red warning; tick *Let everyone submit again* on the department page to open it |
 | Discord webhook | The channel where this department is pinged. See [Discord](#discord) |
 | Discord role IDs to mention | The roles pinged for new tickets, depending on the priority |
 | Active | Inactive departments disappear from all choices. Existing tickets stay |
@@ -212,6 +223,11 @@ Leadership           (CEO group, does not accept tickets from players)
 ```
 
 The CEOs then see every ticket but are only pinged when a ticket is escalated to them.
+
+**Check the priorities before adding webhooks.** The app comes with three priorities: *Low*,
+*Normal* (mentions the roles for new tickets, reminds after 24 hours) and *Urgent* (mentions the
+roles, reminds after 30 minutes, escalates after 2 hours). As soon as a department has a webhook
+and role IDs, pings and reminders start. Change them under **Manage → Priorities**.
 
 ## Discord
 
@@ -292,7 +308,8 @@ language, depending on the *Language of Discord direct messages* setting.
 | Warn before auto-close (hours) | 24 | Requester and assignee are warned this long before. `0` turns the warning off. Must be shorter than the auto-close time |
 | Requester can reopen for (days) | 7 | Staff can always reopen |
 | Open tickets per person | 5 | A person cannot open more tickets than this at once |
-| Maximum image size (MB) | 5 | Up to 5 images per message; PNG, JPG, GIF and WEBP |
+| New tickets per person per hour | 5 | Stops one person from submitting (and pinging a department) over and over. `0` means no limit |
+| Maximum image size (MB) | 5 | Up to 5 images per message; PNG, JPG, GIF and WEBP. At most 6 |
 | Delete images after (days) | empty | Images of tickets closed longer than this are deleted. Empty keeps them |
 | Discord direct messages | on | Only has an effect when aa-discordbot is installed |
 | Language of Discord channel messages | English | English, Simplified Chinese, German, Russian or Spanish |
@@ -327,7 +344,14 @@ Submitted ──► Unclaimed ──claim──► In progress ──close──
 The app stores, per ticket: the requester's user account and main character, the text of
 all replies and internal notes, uploaded images, who claimed, transferred and closed the
 ticket, and when. Nothing is sent outside your server except the Discord messages described
-above, which contain the ticket title and the requester's main character name.
+above. Channel messages contain the ticket title, department, priority, category, the
+requester's main character name and the main character name of the person who caused the
+message; direct messages also contain the department and the assignee. Messages already sent to
+Discord cannot be recalled.
+
+The Discord webhook URLs are stored in plain text in the database (and therefore in your
+backups). Anyone who has one can post to that channel. The app never shows them in full; if one
+leaks, delete the webhook in Discord and paste a new one.
 
 Images are served only through a permission-checked page, never from a public URL. Uploads are
 re-encoded, which removes location, camera and other metadata; images with a longer edge above
@@ -338,9 +362,29 @@ larger PNG images needs too much memory on small servers such as a Raspberry Pi)
 messages or images in the Django admin.
 
 Tickets are kept as a record: a user who has submitted tickets cannot be deleted in Alliance
-Auth while those tickets exist. Deactivate the user instead.
+Auth while those tickets exist. Deactivate the user instead, or erase their ticket data first.
+
+**Erasing one person's data** (for example after a data protection request). Back up the
+database first; erasing cannot be undone.
+
+```bash
+python manage.py aa_ticket_erase_user <username>        # shows what would happen
+python manage.py aa_ticket_erase_user <username> --yes  # erases
+```
+
+Deactivate the account first and wait a few minutes, so Discord messages still in the queue are
+sent; the command refuses to erase an active account. The command deletes the tickets the person submitted, with their
+images. In other tickets their messages show *Deleted user*, in-progress tickets assigned to them
+become unclaimed, and the history no longer names them (also under older main characters).
+Kept: the text and images of messages they wrote in other people's tickets (they are part of
+that ticket), Alliance Auth notifications, and Discord messages already sent. Afterwards the
+account can be deleted in Alliance Auth.
+
+Browsers may keep an image they have shown for up to 5 minutes.
 
 ## Updating
+
+Read the [CHANGELOG](CHANGELOG.md) first and back up your database. Then:
 
 ```bash
 pip install -U git+https://github.com/yilifaer/aa-ticket.git@<new tag>
@@ -348,7 +392,14 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-Then restart Alliance Auth and Celery. Read the [CHANGELOG](CHANGELOG.md) first.
+Then restart Alliance Auth and Celery.
+
+To go back to the previous version: if the CHANGELOG lists database changes for the version you
+installed, first undo them with `python manage.py migrate aa_ticket <last migration of the
+previous version>` (from 1.0.1 back to 1.0.0: `0005`). Then install the previous tag the same way
+and restart. Going back from 1.0.1 to 1.0.0 also drops the hourly submission limit, and
+departments that were closed because their allowed states or groups were deleted are open to
+everyone again.
 
 ## Uninstalling
 
@@ -366,8 +417,14 @@ Then restart Alliance Auth and Celery. Read the [CHANGELOG](CHANGELOG.md) first.
    ```
    Do **not** use `remove_stale_contenttypes --include-stale-apps`; it also deletes data of
    other apps.
-5. Delete `MEDIA_ROOT/aa_ticket/` if you no longer need the images.
-6. Restart Alliance Auth and Celery.
+5. Celery Beat keeps a copy of the periodic tasks in the database. Delete them, otherwise the
+   worker keeps receiving tasks it no longer knows:
+   ```bash
+   python manage.py shell -c "from django_celery_beat.models import PeriodicTask; PeriodicTask.objects.filter(name__startswith='aa_ticket_').delete()"
+   ```
+   (or delete the three `aa_ticket_*` rows in the Django admin under *Periodic tasks*).
+6. Delete `MEDIA_ROOT/aa_ticket/` if you no longer need the images.
+7. Restart Alliance Auth and Celery.
 
 ## Translations
 

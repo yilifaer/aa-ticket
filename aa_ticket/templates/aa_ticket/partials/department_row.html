@@ -10,8 +10,11 @@
                 {% translate "Staff groups" context 'aa_ticket' %}: {% for g in d.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% empty %}<span class="text-body"><i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i> {% translate "none — nobody can handle tickets here" context 'aa_ticket' %}</span>{% endfor %}
             </div>
             {% for g in row.joinable %}
-                <div class="small text-body"><i class="fas fa-circle-exclamation text-danger" aria-hidden="true"></i> {% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: anyone can join or request this group — they could read all tickets of this department.{% endblocktranslate %}</div>
+                <div class="small text-body"><i class="fas fa-circle-exclamation text-danger" aria-hidden="true"></i> {% if g.auto %}{% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: Alliance Auth fills this group automatically with a whole corporation or alliance — they could all read all tickets of this department.{% endblocktranslate %}{% else %}{% blocktranslate context 'aa_ticket' with group=g.name %}{{ group }}: anyone can join or request this group — they could read all tickets of this department.{% endblocktranslate %}{% endif %}</div>
             {% endfor %}
+            {% if row.nobody_can_submit %}
+                <div class="small text-body"><i class="fas fa-circle-exclamation text-danger" aria-hidden="true"></i> {% translate "Submissions are limited to states or groups that no longer exist — nobody can submit tickets here. Pick new ones, or tick “Let everyone submit again” on the department page." context 'aa_ticket' %}</div>
+            {% endif %}
             {% if not d.webhook_url %}
                 <div class="small text-body"><i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i> {% translate "Discord channel not configured — new tickets will not be announced." context 'aa_ticket' %}</div>
             {% elif d.last_webhook_error %}

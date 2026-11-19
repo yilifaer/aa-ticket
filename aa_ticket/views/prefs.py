@@ -13,8 +13,9 @@ def prefs(request):
     pref = UserPreference.for_user(request.user)
     available = dm.is_available()
     if request.method == "POST" and available:
-        pref.discord_dm_enabled = bool(request.POST.get("discord_dm_enabled"))
-        pref.save(update_fields=["discord_dm_enabled"])
+        UserPreference.objects.update_or_create(
+            user=request.user, defaults={"discord_dm_enabled": bool(request.POST.get("discord_dm_enabled"))}
+        )
         messages.success(request, pgettext("aa_ticket", "Preferences saved."))
         return redirect("aa_ticket:prefs")
     return render(request, "aa_ticket/prefs.html", {"pref": pref, "available": available, "nav_active": "prefs"})
